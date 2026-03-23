@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la database/migrations/*.php)",
+      "Bash(ls -la app/Models/*.php)",
+      "Bash(ls -la database/factories/*.php)",
+      "Bash(ls -la database/seeders/*.php)"
+    ]
+  }
+}

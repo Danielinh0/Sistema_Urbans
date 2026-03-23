@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Corrida extends Model
+{
+    protected $table = 'corrida';
+    protected $primaryKey = 'id_corrida';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'id_ruta',
+        'id_combi',
+        'id_chofer',
+        'fecha',
+        'hora_salida',
+        'hora_llegada',
+    ];
+
+    protected $casts = [
+        'fecha' => 'date',
+        'hora_salida' => 'datetime:H:i:s',
+        'hora_llegada' => 'datetime:H:i:s',
+    ];
+
+    public function ruta(): BelongsTo
+    {
+        return $this->belongsTo(Ruta::class, 'id_ruta', 'id_ruta');
+    }
+
+    public function combi(): BelongsTo
+    {
+        return $this->belongsTo(Urban::class, 'id_combi', 'id_urban');
+    }
+
+    public function chofer(): BelongsTo
+    {
+        return $this->belongsTo(Chofer::class, 'id_chofer', 'id_usuario');
+    }
+
+    public function boletos(): HasMany
+    {
+        return $this->hasMany(Boleto::class, 'id_corrida', 'id_corrida');
+    }
+
+    public function urbans(): BelongsToMany
+    {
+        return $this->belongsToMany(Urban::class, 'urban_corrida', 'id_corrida', 'id_urban');
+    }
+}
