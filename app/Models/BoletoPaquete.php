@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;  
 
 class BoletoPaquete extends Model
 {
+    use HasFactory;
+
     protected $table = 'boleto_paquete';
     protected $primaryKey = 'id_boleto';
     public $timestamps = false;

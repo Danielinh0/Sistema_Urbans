@@ -24,7 +24,6 @@ class BoletoFactory extends Factory
             'folio' => 'BOL-' . $this->faker->unique()->numerify('######'),
             'estado' => $this->faker->randomElement($estados),
             'tipo_de_pago' => $this->faker->randomElement($tiposPago),
-            'timestamp' => $this->faker->dateTimeBetween('-30 days', 'now'),
             'descuento' => $this->faker->randomFloat(2, 0, 100),
         ];
     }

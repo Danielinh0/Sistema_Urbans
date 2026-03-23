@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('subtotal');
             $table->integer('descuento')->default(0);
             $table->date('fecha');
+            $table->timestamps();
         });
     }
 

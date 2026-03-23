@@ -9,8 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('boleto_paquete', function (Blueprint $table) {
-            $table->id('id_boleto');
-            $table->foreignId('id_boleto')->constrained('boleto', 'id_boleto')->onDelete('cascade');
+            $table->unsignedBigInteger('id_boleto')->primary();
+            $table->foreign('id_boleto')
+            ->references('id_boleto')->on('boleto') ->onDelete('cascade');    
+
             $table->string('guia')->unique();
             $table->string('descripcion');
             $table->decimal('peso', 10, 2);

@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Usuario extends Model
 {
+    use HasFactory;
+
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
 
@@ -33,18 +37,13 @@ class Usuario extends Model
         return $this->belongsTo(Direccion::class, 'id_direccion', 'id_direccion');
     }
 
-    public function gerente(): HasOne
+    public function corridas(): HasMany
     {
-        return $this->hasOne(Gerente::class, 'id_usuario', 'id_usuario');
+        return $this->hasMany(Corrida::class, 'id_chofer', 'id_usuario');
     }
 
-    public function cajero(): HasOne
+     public function turnos(): HasMany
     {
-        return $this->hasOne(Cajero::class, 'id_usuario', 'id_usuario');
-    }
-
-    public function chofer(): HasOne
-    {
-        return $this->hasOne(Chofer::class, 'id_usuario', 'id_usuario');
+        return $this->hasMany(Turno::class, 'id_cajero', 'id_usuario');
     }
 }

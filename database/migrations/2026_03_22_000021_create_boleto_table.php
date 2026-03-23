@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('folio')->unique();
             $table->string('estado');
             $table->string('tipo_de_pago');
-            $table->dateTime('timestamp');
             $table->decimal('descuento', 10, 2)->default(0);
+            $table->timestamps();
         });
     }
 

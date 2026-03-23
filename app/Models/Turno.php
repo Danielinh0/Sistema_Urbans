@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Turno extends Model
 {
+    use HasFactory;
+
     protected $table = 'turno';
     protected $primaryKey = 'id_turno';
+    public $timestamps = false;
 
     protected $fillable = [
-        'id_cajero',
+        'id_usuario',
         'id_taquilla',
         'id_venta',
         'monto_inicial',
@@ -28,9 +32,9 @@ class Turno extends Model
         'hora_fin' => 'datetime:H:i:s',
     ];
 
-    public function cajero(): BelongsTo
+    public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Cajero::class, 'id_cajero', 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'id_usuario', 'id_usuario');
     }
 
     public function taquilla(): BelongsTo

@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Corrida extends Model
 {
+    use HasFactory;
     protected $table = 'corrida';
     protected $primaryKey = 'id_corrida';
     public $timestamps = false;
@@ -16,7 +18,7 @@ class Corrida extends Model
     protected $fillable = [
         'id_ruta',
         'id_combi',
-        'id_chofer',
+        'id_usuario',
         'fecha',
         'hora_salida',
         'hora_llegada',
@@ -38,9 +40,9 @@ class Corrida extends Model
         return $this->belongsTo(Urban::class, 'id_combi', 'id_urban');
     }
 
-    public function chofer(): BelongsTo
+    public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Chofer::class, 'id_chofer', 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'id_usuario','id_usuario');
     }
 
     public function boletos(): HasMany

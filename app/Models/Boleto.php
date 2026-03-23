@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Boleto extends Model
 {
+    use HasFactory;
     protected $table = 'boleto';
     protected $primaryKey = 'id_boleto';
 
@@ -19,12 +21,12 @@ class Boleto extends Model
         'folio',
         'estado',
         'tipo_de_pago',
-        'timestamp',
         'descuento',
     ];
 
     protected $casts = [
-        'timestamp' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'descuento' => 'decimal:2',
     ];
 

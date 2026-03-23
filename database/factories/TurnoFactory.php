@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Turno;
-use App\Models\Cajero;
+use App\Models\Usuario;
 use App\Models\Taquilla;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,7 +17,7 @@ class TurnoFactory extends Factory
         $fecha = $this->faker->dateTimeBetween('-30 days', 'now');
 
         return [
-            'id_cajero' => Cajero::factory(),
+            'id_usuario' => Usuario::factory(),
             'id_taquilla' => Taquilla::factory(),
             'id_venta' => null,
             'monto_inicial' => $montoInicial,

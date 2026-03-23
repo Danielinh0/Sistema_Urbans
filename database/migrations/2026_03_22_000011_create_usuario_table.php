@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('correo')->unique();
             $table->string('password');
+            $table->string('rol')->nullable();
             $table->timestamps();
         });
     }
