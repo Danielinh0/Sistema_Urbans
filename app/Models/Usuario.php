@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
@@ -25,7 +27,18 @@ class Usuario extends Model
 
     protected $hidden = [
         'password',
+        'remember_token',
+        'two_factor_recovery_codes',
+        'two_factor_secret',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
     public function sucursal(): BelongsTo
     {
@@ -45,5 +58,17 @@ class Usuario extends Model
      public function turnos(): HasMany
     {
         return $this->hasMany(Turno::class, 'id_cajero', 'id_usuario');
+    }
+
+    /**
+     * Get the user's initials
+     */
+    public function initials(): string
+    {
+        return Str::of($this->nombre)
+            ->explode(' ')
+            ->take(2)
+            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->implode('');
     }
 }

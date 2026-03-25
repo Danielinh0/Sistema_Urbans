@@ -19,8 +19,8 @@ new #[Title('Profile settings')] class extends Component {
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        $this->name = Auth::user()->nombre;
+        $this->email = Auth::user()->correo;
     }
 
     /**
@@ -30,17 +30,21 @@ new #[Title('Profile settings')] class extends Component {
     {
         $user = Auth::user();
 
-        $validated = $this->validate($this->profileRules($user->id));
+        // Pass the primary key
+        $validated = $this->validate($this->profileRules($user->id_usuario));
 
-        $user->fill($validated);
+        $user->fill([
+            'nombre' => $validated['name'],
+            'correo' => $validated['email'],
+        ]);
 
-        if ($user->isDirty('email')) {
+        if ($user->isDirty('correo')) {
             $user->email_verified_at = null;
         }
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        $this->dispatch('profile-updated', name: $user->nombre);
     }
 
     /**
