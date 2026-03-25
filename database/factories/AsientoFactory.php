@@ -13,7 +13,7 @@ class AsientoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_combi' => Urban::factory(),
+            'id_urban' => Urban::factory(),
             'nombre' => $this->faker->regexify('[A-Z][0-9]{2}'),
         ];
     }

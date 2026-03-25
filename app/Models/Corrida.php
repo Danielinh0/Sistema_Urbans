@@ -17,7 +17,7 @@ class Corrida extends Model
 
     protected $fillable = [
         'id_ruta',
-        'id_combi',
+        'id_urban',
         'id_usuario',
         'fecha',
         'hora_salida',
@@ -37,12 +37,12 @@ class Corrida extends Model
 
     public function combi(): BelongsTo
     {
-        return $this->belongsTo(Urban::class, 'id_combi', 'id_urban');
+        return $this->belongsTo(Urban::class, 'id_urban', 'id_urban');
     }
 
-    public function usuario(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario','id_usuario');
+        return $this->belongsTo(User::class, 'id_usuario','id_usuario');
     }
 
     public function boletos(): HasMany

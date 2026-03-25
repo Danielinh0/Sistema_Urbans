@@ -29,7 +29,7 @@ class Urban extends Model
 
     public function asientos(): HasMany
     {
-        return $this->hasMany(Asiento::class, 'id_combi', 'id_urban');
+        return $this->hasMany(Asiento::class, 'id_urban', 'id_urban');
     }
 
     public function corridas(): BelongsToMany

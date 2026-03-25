@@ -16,13 +16,13 @@ class Asiento extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_combi',
+        'id_urban',
         'nombre',
     ];
 
     public function urban(): BelongsTo
     {
-        return $this->belongsTo(Urban::class, 'id_combi', 'id_urban');
+        return $this->belongsTo(Urban::class, 'id_urban', 'id_urban');
     }
 
     public function boletoClientes(): HasMany

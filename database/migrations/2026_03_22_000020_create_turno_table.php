@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('turno', function (Blueprint $table) {
             $table->id('id_turno');
-            $table->foreignId('id_usuario')->constrained('usuario', 'id_usuario')->onDelete('cascade');
+            $table->foreignId('id_usuario')->constrained('users', 'id_usuario')->onDelete('cascade');
             $table->foreignId('id_taquilla')->constrained('taquilla', 'id_taquilla')->onDelete('cascade');
             // Se agrega la clave foránea 'id_venta' en una migración posterior porque 'venta' es creada después de 'turno'.
             $table->foreignId('id_venta')->nullable();

@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Sucursal;
+use App\Models\Direccion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -17,11 +19,13 @@ class UserFactory extends Factory
      */
     protected static ?string $password;
 
+    protected $model = User::class;
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
+    
     public function definition(): array
     {
         return [
@@ -33,6 +37,10 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            
+            // camvbios para user y sustituyendo las relaciones logicas en lso modelos
+            'id_sucursal' => Sucursal::factory(),
+            'id_direccion' => Direccion::factory(),   
         ];
     }
 

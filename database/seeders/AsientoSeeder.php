@@ -15,7 +15,7 @@ class AsientoSeeder extends Seeder
         foreach ($urbans as $urban) {
             for ($i = 1; $i <= $urban->numero_asientos; $i++) {
                 Asiento::create([
-                    'id_combi' => $urban->id_urban,
+                    'id_urban' => $urban->id_urban,
                     'nombre' => 'A' . str_pad($i, 2, '0', STR_PAD_LEFT),
                 ]);
             }

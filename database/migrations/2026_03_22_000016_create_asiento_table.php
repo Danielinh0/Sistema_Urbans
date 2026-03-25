@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('asiento', function (Blueprint $table) {
             $table->id('id_asiento');
-            $table->foreignId('id_combi')->constrained('urban', 'id_urban')->onDelete('cascade');
+            $table->foreignId('id_urban')->constrained('urban', 'id_urban')->onDelete('cascade');
             $table->string('nombre');
         });
     }

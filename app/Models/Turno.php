@@ -32,9 +32,9 @@ class Turno extends Model
         'hora_fin' => 'datetime:H:i:s',
     ];
 
-    public function usuario(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario', 'id_usuario');
+        return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
     }
 
     public function taquilla(): BelongsTo

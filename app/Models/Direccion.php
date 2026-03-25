@@ -26,9 +26,9 @@ class Direccion extends Model
         return $this->belongsTo(Calle::class, 'id_calle', 'id_calle');
     }
 
-    public function usuarios(): HasMany
+    public function user(): HasMany
     {
-        return $this->hasMany(Usuario::class, 'id_direccion', 'id_direccion');
+        return $this->hasMany(User::class, 'id_direccion', 'id_direccion');
     }
 
     public function sucursales(): HasMany

@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('corrida', function (Blueprint $table) {
             $table->id('id_corrida');
             $table->foreignId('id_ruta')->constrained('ruta', 'id_ruta')->onDelete('cascade');
-            $table->foreignId('id_combi')->constrained('urban', 'id_urban')->onDelete('cascade');
-            $table->foreignId('id_usuario')->constrained('usuario', 'id_usuario')->onDelete('cascade');
+            $table->foreignId('id_urban')->constrained('urban', 'id_urban')->onDelete('cascade');
+            $table->foreignId('id_usuario')->constrained('users', 'id_usuario')->onDelete('cascade');
             $table->date('fecha');
             $table->time('hora_salida');
             $table->time('hora_llegada');
