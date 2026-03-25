@@ -10,7 +10,7 @@
 
             <!-- Email Address -->
             <flux:input
-                name="email"
+                name="correo"
                 :label="__('Email address')"
                 type="email"
                 required

@@ -12,7 +12,7 @@
 
             <!-- Email Address -->
             <flux:input
-                name="email"
+                name="correo"
                 value="{{ request('email') }}"
                 :label="__('Email')"
                 type="email"

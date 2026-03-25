@@ -10,9 +10,9 @@
 
             <!-- Email Address -->
             <flux:input
-                name="email"
+                name="correo"
                 :label="__('Email address')"
-                :value="old('email')"
+                :value="old('correo')"
                 type="email"
                 required
                 autofocus

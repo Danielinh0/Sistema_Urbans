@@ -21,3 +21,21 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# !/vendor/livewire/
+# /vendor/livewire/*
+# !/vendor/livewire/flux/
+# /vendor/livewire/flux/*
+# !/vendor/livewire/flux/stubs/
+# /vendor/livewire/flux/stubs/*
+# !/vendor/livewire/flux/stubs/resources/
+# /vendor/livewire/flux/stubs/resources/*
+# !/vendor/livewire/flux/stubs/resources/views/
+# /vendor/livewire/flux/stubs/resources/views/*
+# !/vendor/livewire/flux/stubs/resources/views/flux/
+# /vendor/livewire/flux/stubs/resources/views/flux/*
+# !/vendor/livewire/flux/stubs/resources/views/flux/sidebar/
+# /vendor/livewire/flux/stubs/resources/views/flux/sidebar/*
+# !/vendor/livewire/flux/stubs/resources/views/flux/sidebar/item.blade.php
+
+/vendor/_laravel_ide/
