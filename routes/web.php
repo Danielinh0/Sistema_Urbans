@@ -1,7 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UrbansController;
+use App\Http\Controllers\{
+    UrbansController,
+    CorridasController,
+    BoletosController
+}; 
+
+
 
 Route::view('/', 'welcome')->name('home');
 

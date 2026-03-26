@@ -43,7 +43,7 @@ class UserFactory extends Factory
             'id_direccion' => Direccion::factory(),   
         ];
     }
-
+    
     /**
      * Indicate that the model's email address should be unverified.
      */

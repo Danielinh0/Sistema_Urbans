@@ -15,7 +15,7 @@ class CorridasController extends Controller
         $corridas = Corrida::all();
         return view('corridas.index', compact('corridas'));
     }
-
+    
     /**
      * Show the form for creating a new resource.
      */
