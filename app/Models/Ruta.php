@@ -17,11 +17,16 @@ class Ruta extends Model
     protected $fillable = [
         'nombre',
         'distancia',
+        'tiempo_estimado',
+        'tarifa_clientes',
+        'tarifa_paquete',
     ];
 
-    protected $casts = [
-        'distancia' => 'decimal:2',
-    ];
+    // protected $casts = [
+    //     'distancia' => 'decimal:2',
+    //     'tarifa_personas' => 'decimal:2',
+    //     'tarifa_paquetes' => 'decimal:2',
+    // ];
 
     public function corridas(): HasMany
     {
