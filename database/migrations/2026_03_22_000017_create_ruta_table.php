@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id('id_ruta');
             $table->string('nombre');
             $table->decimal('distancia', 10, 2);
+            $table->decimal('tarifa_clientes', 10, 2);
+            $table->decimal('tarifa_paquete', 10, 2);
         });
     }
 

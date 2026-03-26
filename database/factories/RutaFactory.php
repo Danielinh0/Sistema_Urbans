@@ -20,6 +20,8 @@ class RutaFactory extends Factory
         return [
             'nombre' => "$origen - $destino",
             'distancia' => $this->faker->randomFloat(2, 50, 500),
+            'tarifa_clientes' => $this->faker->randomFloat(2, 10, 100),
+            'tarifa_paquete' => $this->faker->randomFloat(2, 20, 200),
         ];
     }
 }
