@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Boleto;
 
 class BoletosController extends Controller
 {
@@ -12,8 +11,7 @@ class BoletosController extends Controller
      */
     public function index()
     {
-        $boletos = Boleto::all();
-        return view('boletos.index', compact('boletos'));
+        return view('boletos.index');
     }
 
     /**
@@ -29,60 +27,38 @@ class BoletosController extends Controller
      */
     public function store(Request $request)
     {
-        $boleto = new Boleto();
-        $boleto->id_corrida = $request->id_corrida;
-        $boleto->id_turno = $request->id_turno;
-        $boleto->id_cliente = $request->id_cliente;
-        $boleto->folio = $request->folio;
-        $boleto->estado = $request->estado;
-        $boleto->tipo_de_pago = $request->tipo_de_pago;
-        $boleto->descuento = $request->descuento;
-        $boleto->save();
-        return redirect()->route('boletos.index');
+        return view('boletos.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $boleto = Boleto::find($id);
-        return view('boletos.show', compact('boleto'));
+        return view('boletos.show', ['id' => $id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $boleto = Boleto::find($id);
-        return view('boletos.edit', compact('boleto'));
+        return view('boletos.edit', ['id' => $id]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $boleto = Boleto::find($id);
-        $boleto->id_corrida = $request->id_corrida;
-        $boleto->id_turno = $request->id_turno;
-        $boleto->id_cliente = $request->id_cliente;
-        $boleto->folio = $request->folio;
-        $boleto->estado = $request->estado;
-        $boleto->tipo_de_pago = $request->tipo_de_pago;
-        $boleto->descuento = $request->descuento;
-        $boleto->save();
-        return redirect()->route('boletos.index');
+        return view('boletos.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $boleto = Boleto::find($id);
-        $boleto->delete();
-        return redirect()->route('boletos.index');
+        return view('boletos.index');
     }
 }

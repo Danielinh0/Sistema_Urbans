@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Urban;
 
 class UrbansController extends Controller
 {
@@ -12,8 +11,7 @@ class UrbansController extends Controller
      */
     public function index()
     {
-        $urbans = Urban::all();
-        return view('urbans.index', compact('urbans'));
+        return view('urbans.index');
     }
 
     /**
@@ -29,54 +27,38 @@ class UrbansController extends Controller
      */
     public function store(Request $request)
     {
-        $urban = new Urban();
-        $urban->id_socio = $request->id_socio;
-        $urban->placa = $request->placa;
-        $urban->codigo_urban = $request->codigo_urban;
-        $urban->numero_asientos = $request->numero_asientos;
-        $urban->save();
-        return redirect()->route('urbans.index');
+        return view('urbans.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $urban = Urban::find($id);
-        return view('urbans.show', compact('urban'));
+        return view('urbans.show', ['id' => $id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $urban = Urban::find($id);
-        return view('urbans.edit', compact('urban'));
+        return view('urbans.edit', ['id' => $id]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $urban = Urban::find($id);
-        $urban->id_socio = $request->id_socio;
-        $urban->placa = $request->placa;
-        $urban->codigo_urban = $request->codigo_urban;
-        $urban->numero_asientos = $request->numero_asientos;
-        $urban->save();
-        return redirect()->route('urbans.index');
+        return view('urbans.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $urban = Urban::find($id);
-        $urban->delete();
-        return redirect()->route('urbans.index');
+        return view('urbans.index');
     }
 }

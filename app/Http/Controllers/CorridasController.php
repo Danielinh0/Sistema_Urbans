@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Corrida;
 
 class CorridasController extends Controller
 {
@@ -12,10 +11,9 @@ class CorridasController extends Controller
      */
     public function index()
     {
-        $corridas = Corrida::all();
-        return view('corridas.index', compact('corridas'));
+        return view('corridas.index');
     }
-    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -29,58 +27,38 @@ class CorridasController extends Controller
      */
     public function store(Request $request)
     {
-        $corrida = new Corrida();
-        $corrida->id_ruta = $request->id_ruta;
-        $corrida->id_combi = $request->id_combi;
-        $corrida->id_usuario = $request->id_usuario;
-        $corrida->fecha = $request->fecha;
-        $corrida->hora_salida = $request->hora_salida;
-        $corrida->hora_llegada = $request->hora_llegada;
-        $corrida->save();
-        return redirect()->route('corridas.index');
+        return view('corridas.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $corrida = Corrida::find($id);
-        return view('corridas.show', compact('corrida'));
+        return view('corridas.show', ['id' => $id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $corrida = Corrida::find($id);
-        return view('corridas.edit', compact('corrida'));
+        return view('corridas.edit', ['id' => $id]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $corrida = Corrida::find($id);
-        $corrida->id_ruta = $request->id_ruta;
-        $corrida->id_combi = $request->id_combi;
-        $corrida->id_usuario = $request->id_usuario;
-        $corrida->fecha = $request->fecha;
-        $corrida->hora_salida = $request->hora_salida;
-        $corrida->hora_llegada = $request->hora_llegada;
-        $corrida->save();
-        return redirect()->route('corridas.index');
+        return view('corridas.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $corrida = Corrida::find($id);
-        $corrida->delete();
-        return redirect()->route('corridas.index');
+        return view('corridas.index');
     }
 }
