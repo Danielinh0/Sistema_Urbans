@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
 UrbansController,
 CorridasController,
-BoletosController
+BoletosController,
+RutaController
 };
 
 
@@ -47,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             }
             );
             Route::prefix('rutas')->name('rutas.')->group(function () {
-            Route::controller(RutasController::class)->group(function () {
+            Route::controller(RutaController::class)->group(function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
                     Route::get('/{id}', 'show')->name('show');

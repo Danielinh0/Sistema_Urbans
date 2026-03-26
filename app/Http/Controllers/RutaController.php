@@ -12,7 +12,6 @@ class RutaController extends Controller
      */
     public function index()
     {
-        $rutas = Ruta::all();
         return view('rutas.index');
     }
 
@@ -35,17 +34,17 @@ class RutaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        return view('rutas.show');
+        return view('rutas.show', ['id' => $id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        return view('rutas.edit');
+        return view('rutas.edit', ['id' => $id]);
     }
 
     /**
