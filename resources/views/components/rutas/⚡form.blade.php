@@ -8,20 +8,28 @@ use App\Models\Ruta;
 new class extends Component
 {
     use WithPagination;
-
-    #[Validate('required|min:3')]
+    
+    #[Validate('required', message: 'El nombre de la ruta es requerido.')]
+    #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
     public $nombre;
 
-    #[Validate('required|numeric|min:0')]
+    #[Validate('required', message: 'La distancia es requerida.')]
+    #[Validate('numeric', message: 'La distancia debe ser un valor numérico.')]
+    #[Validate('min:0', message: 'La distancia no puede ser negativa.')]
     public $distancia;
 
-    #[Validate('required|date_format:H:i')]
+    #[Validate('required', message: 'El tiempo estimado es requerido.')]
+    #[Validate('date_format:H:i', message: 'El tiempo estimado debe estar en formato HH:MM.')]
     public $tiempo_estimado;
 
-    #[Validate('required|numeric|min:0')]
+    #[Validate('required', message: 'La tarifa para personas es requerida.')]
+    #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
+    #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
     public $tarifa_clientes;
 
-    #[Validate('required|numeric|min:0')]
+    #[Validate('required', message: 'La tarifa para paquetes es requerida.')]
+    #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
+    #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
     public $tarifa_paquete; 
 
     public $sortBy = 'id_ruta';
@@ -72,23 +80,23 @@ new class extends Component
                 </div>
                 <div class="space-y-6">
                     <div>
-                        <flux:input wire:model="nombre" icon:trailing="a-large-small" type="text" label="Nombre de la ruta"  description:trailing="No se debe dejar en blanco, siendo de almenos 20 caracteres manejandose por la nomenclatura 'Ruta - Destino'"/>
+                        <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text" label="Nombre de la ruta"  description:trailing="No se debe dejar en blanco, siendo de almenos 20 caracteres manejandose por la nomenclatura 'Ruta - Destino'"/>
                         @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <flux:input wire:model="distancia" icon:trailing="land-plot"  label="Distancia"  description:trailing="Ingrese la distancia de la ruta en kilómetros"/>
+                        <flux:input wire:model.live.blur="distancia" icon:trailing="land-plot"  label="Distancia"  description:trailing="Ingrese la distancia de la ruta en kilómetros"/>
                         @error('distancia') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <flux:input wire:model="tiempo_estimado" icon:trailing="clock-fading" label="Tiempo Estimado de Viaje"  description:trailing="Tiempo estimado para completar la ruta en formato HH:MM"/>
+                        <flux:input wire:model.live.blur="tiempo_estimado" icon:trailing="clock-fading" label="Tiempo Estimado de Viaje"  description:trailing="Tiempo estimado para completar la ruta en formato HH:MM"/>
                         @error('tiempo_estimado') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <flux:input wire:model="tarifa_clientes" icon:trailing="book-user" label="Tarifa para personas"  description:trailing="Ingrese la tarifa para personas en la ruta "/>
+                        <flux:input wire:model.live.blur="tarifa_clientes" icon:trailing="book-user" label="Tarifa para personas"  description:trailing="Ingrese la tarifa para personas en la ruta "/>
                         @error('tarifa_clientes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <flux:input wire:model="tarifa_paquete" icon:trailing="package" label="Tarifa para paquetes"  description:trailing="Ingrese la tarifa para paquetes en la ruta "/>
+                        <flux:input wire:model.live.blur="tarifa_paquete" icon:trailing="package" label="Tarifa para paquetes"  description:trailing="Ingrese la tarifa para paquetes en la ruta "/>
                         @error('tarifa_paquete') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
