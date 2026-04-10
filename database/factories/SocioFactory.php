@@ -14,6 +14,11 @@ class SocioFactory extends Factory
         return [
             'numero_telefonico' => $this->faker->phoneNumber(),
             'correo' => $this->faker->unique()->companyEmail(),
+            'nombre' => $this->faker->firstName(),
+            'apellido_paterno' => $this->faker->lastName(),
+            'apellido_materno' => $this->faker->lastName(),
+            'estado' => $this->faker->state(),
+            'fecha_de_incorporacion' => $this->faker->date(),
         ];
     }
 }
