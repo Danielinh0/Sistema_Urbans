@@ -11,7 +11,7 @@ class RutaController extends Controller
      */
     public function index()
     {
-        return view('rutas.index');
+        return view('ruta.index');
     }
 
     /**
@@ -19,7 +19,7 @@ class RutaController extends Controller
      */
     public function create()
     {
-        return view('rutas.create');
+        return view('ruta.create');
     }
 
     /**
@@ -27,7 +27,7 @@ class RutaController extends Controller
      */
     public function store(Request $request)
     {
-        return view('rutas.index');
+        return view('ruta.index');
     }
 
     /**
@@ -35,7 +35,7 @@ class RutaController extends Controller
      */
     public function show($id)
     {
-        return view('rutas.show', ['id' => $id]);
+        return view('ruta.show', ['id' => $id]);
     }
 
     /**
@@ -43,7 +43,7 @@ class RutaController extends Controller
      */
     public function edit($id)
     {
-        return view('rutas.edit', ['id' => $id]);
+        return view('ruta.edit', ['id' => $id]);
     }
 
     /**
@@ -51,7 +51,7 @@ class RutaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        return view('rutas.index');
+        return view('ruta.index');
     }
 
     /**
@@ -59,6 +59,6 @@ class RutaController extends Controller
      */
     public function destroy(string $id)
     {
-        return view('rutas.index');
+        return view('ruta.index');
     }
 }

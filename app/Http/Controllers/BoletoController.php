@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class UrbansController extends Controller
+class BoletoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('urbans.index');
+        return view('boleto.index');
     }
 
     /**
@@ -19,7 +19,7 @@ class UrbansController extends Controller
      */
     public function create()
     {
-        return view('urbans.create');
+        return view('boleto.create');
     }
 
     /**
@@ -27,7 +27,7 @@ class UrbansController extends Controller
      */
     public function store(Request $request)
     {
-        return view('urbans.index');
+        return view('boleto.index');
     }
 
     /**
@@ -35,7 +35,7 @@ class UrbansController extends Controller
      */
     public function show($id)
     {
-        return view('urbans.show', ['id' => $id]);
+        return view('boleto.show', ['id' => $id]);
     }
 
     /**
@@ -43,7 +43,7 @@ class UrbansController extends Controller
      */
     public function edit($id)
     {
-        return view('urbans.edit', ['id' => $id]);
+        return view('boleto.edit', ['id' => $id]);
     }
 
     /**
@@ -51,7 +51,7 @@ class UrbansController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return view('urbans.index');
+        return view('boleto.index');
     }
 
     /**
@@ -59,6 +59,6 @@ class UrbansController extends Controller
      */
     public function destroy($id)
     {
-        return view('urbans.index');
+        return view('boleto.index');
     }
 }

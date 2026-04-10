@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class CorridasController extends Controller
+class CorridaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('corridas.index');
+        return view('corrida.index');
     }
 
     /**
@@ -19,7 +19,7 @@ class CorridasController extends Controller
      */
     public function create()
     {
-        return view('corridas.create');
+        return view('corrida.create');
     }
 
     /**
@@ -27,7 +27,7 @@ class CorridasController extends Controller
      */
     public function store(Request $request)
     {
-        return view('corridas.index');
+        return view('corrida.index');
     }
 
     /**
@@ -35,7 +35,7 @@ class CorridasController extends Controller
      */
     public function show($id)
     {
-        return view('corridas.show', ['id' => $id]);
+        return view('corrida.show', ['id' => $id]);
     }
 
     /**
@@ -43,7 +43,7 @@ class CorridasController extends Controller
      */
     public function edit($id)
     {
-        return view('corridas.edit', ['id' => $id]);
+        return view('corrida.edit', ['id' => $id]);
     }
 
     /**
@@ -51,7 +51,7 @@ class CorridasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return view('corridas.index');
+        return view('corrida.index');
     }
 
     /**
@@ -59,6 +59,6 @@ class CorridasController extends Controller
      */
     public function destroy($id)
     {
-        return view('corridas.index');
+        return view('corrida.index');
     }
 }
