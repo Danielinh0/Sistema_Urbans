@@ -14,7 +14,6 @@ class SucursalFactory extends Factory
     {
         return [
             'nombre' => 'Sucursal ' . $this->faker->city(),
-            'ubicacion' => $this->faker->address(),
             'id_direccion' => Direccion::factory(),
         ];
     }
