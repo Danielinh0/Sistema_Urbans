@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('sucursal', function (Blueprint $table) {
             $table->id('id_sucursal');
             $table->string('nombre');
-            $table->string('ubicacion');
             $table->foreignId('id_direccion')->nullable()->constrained('direccion', 'id_direccion')->onDelete('set null');
         });
     }
