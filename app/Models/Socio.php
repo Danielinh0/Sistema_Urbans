@@ -18,6 +18,11 @@ class Socio extends Model
     protected $fillable = [
         'numero_telefonico',
         'correo',
+        'nombre',
+        'apellido_paterno',
+        'apellido_materno',
+        'estado',
+        'fecha_de_incorporacion',
     ];
 
     public function urbans(): HasMany
