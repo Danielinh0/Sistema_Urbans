@@ -94,7 +94,8 @@
         </flux:header>
 
         {{ $slot }}
-
+       
         @fluxScripts
+            
     </body>
 </html>

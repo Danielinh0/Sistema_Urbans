@@ -28,6 +28,8 @@
     --color-accent-foreground: var(--color-white);
 
     --color-azul_menu: #244396;
+    --color-rojo_boton:#F9B2B2;
+    --color-rojo_texto:#B73131;
 }
 
 @layer theme {
