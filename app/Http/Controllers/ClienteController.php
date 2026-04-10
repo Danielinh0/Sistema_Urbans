@@ -11,7 +11,7 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        //
+        return view('cliente.index');
     }
 
     /**
@@ -19,7 +19,7 @@ class ClienteController extends Controller
      */
     public function create()
     {
-        //
+        return view('cliente.create');
     }
 
     /**
@@ -27,38 +27,38 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return view('cliente.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        return view('cliente.show', ['id' => $id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        return view('cliente.edit', ['id' => $id]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        return view('cliente.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        return view('cliente.index');
     }
 }
