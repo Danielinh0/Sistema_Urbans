@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(AsientoController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
-            Route::get('/', 'store')->name('store');
+            Route::get('/store', 'store')->name('store');
             Route::get('/{id}', 'show')->name('show');
             Route::get('/{id}/edit', 'edit')->name('edit');
             Route::get('/{id}', 'update')->name('update');
@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
@@ -70,7 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
@@ -86,7 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
@@ -102,7 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
@@ -118,7 +118,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
@@ -134,7 +134,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/', 'store')->name('store');
+                    Route::get('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
                     Route::get('/{id}', 'update')->name('update');
