@@ -84,9 +84,9 @@ new class extends Component
                     <flux:table.cell variant="strong">
                         ${{ number_format($ruta->tarifa_paquete, 2) }}
                     </flux:table.cell>
-                    <flux:table.cell>
-                        <flux:button class="!bg-azul_menu !text-white transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-azul_menu/110" icon="map-pin-pen">Editar</flux:button>
-                        <flux:button class="!bg-rojo_boton !text-rojo_texto transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-rojo_boton/110" icon="map-pin-x">Eliminar</flux:button>
+                    <flux:table.cell class="flex gap-2">
+                         <livewire:boton.crud />
+                         <livewire:boton.crud bg="rojo_boton" c_text="rojo_texto" icon="map-pin-x" text="Eliminar"/>
                     </flux:table.cell>
                 </flux:table.row>
             @empty

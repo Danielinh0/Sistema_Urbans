@@ -10,6 +10,11 @@ return new class extends Migration
     {
         Schema::create('socio', function (Blueprint $table) {
             $table->id('id_socio');
+            $table->string('nombre');
+            $table->string('apellido_paterno');
+            $table->string('apellido_materno');
+            $table->string('estado');
+            $table->date('fecha_de_incorporacion');
             $table->string('numero_telefonico');
             $table->string('correo');
         });
