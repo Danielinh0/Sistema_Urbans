@@ -16,13 +16,13 @@ class Socio extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'numero_telefonico',
-        'correo',
         'nombre',
         'apellido_paterno',
         'apellido_materno',
         'estado',
         'fecha_de_incorporacion',
+        'numero_telefonico',
+        'correo',
     ];
 
     public function urbans(): HasMany

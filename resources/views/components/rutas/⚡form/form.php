@@ -5,10 +5,7 @@ use App\Models\Ruta;
 
 use Livewire\Component;
 
-new class extends Component
-{
-    
-    public $tipo = null;
+new class extends Component {
 
     #[Validate('required', message: 'El nombre de la ruta es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
@@ -31,9 +28,9 @@ new class extends Component
     #[Validate('required', message: 'La tarifa para paquetes es requerida.')]
     #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
     #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
-    public $tarifa_paquete; 
+    public $tarifa_paquete;
 
-    
+
     public function save()
     {
         $this->validate();
@@ -49,7 +46,7 @@ new class extends Component
         $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete']);
         $this->dispatch('ruta-creada');
         session()->flash('status', 'Ruta creada correctamente.');
-        
-        
-    }   
+
+
+    }
 };
