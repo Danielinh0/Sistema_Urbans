@@ -9,6 +9,6 @@ class VentaSeeder extends Seeder
 {
     public function run(): void
     {
-        Venta::factory(25)->create();
+        Venta::factory(15)->create();
     }
 }

@@ -9,6 +9,6 @@ class ColoniaSeeder extends Seeder
 {
     public function run(): void
     {
-        Colonia::factory(15)->create();
+        Colonia::factory(5)->create();
     }
 }

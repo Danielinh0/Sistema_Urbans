@@ -16,7 +16,7 @@ class CorridaSeeder extends Seeder
             return;
         }
 
-        $corridas = Corrida::factory(25)->create();
+        $corridas = Corrida::factory(10)->create();
 
         foreach ($corridas as $corrida) {
             $corrida->urbans()->attach($urbanIds->random());

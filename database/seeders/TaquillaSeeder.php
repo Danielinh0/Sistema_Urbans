@@ -9,6 +9,6 @@ class TaquillaSeeder extends Seeder
 {
     public function run(): void
     {
-        Taquilla::factory(8)->create();
+        Taquilla::factory(5)->create();
     }
 }

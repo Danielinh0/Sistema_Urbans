@@ -9,6 +9,6 @@ class BoletoSeeder extends Seeder
 {
     public function run(): void
     {
-        Boleto::factory(40)->create();
+        Boleto::factory(10)->create();
     }
 }

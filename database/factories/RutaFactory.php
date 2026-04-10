@@ -22,6 +22,7 @@ class RutaFactory extends Factory
             'distancia' => $this->faker->randomFloat(2, 50, 500),
             'tarifa_clientes' => $this->faker->randomFloat(2, 10, 100),
             'tarifa_paquete' => $this->faker->randomFloat(2, 20, 200),
+            'tiempo_estimado' => $this->faker->time('H:i:s'),
         ];
     }
 }

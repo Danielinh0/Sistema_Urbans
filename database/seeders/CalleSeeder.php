@@ -9,6 +9,6 @@ class CalleSeeder extends Seeder
 {
     public function run(): void
     {
-        Calle::factory(20)->create();
+        Calle::factory(5)->create();
     }
 }

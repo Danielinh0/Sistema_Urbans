@@ -9,6 +9,6 @@ class SucursalSeeder extends Seeder
 {
     public function run(): void
     {
-        Sucursal::factory(8)->create();
+        Sucursal::factory(3)->create();
     }
 }
