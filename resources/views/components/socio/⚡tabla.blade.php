@@ -69,15 +69,15 @@ new class extends Component {
                     wire:click="sort('numero_telefonico')">Teléfono</flux:table.column>
                 <flux:table.column sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
                     wire:click="sort('correo')">Correo</flux:table.column>
-                <flux:table.column>Acciones</flux:table.column>
+                <flux:table.column align="center">Acciones</flux:table.column>
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
                     <flux:table.row :key="$socio->id_socio">
-                        <flux:table.cell class="flex items-center gap-3">
+                        <flux:table.cell>
                             {{ $socio->id_socio }}
                         </flux:table.cell>
-                        <flux:table.cell class="whitespace-nowrap">
+                        <flux:table.cell>
                             {{ $socio->nombre }}
                         </flux:table.cell>
                         <flux:table.cell>
@@ -98,13 +98,15 @@ new class extends Component {
                         <flux:table.cell>
                             {{ $socio->correo }}
                         </flux:table.cell>
-                        <flux:table.cell>
-                            <flux:button
-                                class="!bg-azul_menu !text-white transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-azul_menu/110"
-                                icon="user-round-pen">Editar</flux:button>
-                            <flux:button
-                                class="!bg-rojo_boton !text-rojo_texto transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-rojo_boton/110"
-                                icon="user-round-minus">Eliminar</flux:button>
+                        <flux:table.cell class="flex gap-2">
+                            <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
+                                wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
+                                Editar
+                            </flux:button>
+                            <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
+                                wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
+                                Eliminar
+                            </flux:button>
                         </flux:table.cell>
                     </flux:table.row>
                 @empty
@@ -117,4 +119,6 @@ new class extends Component {
             </flux:table.rows>
         </flux:table>
     </flux:card>
+    <!-- Botones de editar y eliminar -->
+    <livewire:socio.manager />
 </div>
