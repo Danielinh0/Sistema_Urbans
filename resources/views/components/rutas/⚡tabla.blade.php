@@ -6,15 +6,15 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use App\Models\Ruta;
 
-new class extends Component
-{
+new class extends Component {
     use WithPagination;
-    
+
     public $sortBy = 'id_ruta';
     public $sortDirection = 'desc';
     public $search = '';
 
-    public function sort($column) {
+    public function sort($column)
+    {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -41,7 +41,7 @@ new class extends Component
     {
         return Ruta::query()
             ->when($this->search !== '', function ($query) {
-                $query->whereRaw('LOWER(nombre) like ?', ['%'.strtolower($this->search).'%']);
+                $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(10);
@@ -54,51 +54,60 @@ new class extends Component
     <div>
         <flux:card>
             <flux:table :paginate="$this->rutas">
-        <flux:table.columns>
-            <flux:table.column sortable :sorted="$sortBy === 'id_ruta'" :direction="$sortDirection" wire:click="sort('id_ruta')">ID</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection" wire:click="sort('nombre')">Nombre de Ruta</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'distancia'" :direction="$sortDirection" wire:click="sort('distancia')">Distancia (km)</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'tiempo_estimado'" :direction="$sortDirection" wire:click="sort('tiempo_estimado')">Tiempo Est.</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'tarifa_clientes'" :direction="$sortDirection" wire:click="sort('tarifa_clientes')">Tarifa Personas</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'tarifa_paquete'" :direction="$sortDirection" wire:click="sort('tarifa_paquete')">Tarifa Paquetes</flux:table.column>
-            <flux:table.column>Acciones</flux:table.column>
-        </flux:table.columns>
-        <flux:table.rows>
-            @forelse ($this->rutas as $ruta)
-                <flux:table.row :key="$ruta->id_ruta">
-                    <flux:table.cell class="flex items-center gap-3">
-                        {{ $ruta->id_ruta }}
-                    </flux:table.cell>
-                    <flux:table.cell class="whitespace-nowrap">
-                        {{ $ruta->nombre }}
-                    </flux:table.cell>
-                    <flux:table.cell>
-                        {{ $ruta->distancia }} km
-                    </flux:table.cell>
-                    <flux:table.cell>
-                        {{ $ruta->tiempo_estimado }}
-                    </flux:table.cell>
-                    <flux:table.cell variant="strong">
-                        ${{ number_format($ruta->tarifa_clientes, 2) }}
-                    </flux:table.cell>
-                    <flux:table.cell variant="strong">
-                        ${{ number_format($ruta->tarifa_paquete, 2) }}
-                    </flux:table.cell>
-                    <flux:table.cell class="flex gap-2">
-                         <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta wire:key=" btn-edit-{{ $ruta->id_ruta }}"/>
-                         <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta tipo="eliminar" wire:key="btn-del-{{ $ruta->id_ruta }}" bg="rojo_boton" c_text="rojo_texto" icon="map-pin-x" text="Eliminar"/>
-                    </flux:table.cell>
-                    
-                </flux:table.row>
-            @empty
-                <flux:table.row>
-                    <flux:table.cell colspan="7" class="text-center py-4 ">
-                        No se encontraron rutas.
-                    </flux:table.cell>
-                </flux:table.row>
-            @endforelse
-        </flux:table.rows>
-    </flux:table>
+                <flux:table.columns>
+                    <flux:table.column sortable :sorted="$sortBy === 'id_ruta'" :direction="$sortDirection"
+                        wire:click="sort('id_ruta')">ID</flux:table.column>
+                    <flux:table.column sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
+                        wire:click="sort('nombre')">Nombre de Ruta</flux:table.column>
+                    <flux:table.column sortable :sorted="$sortBy === 'distancia'" :direction="$sortDirection"
+                        wire:click="sort('distancia')">Distancia (km)</flux:table.column>
+                    <flux:table.column sortable :sorted="$sortBy === 'tiempo_estimado'" :direction="$sortDirection"
+                        wire:click="sort('tiempo_estimado')">Tiempo Est.</flux:table.column>
+                    <flux:table.column sortable :sorted="$sortBy === 'tarifa_clientes'" :direction="$sortDirection"
+                        wire:click="sort('tarifa_clientes')">Tarifa Personas</flux:table.column>
+                    <flux:table.column sortable :sorted="$sortBy === 'tarifa_paquete'" :direction="$sortDirection"
+                        wire:click="sort('tarifa_paquete')">Tarifa Paquetes</flux:table.column>
+                    <flux:table.column align="center">Acciones</flux:table.column>
+                </flux:table.columns>
+                <flux:table.rows>
+                    @forelse ($this->rutas as $ruta)
+                        <flux:table.row :key="$ruta->id_ruta">
+                            <flux:table.cell>
+                                {{ $ruta->id_ruta }}
+                            </flux:table.cell>
+                            <flux:table.cell class="whitespace-nowrap">
+                                {{ $ruta->nombre }}
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                {{ $ruta->distancia }} km
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                {{ $ruta->tiempo_estimado }}
+                            </flux:table.cell>
+                            <flux:table.cell variant="strong">
+                                ${{ number_format($ruta->tarifa_clientes, 2) }}
+                            </flux:table.cell>
+                            <flux:table.cell variant="strong">
+                                ${{ number_format($ruta->tarifa_paquete, 2) }}
+                            </flux:table.cell>
+                            <flux:table.cell class="flex gap-2">
+                                <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta
+                                    wire:key=" btn-edit-{{ $ruta->id_ruta }}" />
+                                <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta tipo="eliminar"
+                                    wire:key="btn-del-{{ $ruta->id_ruta }}" bg="rojo_boton" c_text="rojo_texto"
+                                    icon="map-pin-x" text="Eliminar" />
+                            </flux:table.cell>
+
+                        </flux:table.row>
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="7" class="text-center py-4 ">
+                                No se encontraron rutas.
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
         </flux:card>
     </div>
 </div>
