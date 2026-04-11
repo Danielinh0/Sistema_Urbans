@@ -8,7 +8,6 @@ use App\Models\Socio;
 new class extends Component {
     public ?Socio $socio = null;
 
-    // Propiedades del formulario (extraídas de tu form.blade.php)
     #[Validate('required', message: 'El nombre es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
     public $nombre;

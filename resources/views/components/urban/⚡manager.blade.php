@@ -71,7 +71,7 @@ new class extends Component {
     #[Computed]
     public function socios()
     {
-        return Socio::orderBy('nombre')->get(); //
+        return Socio::orderBy('nombre')->get();
     }
 };
 ?>
@@ -81,7 +81,6 @@ new class extends Component {
         @if($urban)
             <flux:heading size="lg" class="mb-6">Editar Urban: {{ $urban->codigo_urban }}</flux:heading>
 
-            {{-- Replicamos el grid de 2 columnas de form.blade.php --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div>
                     <flux:input wire:model="codigo_urban" icon:trailing="a-large-small" type="text"
@@ -96,7 +95,6 @@ new class extends Component {
                 </div>
 
                 <div>
-                    {{-- Se añade 'searchable' y se corrige la llave a 'id_socio' --}}
                     <flux:select wire:model="id_socio" label="Socio" placeholder="Seleccione el socio" searchable>
                         @foreach ($this->socios as $socio)
                             <flux:select.option value="{{ $socio->id_socio }}">
@@ -120,7 +118,6 @@ new class extends Component {
         @endif
     </flux:modal>
 
-    {{-- Modal de eliminación permanece igual --}}
     <flux:modal name="modal-eliminar-urban" class="min-w-[22rem]">
         @if($urban)
             <div class="space-y-6">
