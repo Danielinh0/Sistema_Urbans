@@ -85,8 +85,8 @@ new class extends Component
                         ${{ number_format($ruta->tarifa_paquete, 2) }}
                     </flux:table.cell>
                     <flux:table.cell class="flex gap-2">
-                         <livewire:boton.crud />
-                         <livewire:boton.crud bg="rojo_boton" c_text="rojo_texto" icon="map-pin-x" text="Eliminar"/>
+                         <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta wire:key=" btn-edit-{{ $ruta->id_ruta }}"/>
+                         <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta tipo="eliminar" wire:key="btn-del-{{ $ruta->id_ruta }}" bg="rojo_boton" c_text="rojo_texto" icon="map-pin-x" text="Eliminar"/>
                     </flux:table.cell>
                 </flux:table.row>
             @empty
