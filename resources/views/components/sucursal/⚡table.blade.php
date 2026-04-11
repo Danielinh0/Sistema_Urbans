@@ -70,7 +70,12 @@ new class extends Component
                         {{ $sucursal->nombre }}
                     </flux:table.cell>
                     <flux:table.cell>
-                        {{$sucursal->direccion->numero_exterior ?? ''}} {{$sucursal->direccion->calle->nombre}} {{$sucursal->direccion->calle->colonia->nombre}}
+                        {{$sucursal->direccion->calle->nombre ?? ''}}
+                        #{{$sucursal->direccion->numero_exterior ?? ''}}, 
+                        {{$sucursal->direccion->calle->colonia->nombre ?? ''}}, 
+                        {{$sucursal->direccion->calle->colonia->codigoPostal->numero ?? ''}}, 
+                        {{$sucursal->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
+                        {{$sucursal->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
                     </flux:table.cell>
                     <flux:table.cell>
                         <flux:button class="!bg-azul_menu !text-white transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-azul_menu/110" icon="map-pin-pen">Editar</flux:button>
