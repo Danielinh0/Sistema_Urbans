@@ -34,6 +34,11 @@
                     wire:navigate>
                     {{ __('Urbans') }}
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="building-2" :href="route('sucursal.index')" :current="request()->routeIs('sucursal.index')"
+                    wire:navigate>
+                    {{ __('Sucursales') }}
+                </flux:sidebar.item>
             </flux:sidebar.group>
         </flux:sidebar.nav>
 

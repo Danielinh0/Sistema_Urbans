@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,12 +21,14 @@ class Ruta extends Model
         'tarifa_clientes',
         'tarifa_paquete',
     ];
-
-    // protected $casts = [
-    //     'distancia' => 'decimal:2',
-    //     'tarifa_personas' => 'decimal:2',
-    //     'tarifa_paquetes' => 'decimal:2',
-    // ];
+    
+    protected function tiempoEstimado(): Attribute
+    {
+    return Attribute::make(
+        get: fn ($value) => $value ? substr($value, 0, 5) : null, // "08:30:00" → "08:30"
+        set: fn ($value) => $value . ':00', // "08:30" → "08:30:00"
+    );
+    }
 
     public function corridas(): HasMany
     {
