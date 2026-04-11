@@ -8,7 +8,6 @@ use Livewire\Component;
 new class extends Component
 {
     
-    public $tipo = null;
 
     #[Validate('required', message: 'El nombre de la ruta es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
