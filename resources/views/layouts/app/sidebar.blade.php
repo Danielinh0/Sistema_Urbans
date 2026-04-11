@@ -30,6 +30,10 @@
                     {{ __('Socios') }}
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="bus" :href="route('urban.index')" :current="request()->routeIs('urban.index')"
+                    wire:navigate>
+                    {{ __('Urbans') }}
+                </flux:sidebar.item>
             </flux:sidebar.group>
         </flux:sidebar.nav>
 

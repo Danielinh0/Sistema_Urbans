@@ -76,7 +76,7 @@ new class extends Component {
     {
         $this->socio->delete();
         $this->js("Flux.modal('modal-eliminar-socio').close()");
-        $this->dispatch('socio-creado');
+        $this->dispatch('socio-eliminado');
     }
 };
 ?>
@@ -115,7 +115,8 @@ new class extends Component {
             <div class="space-y-6">
                 <flux:heading size="lg">Eliminar Socio</flux:heading>
                 <flux:text>
-                    ¿Estás seguro de que deseas eliminar a <b>{{ $socio->nombre }} {{ $socio->apellido_paterno }}</b>?
+                    ¿Estás seguro de que deseas eliminar a <b>{{ $socio->nombre }} {{ $socio->apellido_paterno }}'
+                        '{{ $socio->apellido_materno }}</b>?
                 </flux:text>
                 <div class="flex gap-2">
                     <flux:spacer />

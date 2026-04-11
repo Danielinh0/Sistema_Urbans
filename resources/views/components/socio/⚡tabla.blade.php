@@ -31,6 +31,8 @@ new class extends Component {
     }
 
     #[On('socio-creado')]
+    #[On('socio-eliminado')]
+    #[On('socio-actualizado')]
     public function refreshAfterCreate()
     {
         $this->resetPage();
