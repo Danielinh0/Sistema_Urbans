@@ -9,7 +9,8 @@ use App\Http\Controllers\{
     RutaController,
     UrbanController,
     UserController,
-    VentaController
+    VentaController,
+    SucursalController
 };
 
 
@@ -83,6 +84,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('ruta')->name('ruta.')->group(
         function () {
             Route::controller(RutaController::class)->group(
+                function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('/create', 'create')->name('create');
+                    Route::get('/store', 'store')->name('store');
+                    Route::get('/{id}', 'show')->name('show');
+                    Route::get('/{id}/edit', 'edit')->name('edit');
+                    Route::get('/{id}', 'update')->name('update');
+                    Route::get('/{id}', 'destroy')->name('destroy');
+                }
+            );
+        }
+    );
+
+    Route::prefix('sucursal')->name('sucursal.')->group(
+        function () {
+            Route::controller(SucursalController::class)->group(
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');

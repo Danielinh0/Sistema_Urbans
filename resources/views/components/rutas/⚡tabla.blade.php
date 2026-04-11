@@ -88,6 +88,7 @@ new class extends Component
                         <flux:button class="!bg-azul_menu !text-white transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-azul_menu/110" icon="map-pin-pen">Editar</flux:button>
                         <flux:button class="!bg-rojo_boton !text-rojo_texto transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-100 hover:bg-rojo_boton/110" icon="map-pin-x">Eliminar</flux:button>
                     </flux:table.cell>
+                    
                 </flux:table.row>
             @empty
                 <flux:table.row>
