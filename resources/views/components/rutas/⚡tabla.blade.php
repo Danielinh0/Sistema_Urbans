@@ -88,6 +88,7 @@ new class extends Component
                          <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta wire:key=" btn-edit-{{ $ruta->id_ruta }}"/>
                          <livewire:boton.update-delete esqueleto="skeleton-form-ruta" :$ruta tipo="eliminar" wire:key="btn-del-{{ $ruta->id_ruta }}" bg="rojo_boton" c_text="rojo_texto" icon="map-pin-x" text="Eliminar"/>
                     </flux:table.cell>
+                    
                 </flux:table.row>
             @empty
                 <flux:table.row>
