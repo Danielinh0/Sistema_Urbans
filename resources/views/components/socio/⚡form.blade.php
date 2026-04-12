@@ -18,7 +18,7 @@ new class extends Component {
     public $apellido_materno;
 
     #[Validate('required', message: 'El estado es requerido.')]
-    public $estado;
+    public $estado = '';
 
     #[Validate('required', message: 'La fecha de incorporación es requerida.')]
     #[Validate('date', message: 'La fecha de incorporación debe ser una fecha válida.')]
