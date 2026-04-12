@@ -13,7 +13,7 @@ class CodigoPostalFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_estado' => Estado::factory(),
+            'id_estado' => Estado::all()->random()->id_estado,
             'numero' => $this->faker->postcode(),
         ];
     }

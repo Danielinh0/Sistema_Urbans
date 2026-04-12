@@ -13,7 +13,7 @@ class ColoniaFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_cp' => CodigoPostal::factory(),
+            'id_cp' => CodigoPostal::all()->random()->id_cp,
             'nombre' => $this->faker->word() . ' ' . $this->faker->word(),
         ];
     }

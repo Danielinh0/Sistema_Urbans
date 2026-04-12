@@ -14,7 +14,7 @@ class CalleFactory extends Factory
     {
         $tipos = ['Calle', 'Avenida', 'Boulevard', 'Cerrada'];
         return [
-            'id_colonia' => Colonia::factory(),
+            'id_colonia' => Colonia::all()->random()->id_colonia,
             'nombre' => $this->faker->randomElement($tipos) . ' ' . $this->faker->lastName(),
         ];
     }

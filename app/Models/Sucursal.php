@@ -25,7 +25,7 @@ class Sucursal extends Model
         return $this->belongsTo(Direccion::class, 'id_direccion', 'id_direccion');
     }
 
-    public function user(): HasMany
+    public function users(): HasMany
     {
         return $this->hasMany(User::class, 'id_sucursal', 'id_sucursal');
     }

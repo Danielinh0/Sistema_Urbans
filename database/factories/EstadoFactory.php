@@ -13,7 +13,7 @@ class EstadoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_pais' => Pais::factory(),
+            'id_pais' => Pais::all()->random()->id_pais,
             'nombre' => $this->faker->state(),
         ];
     }

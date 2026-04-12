@@ -10,6 +10,11 @@ class CodigoPostalSeeder extends Seeder
 {
     public function run(): void
     {
-        CodigoPostal::factory(10)->create();
+        $estados = Estado::all();
+        foreach ($estados as $estado) {
+            CodigoPostal::factory(5)->create([
+                'id_estado' => $estado->id_estado,
+            ]);
+        }
     }
 }

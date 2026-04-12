@@ -13,7 +13,7 @@ class DireccionFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_calle' => Calle::factory(),
+            'id_calle' => Calle::all()->random()->id_calle,
             'numero_exterior' => $this->faker->numberBetween(1, 9999),
             'numero_interior' => $this->faker->optional(0.3)->numberBetween(1, 500),
         ];

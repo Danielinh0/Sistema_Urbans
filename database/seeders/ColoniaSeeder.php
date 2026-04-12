@@ -3,12 +3,18 @@
 namespace Database\Seeders;
 
 use App\Models\Colonia;
+use App\Models\CodigoPostal;
 use Illuminate\Database\Seeder;
 
 class ColoniaSeeder extends Seeder
 {
     public function run(): void
     {
-        Colonia::factory(5)->create();
+        $codigosPostales = CodigoPostal::all();
+        foreach ($codigosPostales as $codigoPostal) {
+            Colonia::factory(5)->create([
+                'id_cp' => $codigoPostal->id_cp,
+            ]);
+        }
     }
 }
