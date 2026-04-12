@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Asiento extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'asiento';
     protected $primaryKey = 'id_asiento';
     public $timestamps = false;
@@ -18,6 +18,7 @@ class Asiento extends Model
     protected $fillable = [
         'id_urban',
         'nombre',
+        'estado',
     ];
 
     public function urban(): BelongsTo

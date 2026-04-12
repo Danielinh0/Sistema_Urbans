@@ -17,6 +17,7 @@ class AsientoSeeder extends Seeder
                 Asiento::create([
                     'id_urban' => $urban->id_urban,
                     'nombre' => 'A' . str_pad($i, 2, '0', STR_PAD_LEFT),
+                    'estado' => 'Libre',
                 ]);
             }
         }
