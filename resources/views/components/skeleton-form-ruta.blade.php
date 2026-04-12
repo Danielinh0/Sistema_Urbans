@@ -6,7 +6,7 @@
             @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
         <div>
-            <flux:input wire:model.live.blur="distancia" icon:trailing="land-plot"  label="Distancia"  description:trailing="Ingrese la distancia de la ruta en kilómetros"/>
+            <flux:input wire:model.live.blur="distancia" icon:trailing="land-plot"  label="Distancia" description:trailing="Ingrese la distancia de la ruta en kilómetros"/>
             @error('distancia') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
         <div>
