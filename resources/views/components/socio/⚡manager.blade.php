@@ -91,11 +91,11 @@ new class extends Component {
                 <flux:input wire:model="apellido_materno" label="Apellido Materno" />
 
                 <flux:select wire:model="estado" label="Estado">
-                    <flux:select.option>Activo</flux:select.option>
-                    <flux:select.option>Inactivo</flux:select.option>
+                    <flux:select.option value="Activo">Activo</flux:select.option>
+                    <flux:select.option value="Inactivo">Inactivo</flux:select.option>
                 </flux:select>
 
-                <flux:input wire:model="fecha_de_incorporacion" type="date" label="Incorporación" />
+                <flux:input wire:model="fecha_de_incorporacion" type="date" label="Fecha de Incorporación" />
                 <flux:input wire:model="numero_telefonico" label="Teléfono" />
 
                 <div class="md:col-span-2">
