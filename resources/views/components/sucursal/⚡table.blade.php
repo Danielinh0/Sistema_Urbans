@@ -86,10 +86,13 @@ new class extends Component
                                 wire:click="$dispatch('preparar-edicion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
                                 Editar
                             </flux:button>
-                            <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
-                                wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                Eliminar
-                            </flux:button>
+                            @if (!$sucursal->users->count()>0)
+                                <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                                    wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
+                                    Eliminar
+                                </flux:button>
+                            @endif
+                            
                         </flux:table.cell>
                     </flux:table.row>
                 @empty
