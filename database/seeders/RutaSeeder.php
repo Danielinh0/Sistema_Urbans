@@ -4,19 +4,25 @@ namespace Database\Seeders;
 
 use App\Models\Ruta;
 use Illuminate\Database\Seeder;
+use App\Models\Corrida;
+use App\Models\Urban;
 
 class RutaSeeder extends Seeder
 {
     public function run(): void
     {
-        $rutas = [
-            ['nombre' => 'Oaxaca - Juquila', 'tiempo_estimado' => '05:30', 'distancia' => 535.50, 'tarifa_clientes' => 50.00, 'tarifa_paquete' => 100.00],
-            ['nombre' => 'Juquila - Oaxaca', 'tiempo_estimado' => '06:00', 'distancia' => 890.00, 'tarifa_clientes' => 80.00, 'tarifa_paquete' => 160.00],
-            
-        ];
+        $urbanIds = Urban::query()->pluck('id_urban');
 
-        foreach ($rutas as $ruta) {
-            Ruta::create($ruta);
+        if ($urbanIds->isEmpty()) {
+            return;
         }
+
+        Corrida::factory()->count(5)->create()->each(function ($corrida) use ($urbanIds) {
+            $cantidad = min(3, $urbanIds->count());
+
+            $corrida->urbans()->sync(
+                $urbanIds->random($cantidad)->all()
+            );
+        });
     }
 }

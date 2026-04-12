@@ -12,7 +12,7 @@ class CalleSeeder extends Seeder
     {
         $colonias = Colonia::all();
         foreach ($colonias as $colonia) {
-            Calle::factory(5)->create([
+            Calle::factory(2)->create([
                 'id_colonia' => $colonia->id_colonia,
             ]);
         }

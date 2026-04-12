@@ -12,7 +12,7 @@ class ColoniaSeeder extends Seeder
     {
         $codigosPostales = CodigoPostal::all();
         foreach ($codigosPostales as $codigoPostal) {
-            Colonia::factory(5)->create([
+            Colonia::factory(2)->create([
                 'id_cp' => $codigoPostal->id_cp,
             ]);
         }

@@ -9,6 +9,6 @@ class UrbanSeeder extends Seeder
 {
     public function run(): void
     {
-        Urban::factory(5)->create();
+        Urban::factory()->times(10)->create();
     }
 }

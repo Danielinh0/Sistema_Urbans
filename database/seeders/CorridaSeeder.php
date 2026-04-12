@@ -10,16 +10,16 @@ class CorridaSeeder extends Seeder
 {
     public function run(): void
     {
-        $urbanIds = Urban::query()->pluck('id_urban');
+        // $urbanIds = Urban::query()->pluck('id_urban');
 
-        if ($urbanIds->isEmpty()) {
-            return;
-        }
+        // if ($urbanIds->isEmpty()) {
+        //     return;
+        // }
 
-        $corridas = Corrida::factory(10)->create();
+        // $corridas = Corrida::factory(10)->create();
 
-        foreach ($corridas as $corrida) {
-            $corrida->urbans()->attach($urbanIds->random());
-        }
+        // foreach ($corridas as $corrida) {
+        //     $corrida->urbans()->attach($urbanIds->random());
+        // }
     }
 }

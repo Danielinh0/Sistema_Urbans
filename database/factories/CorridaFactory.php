@@ -21,7 +21,6 @@ class CorridaFactory extends Factory
 
         return [
             'id_ruta' => Ruta::factory(),
-            'id_urban' => Urban::factory(),
             'id_usuario' => User::factory(),
             'fecha' => $fecha->format('Y-m-d'),
             'hora_salida' => $horaSalida,

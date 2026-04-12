@@ -12,7 +12,7 @@ class CodigoPostalSeeder extends Seeder
     {
         $estados = Estado::all();
         foreach ($estados as $estado) {
-            CodigoPostal::factory(5)->create([
+            CodigoPostal::factory(2)->create([
                 'id_estado' => $estado->id_estado,
             ]);
         }

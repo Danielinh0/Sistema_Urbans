@@ -1,19 +1,20 @@
 <x-layouts::app :title="__('corrida')">
-    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <a href="">corrida-Index</a>
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
+    <section class="flex ">
+
+        <div class="">
+            <flux:modal.trigger name="crear-corrida">
+                <flux:button icon="square-plus">Crea una nueva ruta </flux:button>
+            </flux:modal.trigger>
+            <livewire:rutas.tabla />
+
+
+            <flux:modal name="crear-corrida" class="w-[50%] p-10">
+                <div>
+                    <flux:heading class="!text-xl !font-bold" size="lg">Programa una nueva corrida</flux:heading>
+                </div>
+                <livewire:rutas.form />
+            </flux:modal>
         </div>
-        <div class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-            <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-        </div>
-    </div>
+
+    </section>
 </x-layouts::app>
