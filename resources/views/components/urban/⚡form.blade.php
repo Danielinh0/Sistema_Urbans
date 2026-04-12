@@ -4,6 +4,7 @@ use Livewire\Component;
 use Livewire\Attributes\Validate;
 use App\Models\Urban;
 use App\Models\Socio;
+use App\Models\Asiento;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
@@ -18,7 +19,7 @@ new class extends Component {
     public $numero_asientos;
 
     #[Validate('required', message: 'El socio es requerido.')]
-    public $id_socio;
+    public $id_socio = null;
 
     #[Validate('required', message: 'La placa es requerida.')]
     #[Validate('min:3', message: 'La placa debe tener al menos 3 caracteres.')]
@@ -27,12 +28,21 @@ new class extends Component {
     public function save()
     {
         $this->validate();
-        Urban::create([
+        $urban = Urban::create([
             'codigo_urban' => $this->codigo_urban,
             'numero_asientos' => $this->numero_asientos,
             'id_socio' => $this->id_socio,
             'placa' => $this->placa,
         ]);
+
+        for ($i = 0; $i < $this->numero_asientos; $i++) {
+            Asiento::create([
+                'id_urban' => $urban->id_urban,
+                'nombre' => $this->codigo_urban . '-' . '0' . ($i + 1),
+                'estado' => 'Libre',
+            ]);
+        }
+
         $this->reset();
         $this->dispatch('urban-creada');
         session()->flash('status', 'Urban creada correctamente.');
@@ -60,7 +70,8 @@ new class extends Component {
                 @error('numero_asientos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
             <div>
-                <flux:select wire:model="id_socio" label="Socio" placeholder="Seleccione el socio" searchable>
+                <flux:select wire:model="id_socio" label="Socio" placeholder="Seleccione el socio"
+                    description:trailing="Seleccione el socio" searchable>
                     @foreach ($this->socios as $socio)
                         <flux:select.option value="{{ $socio->id_socio }}">
                             {{ $socio->nombre }} {{ $socio->apellido_paterno }} {{ $socio->apellido_materno }}

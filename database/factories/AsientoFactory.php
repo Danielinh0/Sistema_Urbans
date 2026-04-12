@@ -15,6 +15,7 @@ class AsientoFactory extends Factory
         return [
             'id_urban' => Urban::factory(),
             'nombre' => $this->faker->regexify('[A-Z][0-9]{2}'),
+            'estado' => 'Libre',
         ];
     }
 }

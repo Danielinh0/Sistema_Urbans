@@ -76,15 +76,15 @@ new class extends Component {
 
             <div>
                 <flux:select wire:model="estado" label="Estado" placeholder="Seleccione el estado">
-                    <flux:select.option>Activo</flux:select.option>
-                    <flux:select.option>Inactivo</flux:select.option>
+                    <flux:select.option value="Activo">Activo</flux:select.option>
+                    <flux:select.option value="Inactivo">Inactivo</flux:select.option>
                 </flux:select>
                 @error('estado') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
             <div>
-                <flux:input wire:model.live.blur="fecha_de_incorporacion" icon:trailing="clock-fading"
-                    label="Fecha de Incorporación" description:trailing="Formato YYYY-MM-DD" />
+                <flux:input wire:model.live.blur="fecha_de_incorporacion" label="Fecha de Incorporación"
+                    description:trailing="La fecha debe ser valida" type="date" />
                 @error('fecha_de_incorporacion') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 

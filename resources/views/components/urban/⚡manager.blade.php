@@ -5,6 +5,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use App\Models\Urban;
 use App\Models\Socio;
+use App\Models\Asiento;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
@@ -57,6 +58,16 @@ new class extends Component {
             'placa' => $this->placa,
         ]);
 
+        Asiento::where('id_urban', $this->urban->id_urban)->delete();
+
+        for ($i = 0; $i < $this->numero_asientos; $i++) {
+            Asiento::create([
+                'id_urban' => $this->urban->id_urban,
+                'nombre' => $this->codigo_urban . '-' . '0' . ($i + 1),
+                'estado' => 'Libre',
+            ]);
+        }
+
         $this->js("Flux.modal('modal-editar-urban').close()");
         $this->dispatch('urban-creada');
     }
@@ -64,6 +75,9 @@ new class extends Component {
     public function delete()
     {
         $this->urban->delete();
+
+        Asiento::where('id_urban', $this->urban->id_urban)->delete();
+
         $this->js("Flux.modal('modal-eliminar-urban').close()");
         $this->dispatch('urban-eliminada');
     }
