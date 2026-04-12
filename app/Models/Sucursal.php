@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Direccion; 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -28,5 +29,24 @@ class Sucursal extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'id_sucursal', 'id_sucursal');
+    }
+
+    protected static function booted(): void
+    {
+        static::deleted(function (Sucursal $sucursal) {
+            if (!$sucursal->id_direccion) {
+                return;
+            }
+
+            $direccion = Direccion::find($sucursal->id_direccion);
+
+            if (!$direccion) {
+                return;
+            }
+
+            if (!$direccion->sucursales()->exists()) {
+                $direccion->delete();
+            }
+        });
     }
 }
