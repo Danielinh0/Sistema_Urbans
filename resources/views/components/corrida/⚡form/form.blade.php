@@ -34,8 +34,8 @@
                         </div>
                         <div class=" flex flex-wrap gap-2">
                             @foreach ($this->urbansSeleccionadas as $urban)
-                                <span class="inline-flex items-center gap-1 rounded-full bg-zinc-100 dark:bg-white/10 px-2 py-1 text-xs">
-                                    <span>{{ $urban->codigo_urban }}</span>
+                                <span class="inline-flex items-center gap-1 rounded-lg bg-zinc-100 dark:bg-white/10 px-2 py-1 text-sm">
+                                    <span class="text-zinc-700"> {{ $urban->codigo_urban }}</span>
                                     <button
                                         type="button"
                                         wire:click="quitarUrban({{ $urban->id_urban }})"
