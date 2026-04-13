@@ -20,7 +20,7 @@
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="map" :href="route('ruta.index')" :current="request()->routeIs('ruta.index')"
+                <flux:sidebar.item icon="map-pinned" :href="route('ruta.index')" :current="request()->routeIs('ruta.index')"
                     wire:navigate>
                     {{ __('Rutas') }}
                 </flux:sidebar.item>
@@ -33,6 +33,11 @@
                 <flux:sidebar.item icon="bus" :href="route('urban.index')" :current="request()->routeIs('urban.index')"
                     wire:navigate>
                     {{ __('Urbans') }}
+                </flux:sidebar.item>
+
+                 <flux:sidebar.item icon="map" :href="route('corrida.index')" :current="request()->routeIs('corrida.index')"
+                    wire:navigate>
+                    {{ __('Corridas') }}
                 </flux:sidebar.item>
 
                 <flux:sidebar.item icon="building-2" :href="route('sucursal.index')" :current="request()->routeIs('sucursal.index')"

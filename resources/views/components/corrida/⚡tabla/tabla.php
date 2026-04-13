@@ -5,6 +5,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use App\Models\Corrida;
+use App\Models\Urban;
 
 new class extends Component
 {
