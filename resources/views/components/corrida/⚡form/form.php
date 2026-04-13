@@ -6,7 +6,7 @@ use App\Models\Ruta;
 use App\Models\User;
 use App\Models\Corrida;
 use App\Models\Urban;
-use Illuminate\Support\Collection;
+use App\Models\Manejada;
 
 new class extends Component
 {   
@@ -21,14 +21,14 @@ new class extends Component
     public function rules()
     {
         return [
-        'id_ruta' => ['required', 'exists:ruta,id_ruta'],
-        'id_usuario' => ['required', 'exists:users,id_usuario'],
-        'id_urbans' => ['required', 'array', 'min:1'],
-        'id_urbans.*' => ['integer', 'exists:urban,id_urban'],
-        'fecha' => ['required', 'date'],
-        'hora_llegada' => ['required', 'date_format:H:i'],
-        'hora_salida' => ['required', 'date_format:H:i'],
-    ];
+            'id_ruta' => ['required', 'exists:ruta,id_ruta'],
+            'id_usuario' => ['required', 'exists:users,id_usuario'],
+            'id_urbans' => ['required', 'array', 'min:1'],
+            'id_urbans.*' => ['integer', 'exists:urban,id_urban'],
+            'fecha' => ['required', 'date'],
+            'hora_llegada' => ['required', 'date_format:H:i'],
+            'hora_salida' => ['required', 'date_format:H:i'],
+        ];
     }
 
     public function messages()
@@ -45,18 +45,21 @@ new class extends Component
     }
 
     #[Computed]
-    public function rutas(){
-        return Ruta::orderBy('id_ruta')->get();
+    public function rutas()
+    {
+        return Ruta::query()->orderBy('id_ruta')->get(['id_ruta', 'nombre']);
     }
 
     #[Computed]
-    public function usuarios(){
-        return User::orderBy('id_usuario')->get();
+    public function usuarios()
+    {
+        return User::query()->orderBy('name')->get(['id_usuario', 'name']);
     }
 
     #[Computed]
-    public function urbans(){
-        return Urban::orderBy('id_urban')->get();
+    public function urbans()
+    {
+        return Urban::query()->orderBy('codigo_urban')->get(['id_urban', 'codigo_urban']);
     }
 
     #[Computed]
@@ -74,7 +77,9 @@ new class extends Component
 
     public function agregarUrban()
     {
-        if (!$this->id_urban_actual) return;
+        if (!$this->id_urban_actual) {
+            return;
+        }
 
         $id = (int) $this->id_urban_actual;
 
@@ -92,19 +97,35 @@ new class extends Component
         );
     }
 
+    protected function buildManejadaIds(): array
+    {
+        $manejadaIds = [];
+
+        foreach ($this->id_urbans as $idUrban) {
+            $manejada = Manejada::firstOrCreate([
+                'fecha' => $this->fecha,
+                'id_usuario' => (int) $this->id_usuario,
+                'id_urban' => (int) $idUrban,
+            ]);
+
+            $manejadaIds[] = $manejada->id_manejada;
+        }
+
+        return $manejadaIds;
+    }
+
     public function save()
     {
         $this->validate();
 
         $corrida = Corrida::create([
             'id_ruta' => $this->id_ruta,
-            'id_usuario' => $this->id_usuario,
             'fecha' => $this->fecha,
             'hora_llegada' => $this->hora_llegada,
             'hora_salida' => $this->hora_salida,
         ]);
 
-        $corrida->urbans()->sync($this->id_urbans);
+        $corrida->manejadas()->sync($this->buildManejadaIds());
 
         $this->dispatch('corrida-creada');
 
@@ -117,5 +138,9 @@ new class extends Component
             'hora_llegada',
             'hora_salida',
         ]);
+
+        $this->id_ruta = '';
+        $this->id_usuario = '';
+        $this->id_urban_actual = '';
     }
 };

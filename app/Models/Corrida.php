@@ -18,7 +18,6 @@ class Corrida extends Model
 
     protected $fillable = [
         'id_ruta',
-        'id_usuario',
         'fecha',
         'hora_salida',
         'hora_llegada',
@@ -47,10 +46,11 @@ class Corrida extends Model
 
     public function boletos(): HasMany
     {
-        return $this->hasMany(Boleto::class, 'id_boleto', 'id_boleto');
+        return $this->hasMany(Boleto::class, 'id_corrida', 'id_corrida');
     }
 
-    public function manejadas(){
+    public function manejadas(): BelongsToMany
+    {
         return $this->belongsToMany(Manejada::class, 'manejada_corrida', 'id_corrida', 'id_manejada');
     }
 }

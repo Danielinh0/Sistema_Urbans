@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Manejada extends Model
@@ -16,14 +18,18 @@ class Manejada extends Model
         'id_urban',  
     ];
 
-    public function usuarios(){
+    public function usuarios(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
     }
-    public function urbans(){
+
+    public function urbans(): BelongsTo
+    {
         return $this->belongsTo(Urban::class, 'id_urban', 'id_urban');
     }
 
-    public function corridas(){
+    public function corridas(): BelongsToMany
+    {
         return $this->belongsToMany(Corrida::class, 'manejada_corrida', 'id_manejada', 'id_corrida');
     }
 }

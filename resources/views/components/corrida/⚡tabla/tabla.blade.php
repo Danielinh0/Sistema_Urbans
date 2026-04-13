@@ -10,8 +10,7 @@
 
                 <flux:table.column>Urban</flux:table.column>    
 
-                <flux:table.column sortable :sorted="$sortBy === 'id_usuario'" :direction="$sortDirection"
-                    wire:click="sort('id_usuario')">Conductor</flux:table.column>
+                <flux:table.column>Conductor</flux:table.column>
 
 
                 <flux:table.column sortable :sorted="$sortBy === 'fecha'" :direction="$sortDirection"
@@ -33,19 +32,23 @@
                             {{ $corrida->id_corrida }}
                         </flux:table.cell>
                         <flux:table.cell class="whitespace-nowrap">
-                            {{ $corrida->ruta->nombre }}
+                            {{ $corrida->ruta?->nombre ?? 'Sin ruta' }}
                         </flux:table.cell>
 
                         <flux:table.cell class="whitespace-normal">
-                            @forelse ($corrida->urbans as $urban)
-                                <div>{{ $urban->codigo_urban }}</div>
+                            @forelse ($corrida->manejadas as $manejada)
+                                <div>{{ $manejada->urbans?->codigo_urban ?? 'Sin urban' }}</div>
                             @empty
                                 <span class="text-zinc-500">Sin urban</span>
                             @endforelse
                         </flux:table.cell>
 
-                        <flux:table.cell>
-                            {{ $corrida->user->name }} 
+                        <flux:table.cell class="whitespace-normal">
+                            @forelse ($corrida->manejadas as $manejada)
+                                <div>{{ $manejada->usuarios?->name ?? 'Sin conductor' }}</div>
+                            @empty
+                                <span class="text-zinc-500">Sin conductor</span>
+                            @endforelse
                         </flux:table.cell>
                         <flux:table.cell>
                             {{ $corrida->fecha }}
@@ -60,17 +63,17 @@
                         <flux:table.cell class="flex gap-1">
 
                             <x-boton-estilo bg="bg-azul_menu" c_text="text-white" icon="map-pin-pen" text="Editar" 
-                            evento=""/>
+                            evento="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })"/>
 
-                            {{-- <x-boton-estilo bg="bg-rojo_boton" c_text="text-rojo_texto" icon="map-pin-x" text="Eliminar" 
-                            evento="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })" /> --}}
+                            <x-boton-estilo bg="bg-rojo_boton" c_text="text-rojo_texto" icon="map-pin-x" text="Eliminar" 
+                            evento="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })" />
 
                         </flux:table.cell>
 
                     </flux:table.row>
                 @empty
                     <flux:table.row>
-                        <flux:table.cell colspan="7" class="text-center py-4 ">
+                        <flux:table.cell colspan="8" class="text-center py-4 ">
                             No se encontraron corridas.
                         </flux:table.cell>
                     </flux:table.row>
@@ -78,5 +81,5 @@
             </flux:table.rows>
         </flux:table>
     
-    {{-- <livewire:rutas.modal /> --}}
+    <livewire:corrida.modal />
 </div>
