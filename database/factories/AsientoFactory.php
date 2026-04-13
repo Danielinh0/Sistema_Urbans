@@ -13,7 +13,7 @@ class AsientoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_urban' => Urban::factory(),
+            'id_urban' => Urban::all()->random()->id,
             'nombre' => $this->faker->regexify('[A-Z][0-9]{2}'),
             'estado' => 'Libre',
         ];

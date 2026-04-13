@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-
             $table->foreignId('id_sucursal')->nullable();
             $table->foreignId('id_direccion')->nullable();
             

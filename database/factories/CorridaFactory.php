@@ -20,8 +20,7 @@ class CorridaFactory extends Factory
         $horaLlegadaDate->modify('+4 hours');
 
         return [
-            'id_ruta' => Ruta::factory(),
-            'id_usuario' => User::factory(),
+            'id_ruta' => Ruta::all()->random()->id_ruta,
             'fecha' => $fecha->format('Y-m-d'),
             'hora_salida' => $horaSalida,
             'hora_llegada' => $horaLlegadaDate->format('H:i'),

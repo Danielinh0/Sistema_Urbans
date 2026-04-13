@@ -14,8 +14,8 @@ class BoletoClienteFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_boleto' => Boleto::factory(),
-            'id_asiento' => Asiento::factory(),
+            'id_boleto' => Boleto::all()->random()->id_boleto,
+            'id_asiento' => Asiento::all()->random()->id_asiento,
             'peso_equipaje' => $this->faker->randomFloat(2, 0, 30),
         ];
     }

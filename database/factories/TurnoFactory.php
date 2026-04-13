@@ -17,8 +17,8 @@ class TurnoFactory extends Factory
         $fecha = $this->faker->dateTimeBetween('-30 days', 'now');
 
         return [
-            'id_usuario' => User::factory(),
-            'id_taquilla' => Taquilla::factory(),
+            'id_usuario' => User::all()->random()->id_usuario,
+            'id_taquilla' => Taquilla::all()->random()->id_taquilla,
             'id_venta' => null,
             'monto_inicial' => $montoInicial,
             'monto_final' => $montoInicial + $this->faker->numberBetween(500, 15000),

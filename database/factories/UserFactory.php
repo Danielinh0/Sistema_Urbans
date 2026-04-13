@@ -39,8 +39,8 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => null,
             
             // camvbios para user y sustituyendo las relaciones logicas en lso modelos
-            'id_sucursal' => Sucursal::factory(),
-            'id_direccion' => Direccion::factory(),   
+            'id_sucursal' => Sucursal::all()->random()->id_sucursal,
+            'id_direccion' => Direccion::all()->random()->id_direccion,   
         ];
     }
 
