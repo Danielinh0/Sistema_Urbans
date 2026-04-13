@@ -48,9 +48,6 @@
 
                 <flux:button type="button" wire:click="agregarUrban">Agregar urban </flux:button>
 
-                
-               
-
                 <flux:error name="id_urbans" />
             </flux:field>
   
@@ -68,10 +65,10 @@
                         </flux:select>
                      </flux:field>
 
-                    <flux:input type="date" label="Fecha" placeholder="Seleccione una fecha" badge="Obligatorio"/>
+                    <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha" badge="Obligatorio"/>
 
-                    <x-input-time wire="hora_llegada" texto="Hora de llegada" />
                     <x-input-time wire="hora_salida" texto="Hora de salida" />
+                    <x-input-time wire="hora_llegada" texto="Hora de llegada" />
                 
             </div>
     

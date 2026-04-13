@@ -34,11 +34,6 @@ class Corrida extends Model
         return $this->belongsTo(Ruta::class, 'id_ruta', 'id_ruta');
     }
 
-    public function combi(): BelongsTo
-    {
-        return $this->belongsTo(Urban::class, 'id_urban', 'id_urban');
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario','id_usuario');

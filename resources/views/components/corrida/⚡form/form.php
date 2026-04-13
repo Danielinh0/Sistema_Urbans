@@ -14,7 +14,7 @@ new class extends Component
     public $id_usuario = '';
     public $hora_llegada;
     public $hora_salida;
-
+    public $fecha;
     public $id_urban_actual = '';
     public $id_urbans = [];
 
