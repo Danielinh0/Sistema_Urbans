@@ -1,5 +1,6 @@
 <x-layouts::app :title="__('cliente')">
-    <div>
+    <section class="flex">
+        <div>
         <flux:modal.trigger name="add-cliente">
             <flux:button icon="squares-plus">Añadir cliente</flux:button>
         </flux:modal.trigger>
@@ -11,4 +12,5 @@
             <livewire:cliente.form />
         </flux:modal>
     </div>
+    </section>
 </x-layouts::app>
