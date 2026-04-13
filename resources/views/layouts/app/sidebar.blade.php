@@ -49,6 +49,10 @@
                     wire:navigate>
                     {{ __('Sucursales') }}
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="users" :href="route('cliente.index')" :current="request()->routeIs('cliente.index')"
+                    wire:navigate>
+                    {{ __('Clientes') }}
+                </flux:sidebar.item>
             </flux:sidebar.group>
         </flux:sidebar.nav>
 
