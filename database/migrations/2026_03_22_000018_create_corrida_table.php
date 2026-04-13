@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('id_usuario')->constrained('users', 'id_usuario')->onDelete('cascade');
             $table->date('fecha');
             $table->time('hora_salida');
-            $table->time('hora_llegada');
+            $table->time('hora_llegada')->nullable();
         });
     }
 

@@ -1,5 +1,4 @@
-    
-    <form wire:submit="save" class="p-6">
+<form wire:submit="save" class="p-6">
             <flux:card >
                 <x-skeleton-form-ruta />
 
@@ -7,6 +6,6 @@
                     <flux:button type="submit" variant="primary" class="w-full">Crear Ruta</flux:button>
                 </div>
             </flux:card> 
-        </form>
+ </form>
 
     
