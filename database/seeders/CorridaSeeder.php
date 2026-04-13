@@ -13,13 +13,15 @@ class CorridaSeeder extends Seeder
         $urbanIds = Urban::query()->pluck('id_urban');
 
         if ($urbanIds->isEmpty()) {
-            return;
-        }
+        return;
+    }
 
-        $corridas = Corrida::factory(10)->create();
+        Corrida::factory()->count(5)->create()->each(function ($corrida) use ($urbanIds) {
+            $cantidad = min(3, $urbanIds->count());
 
-        foreach ($corridas as $corrida) {
-            $corrida->urbans()->attach($urbanIds->random());
-        }
+            $corrida->urbans()->sync(
+                $urbanIds->random($cantidad)->all()
+            );
+        });
     }
 }

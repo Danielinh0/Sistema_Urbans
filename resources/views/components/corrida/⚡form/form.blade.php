@@ -1,8 +1,11 @@
-<div>
+<form wire:submit="save">
    <flux:card class="space-y-6">
-        <div>
+
+        <div class="inline-flex gap-3 items-center">
+            <flux:icon.map-plus/>
             <flux:heading size="xl">Programa una nueva corrida</flux:heading>
         </div>
+
         <div class="-mt-2 space-y-6">
             <flux:field>
                 <flux:label class="!mt-3 !mb-2" badge="Obligatorio">Para la ruta</flux:label>
@@ -15,13 +18,48 @@
                     @endforeach
                 </flux:select>
 
+            </flux:field>
+
+            <flux:field>
+                <flux:label class="!mt-2 !mb-3" badge="Obligatorio">Agrega una o más urbans a la corrida</flux:label>
+
+                 @if ($this->urbansSeleccionadas->isNotEmpty())
+                    <div class="mt-2 rounded-lg border border-zinc-200 dark:border-white/10 p-2 flex flex-col pl-3 gap-2">
+                        <div>
+                            <flux:text>Urbans seleccionadas</flux:text>
+                        </div>
+                        <div class=" flex flex-wrap gap-2">
+                            @foreach ($this->urbansSeleccionadas as $urban)
+                                <flux:badge size="sm">{{ $urban->codigo_urban }}</flux:badge>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <flux:select wire:model="id_urban_actual" placeholder="Selecciona una urban">
+                    @foreach ($this->urbans as $urban)
+                        @if (!in_array($urban->id_urban, $id_urbans))
+                            <flux:select.option value="{{ $urban->id_urban }}">
+                                {{ $urban->codigo_urban }}
+                            </flux:select.option>
+                        @endif
+                    @endforeach
+                </flux:select>
+
+                <flux:button type="button" wire:click="agregarUrban">Agregar urban </flux:button>
+
+                
+               
+
+                <flux:error name="id_urbans" />
+            </flux:field>
   
             <div class="grid grid-cols-2 gap-6">
                 
                 <flux:field>
                     <flux:label badge="Obligatorio">Conductor</flux:label>
 
-                        <flux:select wire:model="id_conductor" placeholder="Conductor">
+                        <flux:select wire:model="id_usuario" placeholder="Conductor">
                             @foreach ($this->usuarios as $conductor)
                                     <flux:select.option value="{{ $conductor->id_usuario }}">
                                         {{ $conductor->name }}
@@ -31,34 +69,15 @@
                      </flux:field>
 
                     <flux:input type="date" label="Fecha" placeholder="Seleccione una fecha" badge="Obligatorio"/>
-                    <flux:input label="Hora de salida" placeholder="Hora de salida" badge="Obligatorio"/>
-                    <flux:input label="Hora de llegada" placeholder="Hora de llegada" badge="Obligatorio"/>\
 
-                     <flux:field>
-                        <div class="space-y-2">
-                            <label for="hora_salida" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                Hora de salida
-                                
-                            </label>
-
-                            <input
-                                type="time"
-                                id="hora_salida"
-                                name="hora_salida"
-                                wire:model="hora_salida"
-                                step="60"
-                                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500"
-                                required
-                            >
-                        </div>
-                    </flux:field>
-
-                    
+                    <x-input-time wire="hora_llegada" texto="Hora de llegada" />
+                    <x-input-time wire="hora_salida" texto="Hora de salida" />
+                
             </div>
     
         </div>
         <div class="space-y-2">
-            <flux:button variant="primary" class="w-full">Programar corrida</flux:button>
+            <flux:button type="submit" variant="primary" class="w-full">Programar corrida</flux:button>
         </div>
     </flux:card>
-</div>
+</form>

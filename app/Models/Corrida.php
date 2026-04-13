@@ -17,7 +17,6 @@ class Corrida extends Model
 
     protected $fillable = [
         'id_ruta',
-        'id_urban',
         'id_usuario',
         'fecha',
         'hora_salida',
