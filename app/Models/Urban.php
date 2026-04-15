@@ -36,4 +36,8 @@ class Urban extends Model
     {
         return $this->belongsToMany(Corrida::class, 'urban_corrida', 'id_urban', 'id_corrida');
     }
+    public function corrida(): HasMany
+    {
+        return $this->hasMany(Corrida::class, 'id_urban', 'id_urban');
+    }
 }

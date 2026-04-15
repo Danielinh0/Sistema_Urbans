@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('fecha');
             $table->time('hora_salida');
             $table->time('hora_llegada')->nullable();
+            $table->foreignId('id_urban')->constrained('urban', 'id_urban')->onDelete('cascade');
         });
     }
 

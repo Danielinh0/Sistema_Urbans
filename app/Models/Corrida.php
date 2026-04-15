@@ -22,6 +22,7 @@ class Corrida extends Model
         'fecha',
         'hora_salida',
         'hora_llegada',
+        'id_urban',
     ];
 
     protected function hora_salida(): Attribute
@@ -58,5 +59,10 @@ class Corrida extends Model
     public function urbans(): BelongsToMany
     {
         return $this->belongsToMany(Urban::class, 'urban_corrida', 'id_corrida', 'id_urban');
+    }
+
+    public function urban(): BelongsTo
+    {
+        return $this->belongsTo(Urban::class, 'id_urban', 'id_urban');
     }
 }
