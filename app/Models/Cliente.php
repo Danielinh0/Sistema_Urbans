@@ -16,8 +16,6 @@ class Cliente extends Model
 
     protected $fillable = [
         'nombre',
-        'apellido_paterno',
-        'apellido_materno',
     ];
 
     public function boletos(): HasMany
