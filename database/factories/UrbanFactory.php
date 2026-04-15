@@ -13,7 +13,7 @@ class UrbanFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_socio' => Socio::query()->inRandomOrder()->value('id_socio'),
+            'id_socio' => Socio::factory(),
             'placa' => $this->faker->unique()->regexify('[A-Z]{3}[0-9]{3}'),
             'codigo_urban' => 'URB-' . $this->faker->unique()->numberBetween(100, 999),
             'numero_asientos' => $this->faker->numberBetween(15, 30),

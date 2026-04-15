@@ -9,6 +9,6 @@ class SocioSeeder extends Seeder
 {
     public function run(): void
     {
-        Socio::factory(10)->create();
+        Socio::factory(5)->create();
     }
 }

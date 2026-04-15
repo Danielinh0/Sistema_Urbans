@@ -3,25 +3,24 @@
 namespace Database\Seeders;
 
 use App\Models\Corrida;
-use App\Models\Manejada;
-
+use App\Models\Urban;
 use Illuminate\Database\Seeder;
 
 class CorridaSeeder extends Seeder
 {
     public function run(): void
     {
-        $manejadas = Manejada::query()->pluck('id_manejada');
+        $urbanIds = Urban::query()->pluck('id_urban');
 
-        if ($manejadas->isEmpty()) {
+        if ($urbanIds->isEmpty()) {
         return;
     }
 
-        Corrida::factory()->count(5)->create()->each(function ($corrida) use ($manejadas) {
-            $cantidad = min(3, $manejadas->count());
+        Corrida::factory()->count(5)->create()->each(function ($corrida) use ($urbanIds) {
+            $cantidad = min(3, $urbanIds->count());
 
-            $corrida->manejadas()->sync(
-                $manejadas->random($cantidad)->all()
+            $corrida->urbans()->sync(
+                $urbanIds->random($cantidad)->all()
             );
         });
     }

@@ -24,15 +24,12 @@ class DatabaseSeeder extends Seeder
             UrbanSeeder::class,
             AsientoSeeder::class,
             RutaSeeder::class,
-            ManejadaSeeder::class,
             CorridaSeeder::class,
-            
             TurnoSeeder::class,
             BoletoSeeder::class,
             BoletoClienteSeeder::class,
             BoletoPaqueteSeeder::class,
             VentaSeeder::class,
-            
         ]);
 
         $Usuario = User::factory()->create([

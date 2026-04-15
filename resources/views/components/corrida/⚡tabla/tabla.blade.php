@@ -48,13 +48,13 @@
                             {{ $corrida->user->name }} 
                         </flux:table.cell>
                         <flux:table.cell>
-                            {{ $corrida->fecha }}
+                            {{ $corrida->fecha->format('d/m/Y') }}
                         </flux:table.cell>
                         <flux:table.cell variant="strong">
-                            {{ $corrida->hora_salida }}
+                            {{ $corrida->hora_salida->format('H:i') }}
                         </flux:table.cell>
                         <flux:table.cell variant="strong">
-                            {{ $corrida->hora_llegada }}
+                            {{ $corrida->hora_llegada->format('H:i') }}
                         </flux:table.cell>
                         
                         <flux:table.cell class="flex gap-1">

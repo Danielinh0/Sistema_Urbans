@@ -18,9 +18,9 @@ class BoletoFactory extends Factory
         $tiposPago = ['efectivo', 'tarjeta', 'transferencia', 'qr'];
 
         return [
-            'id_corrida' => Corrida::all()->random()->id_corrida, // Asumiendo que ya hay corridas creadas
-            'id_turno' => Turno::all()->random()->id_turno,
-            'id_cliente' => Cliente::all()->random()->id_cliente,
+            'id_corrida' => Corrida::factory(),
+            'id_turno' => Turno::factory(),
+            'id_cliente' => Cliente::factory(),
             'folio' => 'BOL-' . $this->faker->unique()->numerify('######'),
             'estado' => $this->faker->randomElement($estados),
             'tipo_de_pago' => $this->faker->randomElement($tiposPago),

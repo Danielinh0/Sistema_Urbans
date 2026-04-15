@@ -45,12 +45,18 @@ class Corrida extends Model
         return $this->belongsTo(Ruta::class, 'id_ruta', 'id_ruta');
     }
 
-    public function boletos(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(Boleto::class, 'id_boleto', 'id_boleto');
+        return $this->belongsTo(User::class, 'id_usuario','id_usuario');
     }
 
-    public function manejadas(){
-        return $this->belongsToMany(Manejada::class, 'manejada_corrida', 'id_corrida', 'id_manejada');
+    public function boletos(): HasMany
+    {
+        return $this->hasMany(Boleto::class, 'id_corrida', 'id_corrida');
+    }
+
+    public function urbans(): BelongsToMany
+    {
+        return $this->belongsToMany(Urban::class, 'urban_corrida', 'id_corrida', 'id_urban');
     }
 }

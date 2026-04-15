@@ -14,7 +14,7 @@ class SucursalFactory extends Factory
     {
         return [
             'nombre' => 'Sucursal ' . $this->faker->city(),
-            'id_direccion' => Direccion::all()->random()->id_direccion,
+            'id_direccion' => Direccion::factory(),
         ];
     }
 }

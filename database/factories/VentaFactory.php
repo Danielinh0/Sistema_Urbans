@@ -17,8 +17,8 @@ class VentaFactory extends Factory
         $descuento = $this->faker->numberBetween(0, 200);
 
         return [
-            'id_boleto' => Boleto::all()->random()->id_boleto,
-            'id_cliente' => Cliente::all()->random()->id_cliente,
+            'id_boleto' => Boleto::factory(),
+            'id_cliente' => Cliente::factory(),
             'total' => $subtotal - $descuento,
             'subtotal' => $subtotal,
             'descuento' => $descuento,
