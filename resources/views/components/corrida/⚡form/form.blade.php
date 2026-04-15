@@ -8,7 +8,7 @@
 
         <div class="-mt-2 space-y-6">
             <flux:field>
-                <flux:label class="mt-3! mb-2!" badge="Obligatorio">Para la ruta</flux:label>
+                <flux:label class="!mt-3 !mb-2" badge="Obligatorio">Para la ruta</flux:label>
 
                 <flux:select wire:model="id_ruta" placeholder="Selecciona una ruta">
                     @foreach ($this->rutas as $ruta)
@@ -21,11 +21,7 @@
             </flux:field>
 
             <flux:field>
-                <flux:label class="mt-2! mb-3!" badge="Obligatorio">Agrega una o más urbans a la corrida</flux:label>
-
-                <flux:description class="mb-3! text-xs!">
-                    El conductor seleccionado se asignara a cada urban agregada.
-                </flux:description>
+                <flux:label class="!mt-2 !mb-3" badge="Obligatorio">Agrega una o más urbans a la corrida</flux:label>
 
                  @if ($this->urbansSeleccionadas->isNotEmpty())
                     <div class="mt-2 rounded-lg border border-zinc-200 dark:border-white/10 p-2 flex flex-col pl-3 gap-2">
@@ -34,17 +30,7 @@
                         </div>
                         <div class=" flex flex-wrap gap-2">
                             @foreach ($this->urbansSeleccionadas as $urban)
-                                <span class="inline-flex items-center gap-1 rounded-full bg-zinc-100 dark:bg-white/10 px-2 py-1 text-xs">
-                                    <span>{{ $urban->codigo_urban }}</span>
-                                    <button
-                                        type="button"
-                                        wire:click="quitarUrban({{ $urban->id_urban }})"
-                                        class="text-zinc-500 hover:text-red-500"
-                                        aria-label="Quitar urban"
-                                    >
-                                        x
-                                    </button>
-                                </span>
+                                <flux:badge size="sm">{{ $urban->codigo_urban }}</flux:badge>
                             @endforeach
                         </div>
                     </div>
@@ -60,7 +46,7 @@
                     @endforeach
                 </flux:select>
 
-                <flux:button type="button" wire:click="agregarUrban">Agregar urban</flux:button>
+                <flux:button type="button" wire:click="agregarUrban">Agregar urban </flux:button>
 
                 <flux:error name="id_urbans" />
             </flux:field>
@@ -77,7 +63,6 @@
                                     </flux:select.option>
                             @endforeach
                         </flux:select>
-                        <flux:error name="id_usuario" />
                      </flux:field>
 
                     <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha" badge="Obligatorio"/>

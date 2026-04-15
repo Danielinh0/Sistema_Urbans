@@ -92,6 +92,6 @@ class User extends Authenticatable
 
     public function manejadas(): HasMany
     {
-        return $this->hasMany(Manejada::class, 'id_usuario', 'id_usuario');
+        return $this->hasMany(Manejada::class, 'id_manejada', 'id_manejada');  
     }
 }

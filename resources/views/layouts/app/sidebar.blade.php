@@ -34,6 +34,11 @@
                     wire:navigate>
                     {{ __('Urbans') }}
                 </flux:sidebar.item>
+                
+                <flux:sidebar.item icon="map" :href="route('corrida.index')" :current="request()->routeIs('corrida.index')"
+                    wire:navigate>
+                    {{ __('Corridas') }}
+                </flux:sidebar.item>
 
                  <flux:sidebar.item icon="map" :href="route('corrida.index')" :current="request()->routeIs('corrida.index')"
                     wire:navigate>

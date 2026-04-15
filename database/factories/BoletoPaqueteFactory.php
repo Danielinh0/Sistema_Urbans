@@ -15,7 +15,7 @@ class BoletoPaqueteFactory extends Factory
         $tiposPaquete = ['Electrónico', 'Documentos', 'Ropa', 'Alimentos', 'Artículos de hogar'];
 
         return [
-            'id_boleto' => Boleto::all()->random()->id_boleto, 
+            'id_boleto' => Boleto::all()->random()->id_boleto, // Asumiendo que ya hay boletos creados
             'guia' => 'GUIA-' . $this->faker->unique()->numerify('########'),
             'descripcion' => $this->faker->randomElement($tiposPaquete),
             'peso' => $this->faker->randomFloat(2, 0.5, 25),

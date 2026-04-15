@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -31,8 +32,7 @@ class Urban extends Model
         return $this->hasMany(Asiento::class, 'id_urban', 'id_urban');
     }
 
-    public function manejadas(): HasMany
-    {
-        return $this->hasMany(Manejada::class, 'id_urban', 'id_urban');
+    public function manejadas(){
+        return $this->hasMany(Manejada::class, 'id_manejada', 'id_manejada');
     }
 }

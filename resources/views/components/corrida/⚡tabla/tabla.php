@@ -5,6 +5,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use App\Models\Corrida;
+use App\Models\Urban;
 
 new class extends Component
 {
@@ -30,10 +31,9 @@ new class extends Component
         $this->resetPage();
     }
 
+    // #[On('ruta-eliminada')]
     #[On('corrida-creada')]
-    #[On('corrida-actualizada')]
-    #[On('corrida-eliminada')]
-    public function refreshAfterChange()
+    public function refreshAfterCreate()
     {
         $this->resetPage();
     }
@@ -42,22 +42,16 @@ new class extends Component
     public function corridas()
     {
         return Corrida::query()
-            ->with(['ruta', 'manejadas.urbans', 'manejadas.usuarios'])
             ->when($this->search !== '', function ($query) {
-                $search = strtolower($this->search);
-
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->whereHas('ruta', function ($rutaQuery) use ($search) {
-                        $rutaQuery->whereRaw('LOWER(nombre) like ?', ['%' . $search . '%']);
-                    })->orWhereHas('manejadas.urbans', function ($urbanQuery) use ($search) {
-                        $urbanQuery->whereRaw('LOWER(codigo_urban) like ?', ['%' . $search . '%']);
-                    })->orWhereHas('manejadas.usuarios', function ($userQuery) use ($search) {
-                        $userQuery->whereRaw('LOWER(name) like ?', ['%' . $search . '%']);
-                    });
-                });
+                $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(10);
+    }
+
+    #[Computed]
+    public function urbans(){
+        return Urban::orderBy('id_urban')->get();
     }
 
 };
