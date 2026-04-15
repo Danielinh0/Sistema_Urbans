@@ -15,8 +15,8 @@ new class extends Component
     #[Validate('min:3', message: 'El apellido paterno debe tener al menos 3 caracteres.')]
     public $apellido_paterno = null;
 
-    #[Validate('required', message: 'El apellido materno es requerido.')]
     #[Validate('min:3', message: 'El apellido materno debe tener al menos 3 caracteres.')]
+    #[Validate('nullable')]
     public $apellido_materno = null;
 
     public function save(){
@@ -54,9 +54,9 @@ new class extends Component
                     <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small" type="text"
                         label="Apellido Materno" description:trailing="Ingrese minimo 3 caracteres" />
                     @error('apellido_materno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div><br
+                </div><br>
                 <div class="mt-8">
-                    <flux:button type="submit" variant="primary" class="w-full">Crear Sucursal</flux:button>
+                    <flux:button type="submit" variant="primary" class="w-full">Crear Cliente</flux:button>
                 </div>
             </div>
         </flux:card>

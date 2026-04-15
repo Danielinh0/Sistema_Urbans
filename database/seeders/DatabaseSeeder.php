@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SocioSeeder::class,
             ClienteSeeder::class,
             TaquillaSeeder::class,
+            RolSeeder::class,
             UserSeeder::class,
             UrbanSeeder::class,
             AsientoSeeder::class,
