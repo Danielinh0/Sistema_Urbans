@@ -6,9 +6,13 @@
         <div class="flex flex-col justify-between items-center
                      md:flex-row ">
 
-            <div class ="inline-flex items-center gap-4 mb-6">
+            {{-- <div class ="inline-flex items-center gap-4 mb-6">
                 <flux:icon.map-pin-house class="size-12 text-azul_menu" />
                 <flux:text class="text-3xl xs:text-4xl font-bold text-azul_menu">Rutas de viaje</flux:text>
+            </div> --}}
+
+            <div >
+                <x-heading :icono="'map-pin-house'" texto="Rutas de viaje" />
             </div>
 
             <div class="pr-2">
