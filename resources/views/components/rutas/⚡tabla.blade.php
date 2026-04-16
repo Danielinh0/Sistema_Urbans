@@ -10,8 +10,9 @@ new class extends Component {
     use WithPagination;
 
     public $sortBy = 'id_ruta';
-    public $sortDirection = 'desc';
+    public $sortDirection = 'asc';
     public $search = '';
+    public $perPage = 7;
 
     public function sort($column)
     {
@@ -45,29 +46,34 @@ new class extends Component {
                 $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
     }
 
 };
 ?>
 
     <div>
+
+        <livewire:barra-busqueda 
+        placeholder="Buscar por nombre de ruta"/>
+
         <flux:card>
             <flux:table :paginate="$this->rutas">
                 <flux:table.columns>
-                    <flux:table.column sortable :sorted="$sortBy === 'id_ruta'" :direction="$sortDirection"
-                        wire:click="sort('id_ruta')">ID</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
-                        wire:click="sort('nombre')">Nombre de Ruta</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'distancia'" :direction="$sortDirection"
-                        wire:click="sort('distancia')">Distancia (km)</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'tiempo_estimado'" :direction="$sortDirection"
-                        wire:click="sort('tiempo_estimado')">Tiempo Est.</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'tarifa_clientes'" :direction="$sortDirection"
-                        wire:click="sort('tarifa_clientes')">Tarifa Personas</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'tarifa_paquete'" :direction="$sortDirection"
-                        wire:click="sort('tarifa_paquete')">Tarifa Paquetes</flux:table.column>
-                    <flux:table.column align="center">Acciones</flux:table.column>
+
+                    <x-header-table sortable="id_ruta" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-componentes.header_table>    
+                        
+                     <x-header-table icon="map-pinned"> Ruta </x-componentes.header_table>
+
+                    <x-header-table icon="land-plot"> Distancia (km) </x-componentes.header_table>
+
+                    <x-header-table icon="alarm-clock" sortable="tiempo_estimado" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tiempo Est. </x-componentes.header_table>    
+                    
+                    <x-header-table icon="tickets" sortable="tarifa_clientes" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tarifa Personas </x-componentes.header_table>    
+
+                    <x-header-table icon="package" sortable="tarifa_paquete" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tarifa Paquetes </x-componentes.header_table>   
+
+                    <flux:table.column ></flux:table.column>
                 </flux:table.columns>
                 <flux:table.rows>
                     @forelse ($this->rutas as $ruta)
@@ -75,23 +81,32 @@ new class extends Component {
                             <flux:table.cell>
                                 {{ $ruta->id_ruta }}
                             </flux:table.cell>
+
                             <flux:table.cell class="whitespace-nowrap">
-                                {{ $ruta->nombre }}
+                            {{ Str::limit($ruta->nombre, 30, '...') }}     
                             </flux:table.cell>
-                            <flux:table.cell>
+
+                            <flux:table.cell class="text-center!">
                                 {{ $ruta->distancia }} km
                             </flux:table.cell>
-                            <flux:table.cell>
+
+                            <flux:table.cell class="pl-15">
                                 {{ $ruta->tiempo_estimado }}
                             </flux:table.cell>
-                            <flux:table.cell variant="strong">
-                                ${{ number_format($ruta->tarifa_clientes, 2) }}
+
+                            <flux:table.cell class="pl-15" variant="strong">
+                                <flux:badge color="green">
+                                ${{ number_format($ruta->tarifa_clientes, 2) }} 
+                                </flux:badge>
                             </flux:table.cell>
-                            <flux:table.cell variant="strong">
-                                ${{ number_format($ruta->tarifa_paquete, 2) }}
+
+                            <flux:table.cell class="pl-15" variant="strong">
+                                <flux:badge color="green">
+                                    ${{ number_format($ruta->tarifa_paquete, 2) }}
+                                </flux:badge>
                             </flux:table.cell>
                             
-                            <flux:table.cell class="flex gap-1">
+                            <flux:table.cell class="flex gap-3">
 
                                 <x-boton-estilo bg="bg-azul_menu" c_text="text-white" icon="map-pin-pen" text="Editar" 
                                 evento="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })"/>
@@ -110,7 +125,17 @@ new class extends Component {
                         </flux:table.row>
                     @endforelse
                 </flux:table.rows>
+                
             </flux:table>
+            <flux:select size="sm" class="w-full sm:w-auto" wire:model.live="perPage">
+                    <flux:select.option value="7">7</flux:select.option>
+                    <flux:select.option value="14">14</flux:select.option>
+                    <flux:select.option value="27">27</flux:select.option>
+                    <flux:select.option value="48">48</flux:select.option>
+                </flux:select>
         </flux:card>
+
+        
+
         <livewire:rutas.modal />
     </div>

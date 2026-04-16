@@ -55,7 +55,6 @@ new class extends Component {
 <form wire:submit="save" class="p-6">
     <flux:card>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-
             <div>
                 <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
                     label="Nombre del socio" description:trailing="Ingrese minimo 3 caracteres" />
