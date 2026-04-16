@@ -17,7 +17,6 @@ new class extends Component {
     public $distancia;
 
     #[Validate('required', message: 'El tiempo estimado es requerido.')]
-    #[Validate('date_format:H:i', message: 'El tiempo estimado debe estar en formato HH:MM.')]
     public $tiempo_estimado;
 
     #[Validate('required', message: 'La tarifa para personas es requerida.')]

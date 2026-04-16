@@ -12,6 +12,7 @@ new class extends Component {
     public $sortBy = 'id_socio';
     public $sortDirection = 'desc';
     public $search = '';
+    public $perPage = 6;
 
     public function sort($column)
     {
@@ -47,12 +48,14 @@ new class extends Component {
                 $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
     }
 };
 ?>
 
 <div>
+
+
     <flux:card>
         <flux:table :paginate="$this->socios" horizontal>
             <flux:table.columns>
@@ -129,6 +132,7 @@ new class extends Component {
             </flux:table.rows>
         </flux:table>
     </flux:card>
+    
     <!-- Botones de editar y eliminar -->
     <livewire:socio.manager />
 </div>

@@ -1,25 +1,36 @@
 
 <div>
-    <div class="space-y-2">
-        <div>
-            <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text" label="Nombre de la ruta"  description:trailing="No se debe dejar en blanco, siendo de almenos 20 caracteres manejandose por la nomenclatura 'Ruta - Destino'"/>
-            @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    <div class="space-y-3">
+        <flux:field>
+            <flux:label badge="Obligatorio">Nombre de la ruta</flux:label>
+            
+            <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text" />
+            <flux:error name="nombre" />
+        </flux:field>
+
+        <div class="grid grid-cols-1  gap-6 mt-7 xs:grid-cols-2 ">
+            <flux:field>
+                <flux:label badge="Obligatorio">Distancia</flux:label>
+
+                <flux:input wire:model.live.blur="distancia" icon:trailing="land-plot" />
+                <flux:error name="distancia" />
+            </flux:field>
+            <div>
+                <x-input-time wire="tiempo_estimado" texto="Tiempo" />
+            </div>
+            <flux:field>
+                <flux:label badge="Obligatorio">Tarifa para personas</flux:label>
+
+                <flux:input wire:model.live.blur="tarifa_clientes" icon:trailing="book-user" />
+                <flux:error name="tarifa_clientes" />
+            </flux:field>
+            <flux:field>
+                <flux:label badge="Obligatorio">Tarifa para paquetes</flux:label>
+
+                <flux:input wire:model.live.blur="tarifa_paquete" icon:trailing="package" />
+                <flux:error name="tarifa_paquete" />
+            </flux:field>
         </div>
-        <div>
-            <flux:input wire:model.live.blur="distancia" icon:trailing="land-plot"  label="Distancia" description:trailing="Ingrese la distancia de la ruta en kilómetros"/>
-            @error('distancia') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-        </div>
-        <div>
-            <flux:input wire:model.live.blur="tiempo_estimado" icon:trailing="clock-fading" label="Tiempo Estimado de Viaje"  description:trailing="Tiempo estimado para completar la ruta en formato HH:MM"/>
-            @error('tiempo_estimado') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-        </div>
-        <div>
-            <flux:input wire:model.live.blur="tarifa_clientes" icon:trailing="book-user" label="Tarifa para personas"  description:trailing="Ingrese la tarifa para personas en la ruta "/>
-            @error('tarifa_clientes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-        </div>
-        <div>
-            <flux:input wire:model.live.blur="tarifa_paquete" icon:trailing="package" label="Tarifa para paquetes"  description:trailing="Ingrese la tarifa para paquetes en la ruta "/>
-            @error('tarifa_paquete') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-        </div>
+       
     </div>        
 </div>

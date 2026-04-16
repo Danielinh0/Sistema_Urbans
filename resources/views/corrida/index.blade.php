@@ -10,7 +10,7 @@
             </div>
 
             <div>
-                <livewire:corrida.tabla />
+                {{-- <livewire:corrida.tabla /> --}}
             </div>
     </section>
 
