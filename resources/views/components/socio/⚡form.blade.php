@@ -7,14 +7,15 @@ use App\Models\Socio;
 new class extends Component {
     #[Validate('required', message: 'El nombre es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
+    #[Validate('max:18', message: 'El nombre debe tener como maximo 18 caracteres.')]
     public $nombre;
 
-    #[Validate('required', message: 'El apellido paterno es requerido.')]
-    #[Validate('min:3', message: 'El apellido paterno debe tener al menos 3 caracteres.')]
+    #[Validate('nullable|min:3|regex:/^[\pL\s\-]+$/u', message: 'El apellido paterno debe tener al menos 3 caracteres.')]
+    #[Validate('max:12', message: 'El apellido paterno debe tener como maximo 12 caracteres.')]
     public $apellido_paterno;
 
-    #[Validate('required', message: 'El apellido materno es requerido.')]
-    #[Validate('min:3', message: 'El apellido materno debe tener al menos 3 caracteres.')]
+    #[Validate('nullable|min:3|regex:/^[\pL\s\-]+$/u', message: 'El apellido materno debe tener al menos 3 caracteres.')]
+    #[Validate('max:12', message: 'El apellido materno debe tener como maximo 12 caracteres.')]
     public $apellido_materno;
 
     #[Validate('required', message: 'El estado es requerido.')]
@@ -29,8 +30,7 @@ new class extends Component {
     #[Validate('min:10', message: 'El número telefónico debe tener al menos 10 dígitos.')]
     public $numero_telefonico;
 
-    #[Validate('required', message: 'El correo es requerido.')]
-    #[Validate('email', message: 'El correo debe ser un correo válido.')]
+    #[Validate('nullable|email', message: 'El correo debe ser un correo válido.')]
     public $correo;
 
     public function save()
@@ -59,19 +59,19 @@ new class extends Component {
             <div>
                 <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
                     label="Nombre del socio" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('nombre')@enderror
             </div>
 
             <div>
                 <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small"
                     label="Apellido Paterno" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('apellido_paterno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('apellido_paterno')@enderror
             </div>
 
             <div>
                 <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small"
                     label="Apellido Materno" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('apellido_materno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('apellido_materno')@enderror
             </div>
 
             <div>
@@ -79,25 +79,25 @@ new class extends Component {
                     <flux:select.option value="Activo">Activo</flux:select.option>
                     <flux:select.option value="Inactivo">Inactivo</flux:select.option>
                 </flux:select>
-                @error('estado') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('estado')@enderror
             </div>
 
             <div>
                 <flux:input wire:model.live.blur="fecha_de_incorporacion" label="Fecha de Incorporación"
                     description:trailing="La fecha debe ser valida" type="date" />
-                @error('fecha_de_incorporacion') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('fecha_de_incorporacion') @enderror
             </div>
 
             <div>
                 <flux:input wire:model.live.blur="numero_telefonico" icon:trailing="smartphone"
                     label="Número Telefónico" description:trailing="Ingrese un numero de telefono valido" />
-                @error('numero_telefonico') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('numero_telefonico')@enderror
             </div>
 
             <div class="md:col-span-2">
                 <flux:input wire:model.live.blur="correo" icon:trailing="mail" label="Correo"
                     description:trailing="Ingrese un correo electronico valido" />
-                @error('correo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('correo')@enderror
             </div>
         </div>
 

@@ -42,6 +42,7 @@ new class extends Component {
     public function socios()
     {
         return Socio::query()
+            ->with('urbans')
             ->when($this->search !== '', function ($query) {
                 $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
             })
@@ -53,7 +54,7 @@ new class extends Component {
 
 <div>
     <flux:card>
-        <flux:table :paginate="$this->socios">
+        <flux:table :paginate="$this->socios" horizontal>
             <flux:table.columns>
                 <flux:table.column sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
                     wire:click="sort('id_socio')">ID</flux:table.column>
@@ -71,7 +72,8 @@ new class extends Component {
                     wire:click="sort('numero_telefonico')">Teléfono</flux:table.column>
                 <flux:table.column sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
                     wire:click="sort('correo')">Correo</flux:table.column>
-                <flux:table.column align="center">Acciones</flux:table.column>
+                <flux:table.column>Urbans</flux:table.colum>
+                    <flux:table.column align="center">Acciones</flux:table.column>
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
@@ -100,14 +102,20 @@ new class extends Component {
                         <flux:table.cell>
                             {{ $socio->correo }}
                         </flux:table.cell>
+                        <flux:table.cell>
+                            @foreach ($socio->urbans as $urban)
+                                {{ $urban->codigo_urban }} <br>
+                            @endforeach
+                        </flux:table.cell>
                         <flux:table.cell class="flex gap-2">
                             <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
-                                Editar
+                                <span class="hidden md:inline ml-1">Editar</span>
+
                             </flux:button>
                             <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
                                 wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
-                                Eliminar
+                                <span class="hidden md:inline ml-1">Eliminar</span>
                             </flux:button>
                         </flux:table.cell>
                     </flux:table.row>

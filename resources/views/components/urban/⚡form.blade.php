@@ -62,12 +62,12 @@ new class extends Component {
             <div>
                 <flux:input wire:model.live.blur="codigo_urban" icon:trailing="a-large-small" type="text"
                     label="Código de la Urban" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('codigo_urban') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('codigo_urban')@enderror
             </div>
             <div>
                 <flux:input wire:model.live.blur="numero_asientos" icon:trailing="a-large-small" type="number"
                     label="Número de Asientos" description:trailing="Ingrese el numero de asientos" />
-                @error('numero_asientos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('numero_asientos')@enderror
             </div>
             <div>
                 <flux:select wire:model="id_socio" label="Socio" placeholder="Seleccione el socio"
@@ -78,12 +78,12 @@ new class extends Component {
                         </flux:select.option>
                     @endforeach
                 </flux:select>
-                @error('id_socio') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('id_socio')@enderror
             </div>
             <div>
                 <flux:input wire:model.live.blur="placa" icon:trailing="a-large-small" type="text" label="Placa"
                     description:trailing="Ingrese la placa" />
-                @error('placa') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                @error('placa')@enderror
             </div>
         </div>
         <div class="mt-8">
