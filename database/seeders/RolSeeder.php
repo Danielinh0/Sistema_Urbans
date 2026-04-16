@@ -166,5 +166,26 @@ class RolSeeder extends Seeder
         ]);
 
         $admin_role->syncPermissions(Permission::all());
+
+        $choferes = User::factory()->count(20)->create();
+        foreach ($choferes as $chofer) {
+            $chofer->assignRole($chofer_role);
+        }
+
+        $cajeros = User::factory()->count(15)->create();
+        foreach ($cajeros as $cajero) {
+            $cajero->assignRole($cajero_role);
+        }
+
+        $gerentes = User::factory()->count(5)->create();
+        foreach ($gerentes as $gerente) {
+            $gerente->assignRole($gerente_role);
+        }
+
+        $admin = User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+        ]);
+        $admin->assignRole($admin_role);
     }
 }

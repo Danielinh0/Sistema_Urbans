@@ -90,7 +90,7 @@ class User extends Authenticatable
         return $this->hasMany(Corrida::class, 'id_usuario', 'id_usuario');
     }
 
-     public function turnos(): HasMany
+    public function turnos(): HasMany
     {
         return $this->hasMany(Turno::class, 'id_usuario', 'id_usuario');
     }
