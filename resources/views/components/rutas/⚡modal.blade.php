@@ -79,7 +79,7 @@ new class extends Component
 ?>
 
 <div>
-    <flux:modal name="modal-editar-ruta" class="w-[60%] p-10">
+    <flux:modal name="modal-editar-ruta" class="w-8/10 xl:w-[60%] xl:p-10">
         @if($ruta)
             <flux:heading class="mb-4" size="lg">Editar la ruta: {{ $ruta->nombre }}</flux:heading>
                 <flux:card >

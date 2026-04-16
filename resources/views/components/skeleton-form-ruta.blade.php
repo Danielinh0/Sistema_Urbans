@@ -1,27 +1,35 @@
 
 <div>
-    <div class="space-y-7">
-        <div>
-            <flux:input badge="Obligatorio" wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text" label="Nombre de la ruta"/>
-            @error('nombre') <span class="text-red-500 text-sm ">{{ $message }}</span> @enderror
-        </div>
+    <div class="space-y-3">
+        <flux:field>
+            <flux:label badge="Obligatorio">Nombre de la ruta</flux:label>
+            
+            <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text" />
+            <flux:error name="nombre" />
+        </flux:field>
 
-        <div class=" grid grid-cols-2 gap-6">
-             <div>
-                <flux:input badge="Obligatorio" wire:model.live.blur="distancia" icon:trailing="land-plot"  label="Distancia" />
-                @error('distancia') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
+        <div class="grid grid-cols-1  gap-6 mt-7 xs:grid-cols-2 ">
+            <flux:field>
+                <flux:label badge="Obligatorio">Distancia</flux:label>
+
+                <flux:input wire:model.live.blur="distancia" icon:trailing="land-plot" />
+                <flux:error name="distancia" />
+            </flux:field>
             <div>
-                <x-input-time wire="tiempo_estimado" texto="Hora de llegada" />
+                <x-input-time wire="tiempo_estimado" texto="Tiempo" />
             </div>
-            <div>
-                <flux:input badge="Obligatorio" wire:model.live.blur="tarifa_clientes" icon:trailing="book-user" label="Tarifa para personas" />
-                @error('tarifa_clientes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
-            <div>
-                <flux:input badge="Obligatorio"  wire:model.live.blur="tarifa_paquete" icon:trailing="package" label="Tarifa para paquetes"  />
-                @error('tarifa_paquete') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
+            <flux:field>
+                <flux:label badge="Obligatorio">Tarifa para personas</flux:label>
+
+                <flux:input wire:model.live.blur="tarifa_clientes" icon:trailing="book-user" />
+                <flux:error name="tarifa_clientes" />
+            </flux:field>
+            <flux:field>
+                <flux:label badge="Obligatorio">Tarifa para paquetes</flux:label>
+
+                <flux:input wire:model.live.blur="tarifa_paquete" icon:trailing="package" />
+                <flux:error name="tarifa_paquete" />
+            </flux:field>
         </div>
        
     </div>        

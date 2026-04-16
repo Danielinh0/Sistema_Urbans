@@ -27,7 +27,7 @@
 
     </section>
 
-            <flux:modal name="edit-profile" class="w-[50%] p-10">
+            <flux:modal name="edit-profile" class="w-8/10 xl:w-[60%] xl:p-10">
                 <div>
                     <flux:heading class="!text-xl !font-bold" size="lg">Crea una nueva ruta</flux:heading>
                 </div>
