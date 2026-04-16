@@ -11,8 +11,9 @@ new class extends Component
     use WithPagination;
     
     public $sortBy = 'id_sucursal';
-    public $sortDirection = 'desc';
+    public $sortDirection = 'asc';
     public $search = '';
+    public $perPage = 7;
 
     public function sort($column) {
         if ($this->sortBy === $column) {
@@ -47,7 +48,7 @@ new class extends Component
                 $query->whereRaw('LOWER(nombre) like ?', ['%'.strtolower($this->search).'%']);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
     }
 
     
@@ -56,14 +57,20 @@ new class extends Component
 
 <div>
     <div>
+        <livewire:barra-busqueda placeholder="Buscar por nombre de sucursal"/>
         <flux:card>
             <flux:table :paginate="$this->sucursales">
                 <flux:table.columns>
-                    <flux:table.column sortable :sorted="$sortBy === 'id_sucursal'" :direction="$sortDirection" wire:click="sort('id_sucursal')">ID</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection" wire:click="sort('nombre')">Nombre de la Sucursal</flux:table.column>
-                    <flux:table.column >Direccion</flux:table.column>
-                    <flux:table.column>Acciones</flux:table.column>
+                    <x-header-table sortable="id_sucursal" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-componentes.header_table>    
+                        {{-- nombre --}}
+                    <x-header-table icon="book-a" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection"> Nombre de la sucursal </x-componentes.header_table>    
+
+                    <x-header-table icon="map-pin-house"> Ruta </x-componentes.header_table>
+                    
+                        <flux:table.column></flux:table.column>
+                
                 </flux:table.columns>
+
                 <flux:table.rows>
                 @forelse ($this->sucursales as $sucursal)
                     <flux:table.row :key="$sucursal->id_sucursal">
@@ -105,6 +112,13 @@ new class extends Component
             </flux:table.rows>
             </flux:table>
             
+            <flux:select size="sm" class="w-full sm:w-auto" wire:model.live="perPage">
+                    <flux:select.option value="7">7</flux:select.option>
+                    <flux:select.option value="14">14</flux:select.option>
+                    <flux:select.option value="27">27</flux:select.option>
+                    <flux:select.option value="48">48</flux:select.option>
+            </flux:select>
+
         </flux:card>
         <livewire:sucursal.manager></livewire:sucursal.manager>
     </div>

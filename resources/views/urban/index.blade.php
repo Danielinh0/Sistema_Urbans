@@ -1,5 +1,5 @@
 <x-layouts::app :title="__('Urbans')">
-    <section class="flex ">
+    {{-- <section class="flex ">
         <div>
             <flux:modal.trigger name="edit-urban">
                 <flux:button icon="circle-plus">Crear una nueva urban</flux:button>
@@ -12,5 +12,9 @@
                 <livewire:urban.form />
             </flux:modal>
         </div>
-    </section>
+    </section> --}}
+
+    
+
+
 </x-layouts::app>

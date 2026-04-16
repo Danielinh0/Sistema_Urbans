@@ -54,8 +54,7 @@ new class extends Component {
 
     <div>
 
-        <livewire:barra-busqueda 
-        placeholder="Buscar por nombre de ruta"/>
+        <livewire:barra-busqueda placeholder="Buscar por nombre de ruta"/>
 
         <flux:card>
             <flux:table :paginate="$this->rutas">
