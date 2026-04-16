@@ -92,7 +92,7 @@ new class extends Component
         @endif
     </flux:modal>
 
-    <flux:modal name="modal-eliminar-ruta" class="min-w-[22rem]">
+    <flux:modal name="modal-eliminar-ruta" class="w-[40%] md:min-w-22rem] ">
         @if($ruta)
             <div class="space-y-6">
                 <flux:heading size="lg">Eliminar Ruta</flux:heading>
