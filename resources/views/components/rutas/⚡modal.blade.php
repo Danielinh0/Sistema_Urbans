@@ -81,9 +81,10 @@ new class extends Component
 <div>
     <flux:modal name="modal-editar-ruta" class="w-[60%] p-10">
         @if($ruta)
-            <flux:heading size="lg">Editar Ruta: {{ $ruta->nombre }}</flux:heading>
-
-                <x-skeleton-form-ruta />
+            <flux:heading class="mb-4" size="lg">Editar la ruta: {{ $ruta->nombre }}</flux:heading>
+                <flux:card >
+                    <x-skeleton-form-ruta/>
+                </flux:card>
 
             <div class="mt-8">
                 <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>

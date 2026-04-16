@@ -1,4 +1,4 @@
-<form wire:submit="save" class="p-6">
+<form wire:submit="save" class="px-4 py-4">
             <flux:card >
                 <x-skeleton-form-ruta />
 
