@@ -10,7 +10,7 @@ new class extends Component {
     use WithPagination;
 
     public $sortBy = 'id_socio';
-    public $sortDirection = 'desc';
+    public $sortDirection = 'asc';
     public $search = '';
     public $perPage = 6;
 
@@ -54,29 +54,30 @@ new class extends Component {
 ?>
 
 <div>
-
+    <livewire:barra-busqueda placeholder="Busca un socio por su nombre..." />
 
     <flux:card>
         <flux:table :paginate="$this->socios" horizontal>
             <flux:table.columns>
-                <flux:table.column sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
-                    wire:click="sort('id_socio')">ID</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
-                    wire:click="sort('nombre')">Nombre</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'apellido_paterno'" :direction="$sortDirection"
-                    wire:click="sort('apellido_paterno')">Apellido Paterno</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'apellido_materno'" :direction="$sortDirection"
-                    wire:click="sort('apellido_materno')">Apellido Materno</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'estado'" :direction="$sortDirection"
-                    wire:click="sort('estado')">Estado</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'fecha_de_incorporacion'" :direction="$sortDirection"
-                    wire:click="sort('fecha_de_incorporacion')">Fecha de Incorporación</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'numero_telefonico'" :direction="$sortDirection"
-                    wire:click="sort('numero_telefonico')">Teléfono</flux:table.column>
-                <flux:table.column sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
-                    wire:click="sort('correo')">Correo</flux:table.column>
-                <flux:table.column>Urbans</flux:table.colum>
-                    <flux:table.column align="center">Acciones</flux:table.column>
+                <x-header-table sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
+                    wire:click="sort('id_socio')">ID</x-header-table>
+                <x-header-table sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
+                    wire:click="sort('nombre')">Nombre</x-header-table>
+                <x-header-table sortable :sorted="$sortBy === 'apellido_paterno'" :direction="$sortDirection"
+                    wire:click="sort('apellido_paterno')">Apellido Paterno</x-header-table>
+                <x-header-table sortable :sorted="$sortBy === 'apellido_materno'" :direction="$sortDirection"
+                    wire:click="sort('apellido_materno')">Apellido Materno</x-header-table>
+                <x-header-table icon="activity" sortable :sorted="$sortBy === 'estado'" :direction="$sortDirection"
+                    wire:click="sort('estado')">Estado</x-header-table>
+                <x-header-table icon="calendar" sortable :sorted="$sortBy === 'fecha_de_incorporacion'"
+                    :direction="$sortDirection"
+                    wire:click="sort('fecha_de_incorporacion')">Incorporación</x-header-table>
+                <x-header-table icon="smartphone" sortable :sorted="$sortBy === 'numero_telefonico'"
+                    :direction="$sortDirection" wire:click="sort('numero_telefonico')">Teléfono</x-header-table>
+                <x-header-table icon="mail" sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
+                    wire:click="sort('correo')">Correo</x-header-table>
+                <x-header-table icon="bus">Urbans</x-header-table>
+                <x-header-table align="center">Acciones</x-header-table>
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
@@ -93,10 +94,14 @@ new class extends Component {
                         <flux:table.cell>
                             {{ $socio->apellido_materno }}
                         </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->estado }}
+                        <flux:table.cell class="text-center!">
+                            @if ($socio->estado == 'Activo')
+                                <flux:badge color="green">Activo</flux:badge>
+                            @else
+                                <flux:badge color="red">Inactivo</flux:badge>
+                            @endif
                         </flux:table.cell>
-                        <flux:table.cell>
+                        <flux:table.cell class="text-center!">
                             {{ $socio->fecha_de_incorporacion }}
                         </flux:table.cell>
                         <flux:table.cell>
@@ -107,7 +112,7 @@ new class extends Component {
                         </flux:table.cell>
                         <flux:table.cell>
                             @foreach ($socio->urbans as $urban)
-                                {{ $urban->codigo_urban }} <br>
+                                <flux:badge color="cyan">{{ $urban->codigo_urban }}</flux:badge>
                             @endforeach
                         </flux:table.cell>
                         <flux:table.cell class="flex gap-2">
@@ -131,8 +136,13 @@ new class extends Component {
                 @endforelse
             </flux:table.rows>
         </flux:table>
+        <flux:select size="sm" class="w-full sm:w-auto" wire:model.live="perPage">
+            <flux:select.option value="6">6</flux:select.option>
+            <flux:select.option value="12">12</flux:select.option>
+            <flux:select.option value="24">24</flux:select.option>
+        </flux:select>
     </flux:card>
-    
+
     <!-- Botones de editar y eliminar -->
     <livewire:socio.manager />
 </div>

@@ -55,49 +55,56 @@ new class extends Component {
 <form wire:submit="save" class="p-6">
     <flux:card>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <div>
+            <flux:field>
+                <flux:label badge="Obligatorio">Nombre(s)</flux:label>
                 <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
-                    label="Nombre del socio" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('nombre')@enderror
-            </div>
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="nombre" />
+            </flux:field>
 
-            <div>
+            <flux:field>
+                <flux:label badge="Opcional">Apellido Paterno</flux:label>
                 <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small"
-                    label="Apellido Paterno" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('apellido_paterno')@enderror
-            </div>
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="apellido_paterno" />
+            </flux:field>
 
-            <div>
+            <flux:field>
+                <flux:label badge="Opcional">Apellido Materno</flux:label>
                 <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small"
-                    label="Apellido Materno" description:trailing="Ingrese minimo 3 caracteres" />
-                @error('apellido_materno')@enderror
-            </div>
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="apellido_materno" />
+            </flux:field>
 
-            <div>
-                <flux:select wire:model="estado" label="Estado" placeholder="Seleccione el estado">
+            <flux:field>
+                <flux:label badge="Obligatorio">Estado</flux:label>
+                <flux:select wire:model="estado" placeholder="Seleccione el estado">
                     <flux:select.option value="Activo">Activo</flux:select.option>
                     <flux:select.option value="Inactivo">Inactivo</flux:select.option>
                 </flux:select>
-                @error('estado')@enderror
-            </div>
+                <flux:error name="estado" />
+            </flux:field>
 
-            <div>
-                <flux:input wire:model.live.blur="fecha_de_incorporacion" label="Fecha de Incorporación"
+            <flux:field>
+                <flux:label badge="Obligatorio">Fecha de Incorporación</flux:label>
+                <flux:input wire:model.live.blur="fecha_de_incorporacion"
                     description:trailing="La fecha debe ser valida" type="date" />
-                @error('fecha_de_incorporacion') @enderror
-            </div>
+                <flux:error name="fecha_de_incorporacion" />
+            </flux:field>
 
-            <div>
+            <flux:field>
+                <flux:label badge="Obligatorio">Número Telefónico</flux:label>
                 <flux:input wire:model.live.blur="numero_telefonico" icon:trailing="smartphone"
-                    label="Número Telefónico" description:trailing="Ingrese un numero de telefono valido" />
-                @error('numero_telefonico')@enderror
-            </div>
+                    description:trailing="Ingrese un numero de telefono valido" />
+                <flux:error name="numero_telefonico" />
+            </flux:field>
 
-            <div class="md:col-span-2">
-                <flux:input wire:model.live.blur="correo" icon:trailing="mail" label="Correo"
+            <flux:field>
+                <flux:label badge="Opcional">Correo</flux:label>
+                <flux:input wire:model.live.blur="correo" icon:trailing="mail"
                     description:trailing="Ingrese un correo electronico valido" />
-                @error('correo')@enderror
-            </div>
+                <flux:error name="correo" />
+            </flux:field>
         </div>
 
         <div class="mt-8">
