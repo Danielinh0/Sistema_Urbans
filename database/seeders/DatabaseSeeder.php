@@ -35,6 +35,8 @@ class DatabaseSeeder extends Seeder
 
         $Usuario = User::factory()->create([
             'name' => 'Test User',
+            'apellido_paterno' => 'Prueba',
+            'apellido_materno' => 'Sistema',
             'email' => 'test@example.com',
         ]);
 

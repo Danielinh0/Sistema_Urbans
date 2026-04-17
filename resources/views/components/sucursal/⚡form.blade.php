@@ -81,6 +81,17 @@ new class extends Component
         return Calle::where('id_colonia', $this->colonia)->orderby('nombre')->get();
     }
 
+    public function updated($property, $value): void
+    {
+        match ($property) {
+            'pais' => $this->reset('estado', 'codigoPostal', 'colonia', 'calle'),
+            'estado' => $this->reset('codigoPostal', 'colonia', 'calle'),
+            'codigoPostal' => $this->reset('colonia', 'calle'),
+            'colonia' => $this->reset('calle'),
+            default => null,
+        };
+    }
+
     public function save(){
         $this->validate();
         $this->direccion = Direccion::create([
@@ -110,7 +121,8 @@ new class extends Component
                     @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <flux:select wire:model.live.blur="pais" label="Pais" placeholder="Seleccione el pais" searchable>
+                    <flux:select wire:model.live.blur="pais" label="Pais" searchable>
+                        <flux:select.option value="">Seleccione un pais</flux:select.option>
                         @foreach ($this->paises as $pais2)
                             <flux:select.option value="{{ $pais2->id_pais }}">
                                 {{ $pais2->nombre }}
@@ -120,7 +132,8 @@ new class extends Component
                     </flux:select>
                 </div>
                 <div>
-                    <flux:select wire:model.live.blur="estado" label="Estado" placeholder="Seleccione el estado" searchable :disabled="!$pais">
+                    <flux:select wire:model.live.blur="estado" label="Estado" searchable :disabled="!$pais">
+                            <flux:select.option value="">Seleccione un estado</flux:select.option>
                             @foreach ($this->estados as $estado2)
                                 <flux:select.option value="{{ $estado2->id_estado }}">
                                     {{ $estado2->nombre }}
@@ -131,7 +144,8 @@ new class extends Component
                     </flux:select>
                 </div>
                 <div>
-                    <flux:select wire:model.live.blur="codigoPostal" label="Codigo postal" placeholder="Seleccione el codigo postal" searchable :disabled="!$estado">
+                    <flux:select wire:model.live.blur="codigoPostal" label="Codigo postal" searchable :disabled="!$estado">
+                            <flux:select.option value="">Seleccione un codigo postal</flux:select.option>
                             @foreach ($this->codigos as $codigoPostal2)
                                 <flux:select.option value="{{ $codigoPostal2->id_cp }}">
                                     {{ $codigoPostal2->numero }}
@@ -142,7 +156,8 @@ new class extends Component
                     </flux:select>
                 </div>
                 <div>
-                    <flux:select wire:model.live.blur="colonia" label="Colonia" placeholder="Seleccione la colonia" searchable :disabled="!$codigoPostal">
+                    <flux:select wire:model.live.blur="colonia" label="Colonia" searchable :disabled="!$codigoPostal">
+                            <flux:select.option value="">Seleccione una colonia</flux:select.option>
                             @foreach ($this->colonias as $colonia2)
                                 <flux:select.option value="{{ $colonia2->id_colonia }}">
                                     {{ $colonia2->nombre }}
@@ -152,9 +167,9 @@ new class extends Component
                         
                     </flux:select>
                 </div>
-
                 <div>
-                    <flux:select wire:model.live.blur="calle" label="Calle" placeholder="Seleccione la calle" searchable :disabled="!$colonia">
+                    <flux:select wire:model.live.blur="calle" label="Calle" searchable :disabled="!$colonia">
+                            <flux:select.option value="">Seleccione una calle</flux:select.option>
                             @foreach ($this->calles as $calle2)
                                 <flux:select.option value="{{ $calle2->id_calle }}">
                                     {{ $calle2->nombre }}

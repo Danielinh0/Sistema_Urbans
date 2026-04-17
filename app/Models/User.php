@@ -37,6 +37,8 @@ class User extends Authenticatable
         'id_sucursal',
         'id_direccion',
         'name',
+        'apellido_paterno',
+        'apellido_materno',
         'email',
         'password',
     ];
@@ -66,7 +68,13 @@ class User extends Authenticatable
      */
     public function initials(): string
     {
-        return Str::of($this->name)
+        $fullName = trim(implode(' ', array_filter([
+            $this->name,
+            $this->apellido_paterno,
+            $this->apellido_materno,
+        ])));
+
+        return Str::of($fullName)
             ->explode(' ')
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))

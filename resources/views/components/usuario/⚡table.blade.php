@@ -47,6 +47,8 @@ new class extends Component
             ->withMin('roles as rol_nombre', 'name')
             ->when($this->search !== '', function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
+                $query->orWhere('apellido_paterno', 'like', '%' . $this->search . '%');
+                $query->orWhere('apellido_materno', 'like', '%' . $this->search . '%');
             })
             ->orderBy($sortColumn, $this->sortDirection)
             ->paginate(10);
@@ -68,10 +70,10 @@ new class extends Component
                     <flux:table.column>Acciones</flux:table.column>
                 </flux:table.columns>
                 <flux:table.rows>
-                    @foreach ($this->usuarios as $usuario)
+                    @forelse ($this->usuarios as $usuario)
                         <flux:table.row :key="$usuario->id_usuario"> 
                             <flux:table.cell>{{ $usuario->id_usuario }}</flux:table.cell>
-                            <flux:table.cell>{{ $usuario->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $usuario->name }} {{ $usuario->apellido_paterno }} {{ $usuario->apellido_materno }}</flux:table.cell>
                             <flux:table.cell>{{ $usuario->email }}</flux:table.cell>
                             <flux:table.cell>{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}</flux:table.cell>
                             <flux:table.cell>{{ $usuario->rol_nombre ?? 'N/A' }}</flux:table.cell>
@@ -83,19 +85,32 @@ new class extends Component
                             {{$usuario->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
                             {{$usuario->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
                         </flux:table.cell>
-                            <flux:table.cell>
-                                <div class="flex gap-2">
-                                    <flux:button icon="pencil" color="blue" wire:click="$emit('editarUsuario', {{ $usuario->id_usuario }})">Editar</flux:button>
-                                    <flux:button icon="trash" color="red" wire:click="$emit('eliminarUsuario', {{ $usuario->id_usuario }})">Eliminar</flux:button>
-                                </div>
+                            <flux:table.cell class="flex gap-2">
+                                <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
+                                    wire:click="$dispatch('preparar-edicion-usuario', { id: {{ $usuario->id_usuario }} })">
+                                    Editar
+                                </flux:button>
+                                @if (!$usuario->corridas->count()>0 || !$usuario->turnos->count()>0)
+                                    <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                                        wire:click="$dispatch('preparar-eliminacion-usuario', { id: {{ $usuario->id_usuario }} })">
+                                        Eliminar
+                                    </flux:button>
+                                @endif
+                                
                             </flux:table.cell>
 
                         </flux:table.row>
-                        
-                    @endforeach
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="7" class="text-center py-4 ">
+                                No se encontraron usuarios.
+                            </flux:table.cell>
+                        </flux:table.row>    
+                    @endforelse
 
                 </flux:table.rows>
             </flux:table>
         </flux:card>
+        <livewire:usuario.manager />
     </div>
 </div>
