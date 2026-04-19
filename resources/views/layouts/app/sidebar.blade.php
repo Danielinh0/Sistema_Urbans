@@ -48,6 +48,10 @@
                     wire:navigate>
                     {{ __('Clientes') }}
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="users" :href="route('usuario.index')" :current="request()->routeIs('usuario.index')"
+                    wire:navigate>
+                    {{ __('Usuarios') }}
+                </flux:sidebar.item>
             </flux:sidebar.group>
         </flux:sidebar.nav>
 
