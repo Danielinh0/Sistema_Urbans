@@ -74,6 +74,16 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */
+@layer components {
+    [data-flux-sidebar-header] {
+        justify-content: center !important;
+    }
+}
+
+[data-flux-avatar] {
+    background-color: var(--color-azul_menu) !important;
+    color: white !important;
+    font-weight: bold !important;
+}
+
+

@@ -9,46 +9,25 @@
     <flux:sidebar sticky collapsible="mobile"
         class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.header>
+            
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+
             <flux:sidebar.collapse class="lg:hidden" />
+
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
-            <flux:sidebar.group :heading="__('Platform')" class="grid">
-                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>
-                    {{ __('Dashboard') }}
-                </flux:sidebar.item>
 
-                <flux:sidebar.item icon="map-pinned" :href="route('ruta.index')" :current="request()->routeIs('ruta.index')"
-                    wire:navigate>
-                    {{ __('Rutas') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="user-round" :href="route('socio.index')"
-                    :current="request()->routeIs('socio.index')" wire:navigate>
-                    {{ __('Socios') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="bus" :href="route('urban.index')" :current="request()->routeIs('urban.index')"
-                    wire:navigate>
-                    {{ __('Urbans') }}
-                </flux:sidebar.item>
-                
-                <flux:sidebar.item icon="map" :href="route('corrida.index')" :current="request()->routeIs('corrida.index')"
-                    wire:navigate>
-                    {{ __('Corridas') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="building-2" :href="route('sucursal.index')" :current="request()->routeIs('sucursal.index')"
-                    wire:navigate>
-                    {{ __('Sucursales') }}
-                </flux:sidebar.item>
-                <flux:sidebar.item icon="users" :href="route('cliente.index')" :current="request()->routeIs('cliente.index')"
-                    wire:navigate>
-                    {{ __('Clientes') }}
-                </flux:sidebar.item>
+            <flux:sidebar.group :heading="__('Menu principal')" class="grid gap-4">
+                <x-item-sidebar icon="home" ruta="dashboard" texto="Dashboard" />
+                <x-item-sidebar icon="map-pinned" ruta="ruta.index" texto="Rutas" />
+                <x-item-sidebar icon="user-round" ruta="socio.index" texto="Socios" />
+                <x-item-sidebar icon="bus" ruta="urban.index" texto="Urbans" />
+                <x-item-sidebar icon="map" ruta="corrida.index" texto="Corridas" />
+                <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" />
+                <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" />
             </flux:sidebar.group>
+
         </flux:sidebar.nav>
 
         <flux:spacer />

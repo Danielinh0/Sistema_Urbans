@@ -18,7 +18,7 @@ class Asiento extends Model
     protected $fillable = [
         'id_urban',
         'nombre',
-        'estado',
+        'estado', //Libre, Ocupado, Apartado
     ];
 
     public function urban(): BelongsTo

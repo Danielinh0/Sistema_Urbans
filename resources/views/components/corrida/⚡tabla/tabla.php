@@ -13,6 +13,7 @@ new class extends Component
     public $sortBy = 'id_corrida';
     public $sortDirection = 'desc';
     public $search = '';
+    public $perPage = 7;
 
     public function sort($column)
     {
@@ -31,7 +32,6 @@ new class extends Component
         $this->resetPage();
     }
 
-    // #[On('ruta-eliminada')]
     #[On('corrida-creada')]
     public function refreshAfterCreate()
     {
@@ -43,10 +43,14 @@ new class extends Component
     {
         return Corrida::query()
             ->when($this->search !== '', function ($query) {
-                $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
+                $query->whereHas('ruta', function ($q) {
+                    $q->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
+                })->orWhereHas('user', function ($q) {
+                    $q->whereRaw('LOWER(name) like ?', ['%' . strtolower($this->search) . '%']);
+                });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
     }
 
     #[Computed]

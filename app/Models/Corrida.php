@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Carbon\Carbon;
 
 class Corrida extends Model
 {
@@ -25,20 +26,28 @@ class Corrida extends Model
         'id_urban',
     ];
 
-    protected function hora_salida(): Attribute
+    protected function horaSalida(): Attribute
     {
-    return Attribute::make(
-        get: fn ($value) => $value ? substr($value, 0, 5) : null, // "08:30:00" → "08:30"
-        set: fn ($value) => $value . ':00', // "08:30" → "08:30:00"
-    );
+        return Attribute::make(
+            get: fn($value) => $value ? Carbon::parse($value) : null,
+            set: fn($value) => $value,
+        );
     }
 
-    protected function hora_llegada(): Attribute
+    protected function horaLlegada(): Attribute
     {
-    return Attribute::make(
-        get: fn ($value) => $value ? substr($value, 0, 5) : null, // "08:30:00" → "08:30"
-        set: fn ($value) => $value . ':00', // "08:30" → "08:30:00"
-    );
+        return Attribute::make(
+            get: fn($value) => $value ? Carbon::parse($value) : null,
+            set: fn($value) => $value,
+        );
+    }
+
+    protected function fecha(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => $value ? Carbon::parse($value) : null,
+            set: fn($value) => $value,
+        );
     }
 
     public function ruta(): BelongsTo
@@ -48,7 +57,7 @@ class Corrida extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_usuario','id_usuario');
+        return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
     }
 
     public function boletos(): HasMany

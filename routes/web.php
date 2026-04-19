@@ -11,13 +11,14 @@ use App\Http\Controllers\{
     UrbanController,
     UserController,
     VentaController,
-    SucursalController
+    SucursalController,
+    DashboardController
 };
 
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('asiento')->group(function () {
         Route::controller(AsientoController::class)->group(function () {
@@ -98,7 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('socio')->name('socio.')->group(
         function () {
             Route::controller(SocioController::class)->group(
-            function () {
+                function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
                     Route::get('/store', 'store')->name('store');

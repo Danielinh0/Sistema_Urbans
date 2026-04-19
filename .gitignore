@@ -37,5 +37,5 @@ yarn-error.log
 # !/vendor/livewire/flux/stubs/resources/views/flux/sidebar/
 # /vendor/livewire/flux/stubs/resources/views/flux/sidebar/*
 # !/vendor/livewire/flux/stubs/resources/views/flux/sidebar/item.blade.php
-
+# !/vendor/livewire/flux/stubs/resources/views/flux/sidebar/header.blade.php
 /vendor/_laravel_ide/
