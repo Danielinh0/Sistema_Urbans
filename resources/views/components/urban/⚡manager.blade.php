@@ -6,6 +6,7 @@ use Livewire\Attributes\Validate;
 use App\Models\Urban;
 use App\Models\Socio;
 use App\Models\Asiento;
+use App\Models\Corrida;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
@@ -18,7 +19,8 @@ new class extends Component {
 
     #[Validate('required', message: 'El numero de asientos es requerido.')]
     #[Validate('numeric', message: 'El numero de asientos debe ser un valor numerico.')]
-    #[Validate('min:1', message: 'El numero de asientos debe tener al menos 1 asiento.')]
+    #[Validate('min:5', message: 'El numero de asientos debe tener al menos 5 asientos.')]
+    #[Validate('regex:/^[0-9]+$/', message: 'El numero de asientos debe ser un valor numerico positivo.')]
     public $numero_asientos;
 
     #[Validate('required', message: 'El socio es requerido.')]
@@ -87,6 +89,12 @@ new class extends Component {
     {
         return Socio::orderBy('nombre')->get();
     }
+
+    #[Computed]
+    public function corridas()
+    {
+        return Corrida::where('id_urban', $this->urban->id_urban)->get();
+    }
 };
 ?>
 
@@ -96,34 +104,39 @@ new class extends Component {
             <flux:heading size="lg" class="mb-6">Editar Urban: {{ $urban->codigo_urban }}</flux:heading>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div>
-                    <flux:input wire:model="codigo_urban" icon:trailing="a-large-small" type="text"
-                        label="Código de la Urban" description:trailing="Ingrese minimo 3 caracteres" />
-                    @error('codigo_urban') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Código de la Urban</flux:label>
+                    <flux:input wire:model.live.blur="codigo_urban" icon:trailing="a-large-small" type="text"
+                        description:trailing="Ingrese minimo 3 caracteres" />
+                    <flux:error name="codigo_urban" />
+                </flux:field>
 
-                <div>
-                    <flux:input wire:model="numero_asientos" icon:trailing="a-large-small" type="number"
-                        label="Número de Asientos" description:trailing="Ingrese el numero de asientos" />
-                    @error('numero_asientos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Número de Asientos</flux:label>
+                    <flux:input wire:model.live.blur="numero_asientos" icon:trailing="a-large-small" type="number"
+                        description:trailing="Ingrese el numero de asientos" />
+                    <flux:error name="numero_asientos" />
+                </flux:field>
 
-                <div>
-                    <flux:select wire:model="id_socio" label="Socio" placeholder="Seleccione el socio" searchable>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Socio</flux:label>
+                    <flux:select wire:model="id_socio" placeholder="Seleccione el socio"
+                        description:trailing="Seleccione el socio" searchable>
                         @foreach ($this->socios as $socio)
                             <flux:select.option value="{{ $socio->id_socio }}">
                                 {{ $socio->nombre }} {{ $socio->apellido_paterno }} {{ $socio->apellido_materno }}
                             </flux:select.option>
                         @endforeach
                     </flux:select>
-                    @error('id_socio') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
+                    <flux:error name="id_socio" />
+                </flux:field>
 
-                <div>
-                    <flux:input wire:model="placa" icon:trailing="a-large-small" type="text" label="Placa"
+                <flux:field>
+                    <flux:label badge="Obligatorio">Placa</flux:label>
+                    <flux:input wire:model.live.blur="placa" icon:trailing="a-large-small" type="text"
                         description:trailing="Ingrese la placa" />
-                    @error('placa') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
+                    <flux:error name="placa" />
+                </flux:field>
             </div>
 
             <div class="mt-8">

@@ -17,7 +17,7 @@ class SocioFactory extends Factory
             'nombre' => $this->faker->firstName(),
             'apellido_paterno' => $this->faker->lastName(),
             'apellido_materno' => $this->faker->lastName(),
-            'estado' => $this->faker->state(),
+            'estado' => $this->faker->randomElement(['Activo', 'Inactivo']),
             'fecha_de_incorporacion' => $this->faker->date(),
         ];
     }
