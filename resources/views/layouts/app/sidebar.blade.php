@@ -26,6 +26,8 @@
                 <x-item-sidebar icon="map" ruta="corrida.index" texto="Corridas" />
                 <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" />
                 <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" />
+                <x-item-sidebar icon="users" ruta="usuario.index" texto="Usuarios" />
+
             </flux:sidebar.group>
 
         </flux:sidebar.nav>

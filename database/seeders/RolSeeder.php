@@ -184,6 +184,8 @@ class RolSeeder extends Seeder
 
         $admin = User::factory()->create([
             'name' => 'Admin User',
+            'apellido_paterno' => 'Administrador',
+            'apellido_materno' => 'Principal',
             'email' => 'admin@example.com',
         ]);
         $admin->assignRole($admin_role);
