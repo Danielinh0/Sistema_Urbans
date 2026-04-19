@@ -4,6 +4,10 @@
     'texto' => '',
 ])
 
+@php
+    $isCurrent = request()->routeIs($ruta);
+@endphp
+
 <flux:sidebar.item
     class="h-8.5 border border-transparent transition duration-300 ease-in-out
            hover:bg-azul_rebajado! hover:translate-x-2.5 hover:!text-azul_menu
@@ -12,9 +16,9 @@
            hover:data-current:!text-white
            [&_[data-flux-icon]]:!size-5"
     :icon="$icon"
-    :href="route($ruta)"
-    :current="request()->routeIs($ruta)"
-    wire:navigate
+    :href="$isCurrent ? null : route($ruta)"
+    :current="$isCurrent"
+    :wire:navigate="!$isCurrent"
 >
     {{ __($texto) }}
 </flux:sidebar.item>
