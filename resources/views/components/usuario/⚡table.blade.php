@@ -42,14 +42,24 @@ new class extends Component
     public function usuarios(){
         $allowedSorts = ['id_usuario', 'name', 'email', 'id_sucursal', 'rol_nombre'];
         $sortColumn = in_array($this->sortBy, $allowedSorts, true) ? $this->sortBy : 'id_usuario';
+        $search = trim($this->search);
         return User::query()
             ->with(['sucursal', 'direccion.calle.colonia.codigoPostal.estado.pais'])
             ->withMin('roles as rol_nombre', 'name')
-            ->when($this->search !== '', function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
-                $query->orWhere('apellido_paterno', 'like', '%' . $this->search . '%');
-                $query->orWhere('apellido_materno', 'like', '%' . $this->search . '%');
-            })
+            ->when($this->search !== '', function ($query) use ($search){
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'ILIKE', "%{$search}%")
+                ->orWhere('apellido_paterno', 'ILIKE', "%{$search}%")
+                ->orWhere('apellido_materno', 'ILIKE', "%{$search}%")
+                ->orWhere('email', 'ILIKE', "%{$search}%")
+                ->orWhereHas('sucursal', function($sq) use ($search){
+                    $sq->where('nombre', 'ILIKE', "%{$search}%");
+                })
+                ->orWhereHas('roles', function($rq) use ($search){
+                    $rq->where('name', 'ILIKE', "%{$search}%");
+                });
+            });
+        })
             ->orderBy($sortColumn, $this->sortDirection)
             ->paginate(10);
     }
@@ -57,6 +67,7 @@ new class extends Component
 ?>
 
 <div>
+    <livewire:barra-busqueda placeholder="Busca un usuario..." />
     <div>
         <flux:card>
             <flux:table :paginate="$this->usuarios">
