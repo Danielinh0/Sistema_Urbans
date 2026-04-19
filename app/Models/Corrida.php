@@ -56,11 +56,6 @@ class Corrida extends Model
         return $this->hasMany(Boleto::class, 'id_corrida', 'id_corrida');
     }
 
-    public function urbans(): BelongsToMany
-    {
-        return $this->belongsToMany(Urban::class, 'urban_corrida', 'id_corrida', 'id_urban');
-    }
-
     public function urban(): BelongsTo
     {
         return $this->belongsTo(Urban::class, 'id_urban', 'id_urban');
