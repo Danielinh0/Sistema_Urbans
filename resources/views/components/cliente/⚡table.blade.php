@@ -40,9 +40,14 @@ new class extends Component
 
     #[Computed]
     public function clientes(){
+        $search = trim($this->search);
         return Cliente::query()
-            ->when($this->search !== '', function ($query) {
-                $query->whereRaw('LOWER(nombre) like ?', ['%'.strtolower($this->search).'%']);
+            ->when($this->search !== '', function ($query) use ($search){
+                $query->where(function ($q) use ($search){
+                    $q->where('nombre', 'ILIKE', "%{$search}%")
+                    ->orWhere('apellido_paterno', 'ILIKE', "%{$search}%")
+                    ->orWhere('apellido_materno','ILIKE', "%{$search}%");
+                });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(10);
@@ -51,6 +56,7 @@ new class extends Component
 ?>
 
 <div>
+    <livewire:barra-busqueda placeholder="Buscar un Cliente..." />
     <div>
         <flux:card>
             <flux:table :paginate="$this->clientes">

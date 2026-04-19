@@ -67,7 +67,7 @@ new class extends Component
 ?>
 
 <div>
-    <livewire:barra-busqueda placeholder="Busca un usuario..." />
+    <livewire:barra-busqueda placeholder="Busca un Usuario..." />
     <div>
         <flux:card>
             <flux:table :paginate="$this->usuarios">
