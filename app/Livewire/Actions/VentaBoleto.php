@@ -279,17 +279,14 @@ class VentaBoleto extends Component
             return;
         }
 
-        // 1. Obtenemos los asientos ocupados para ESTA corrida específica.
-        // Relacionamos BoletoCliente -> Boleto para filtrar por id_corrida y estado.
         $asientosOcupadosMap = BoletoCliente::whereHas('boleto', function ($query) use ($corrida) {
             $query->where('id_corrida', $corrida->id_corrida)
                 ->whereIn('estado', ['activo', 'apartado']);
         })
-            ->with('boleto:id_boleto,estado') // Cargamos el estado del boleto
+            ->with('boleto:id_boleto,estado')
             ->get()
-            ->keyBy('id_asiento'); // Usamos el id_asiento como llave para búsqueda rápida
+            ->keyBy('id_asiento');
 
-        // 2. Traemos la lista maestra de asientos de la unidad (Urban)
         $todosAsientos = Asiento::where('id_urban', $corrida->urban->id_urban)
             ->orderBy('nombre')
             ->get();
@@ -298,27 +295,27 @@ class VentaBoleto extends Component
         $asientosPlano = [];
 
         foreach ($todosAsientos as $a) {
-            // --- Lógica de Posicionamiento (A01, A02, etc.) ---
-            $numero = (int) substr($a->nombre, 1);
-            if ($numero <= 12) {
-                $fila = (string) ceil($numero / 3);
-                $posicion = ($numero - 1) % 3 + 1;
-                $lado = ($posicion <= 2) ? 'left' : 'right';
+            // Extraer solo el número del nombre (ej: "A01" -> 1)
+            $numero = (int) filter_var($a->nombre, FILTER_SANITIZE_NUMBER_INT);
+
+            // --- Lógica de Posicionamiento Especial ---
+            if ($numero == 3) {
+                $fila = 0;
+                $lado = 'right';
+            } elseif ($numero <= 15) {
+                $fila = (int) ceil($numero / 3);
+                $posicionEnFila = ($numero - 1) % 3;
+
+                $lado = ($posicionEnFila < 2) ? 'left' : 'right';
             } else {
-                $fila = '5';
-                $posicion = $numero - 12;
-                $lado = ($posicion <= 4) ? 'left' : 'right';
+                $fila = 6;
+                $posicionUltimaFila = $numero - 16;
+                $lado = ($posicionUltimaFila < 2) ? 'left' : 'right';
             }
-
-            // --- Determinación del Estado ---
+            // 2. Estado del asiento
             $estadoFinal = 'libre';
-
-            // Verificamos si este ID de asiento existe en nuestro mapa de boletos de la corrida
             if ($asientosOcupadosMap->has($a->id_asiento)) {
-                $boletoRelacionado = $asientosOcupadosMap->get($a->id_asiento)->boleto;
-
-                // Mapeamos el estado del boleto al estado del asiento para la UI
-                $estadoFinal = match (strtolower($boletoRelacionado->estado)) {
+                $estadoFinal = match (strtolower($asientosOcupadosMap->get($a->id_asiento)->boleto->estado)) {
                     'activo'   => 'ocupado',
                     'apartado' => 'apartado',
                     default    => 'libre',
@@ -331,12 +328,16 @@ class VentaBoleto extends Component
                 'estado' => $estadoFinal,
             ];
 
-            $asientosPlano[] = $datosAsiento;
+            // 3. Organizar en el array (Aseguramos que las llaves existan)
+            if (!isset($organizados[$fila])) {
+                $organizados[$fila] = ['left' => [], 'right' => []];
+            }
+
             $organizados[$fila][$lado][] = $datosAsiento;
+            $asientosPlano[] = $datosAsiento;
         }
 
-        ksort($organizados, SORT_NUMERIC);
-
+        ksort($organizados);
         $this->asientosOrganizados = $organizados;
         $this->asientos = $asientosPlano;
     }

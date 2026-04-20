@@ -223,26 +223,48 @@
                                     rounded-r-lg border border-gray-400 dark:border-neutral-500 shadow-sm"></div>
 
                         {{-- Puerta deslizante (visual) --}}
-                        <div class="absolute -right-1 top-1/2 translate-y-2 w-1.5 h-16
+                        <div class="absolute -right-1 top-1/4 w-1.5 h-16
                                     bg-gray-400 dark:bg-neutral-500 rounded-r-lg"></div>
 
-                        {{-- Área del conductor --}}
-                        <div class="flex items-center gap-3 mb-3 mt-1">
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700
-                                            flex items-center justify-center shadow-md">
-                                    <flux:icon.bus class="size-6 text-white" />
+                        {{-- Área del conductor y Copiloto (Fila 0) --}}
+                        <div class="flex items-center justify-between mb-3 mt-1">
+                            {{-- Lado Conductor --}}
+                            <div class="flex items-center gap-3">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700
+                        flex items-center justify-center shadow-md">
+                                        <flux:icon.bus class="size-6 text-white" />
+                                    </div>
+                                    <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Conductor</span>
                                 </div>
-                                <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Conductor</span>
+                                @if($corridaData && $corridaData['chofer'])
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
+                                        {{ $corridaData['chofer'] }}
+                                    </p>
+                                </div>
+                                @endif
                             </div>
-                            @if($corridaData && $corridaData['chofer'])
-                            <div>
-                                <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
-                                    {{ $corridaData['chofer'] }}
-                                </p>
-                                <p class="text-[10px] text-gray-400 dark:text-gray-500">{{ $corridaData['codigo_urban'] }}</p>
+
+                            {{-- Lado Copiloto (Aquí va el Asiento 3) --}}
+                            <div class="flex flex-col items-center gap-1">
+                                @if(isset($asientosOrganizados[0]['right'][0]))
+                                @php
+                                $seat = $asientosOrganizados[0]['right'][0];
+                                $sc = match(true) {
+                                $asientoId === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10',
+                                $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed',
+                                $seat['estado'] === 'apartado'=> 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed',
+                                default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer',
+                                };
+                                @endphp
+                                <button wire:click="seleccionarAsiento({{ $seat['id'] }})"
+                                    class="relative w-11 h-11 rounded-xl text-[11px] font-bold border-2 transition-all duration-150 flex items-center justify-center {{ $sc }}"
+                                    @if(in_array($seat['estado'], ['ocupado','apartado'])) disabled @endif>
+                                    {{ $seat['nombre'] }}
+                                </button>
+                                @endif
                             </div>
-                            @endif
                         </div>
 
                         {{-- Divisor pasajeros / conductor --}}
@@ -251,8 +273,9 @@
                         {{-- Filas de asientos --}}
                         <div class="space-y-3 relative z-10">
                             @foreach($asientosOrganizados as $fila => $lados)
+                            @continue($fila == 0)
+
                             @php
-                            // Verificamos si es la última fila (generalmente de 4 asientos juntos sin pasillo)
                             $totalEnFila = count($lados['left']) + count($lados['right']);
                             $esFilaTrasera = $totalEnFila >= 4;
                             @endphp
