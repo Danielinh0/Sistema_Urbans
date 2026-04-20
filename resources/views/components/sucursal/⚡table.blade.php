@@ -56,7 +56,6 @@ new class extends Component
 ?>
 
 <div>
-    <livewire:barra-busqueda placeholder="Buscar una Sucursal" />
     <div>
         <livewire:barra-busqueda placeholder="Buscar por nombre de sucursal"/>
         <flux:card>
