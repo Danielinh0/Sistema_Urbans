@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    
+
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
     use HasRoles;
 
@@ -32,7 +32,7 @@ class User extends Authenticatable
     protected $keyType = 'int';
 
 
-    
+
     protected $fillable = [
         'id_sucursal',
         'id_direccion',
@@ -77,7 +77,7 @@ class User extends Authenticatable
         return Str::of($fullName)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -101,5 +101,14 @@ class User extends Authenticatable
     public function turnos(): HasMany
     {
         return $this->hasMany(Turno::class, 'id_usuario', 'id_usuario');
+    }
+
+
+    public function turnoActivo()
+    {
+        return $this->hasOne(Turno::class, 'id_usuario', 'id_usuario')
+            //->whereNull('hora_fin')
+            ->whereDate('fecha', now()->toDateString())
+            ->latest('id_turno');
     }
 }

@@ -178,17 +178,28 @@ class VentaBoleto extends Component
             'nombreCompleto.min'      => 'El nombre debe tener al menos 3 caracteres.',
         ]);
 
+        //// Agregar que se abra un turno al iniciar el dia y se termine al cerrar sesion
+
         try {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
 
-            $idUsuarioLogueado = Auth::id();
+            // 1. Validar Rol
+            if (!$user->hasRole('cajero')) {
+                throw new \Exception("Acceso denegado: Solo los cajeros pueden realizar ventas.");
+            }
 
-            $turnoActivo = \App\Models\Turno::where('id_usuario', $idUsuarioLogueado)
-                ->latest('id_turno')
-                ->first();
+            // 2. Obtener el turno activo usando la relación
+            $turnoActivo = $user->turnoActivo;
 
             if (!$turnoActivo) {
-                throw new \Exception("No tienes un turno abierto.");
+                // Aquí puedes decidir si lanzas excepción o rediriges
+                throw new \Exception("No se encontró un turno abierto");
             }
+
+            // 3. (Opcional) Validar que la taquilla del turno esté operativa
+            $taquilla = $turnoActivo->taquilla;
+
             $clienteId = $this->resolverCliente();
 
             $boleto = Boleto::create([
@@ -223,18 +234,33 @@ class VentaBoleto extends Component
             'corridaId'      => 'required',
             'asientoId'      => 'required',
             'nombreCompleto' => 'required|min:3',
+        ], [
+            'corridaId.required'      => 'Selecciona una corrida.',
+            'asientoId.required'      => 'Selecciona un asiento.',
+            'nombreCompleto.required' => 'Ingresa el nombre del pasajero.',
         ]);
 
         try {
-            $idUsuarioLogueado = Auth::id();
 
-            $turnoActivo = \App\Models\Turno::where('id_usuario', $idUsuarioLogueado)
-                ->latest('id_turno')
-                ->first();
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+
+            // 1. Validar Rol
+            if (!$user->hasRole('cajero')) {
+                throw new \Exception("Acceso denegado: Solo los cajeros pueden realizar ventas.");
+            }
+
+            // 2. Obtener el turno activo usando la relación
+            $turnoActivo = $user->turnoActivo;
 
             if (!$turnoActivo) {
-                throw new \Exception("No tienes un turno abierto.");
+                // Aquí puedes decidir si lanzas excepción o rediriges
+                throw new \Exception("No se encontró un turno abierto");
             }
+
+            // 3. (Opcional) Validar que la taquilla del turno esté operativa
+            $taquilla = $turnoActivo->taquilla;
+
             $clienteId = $this->resolverCliente();
 
             $boleto = Boleto::create([

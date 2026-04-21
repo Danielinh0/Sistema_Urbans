@@ -18,6 +18,9 @@ use App\Http\Controllers\{
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/turno/abrir', function () {
+        return view('turno.create');
+    })->name('turno.create');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('asiento')->group(function () {
