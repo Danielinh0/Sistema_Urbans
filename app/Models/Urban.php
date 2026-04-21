@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Urban extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'urban';
     protected $primaryKey = 'id_urban';
     public $timestamps = false;
@@ -35,5 +36,12 @@ class Urban extends Model
     public function corrida(): HasMany
     {
         return $this->hasMany(Corrida::class, 'id_urban', 'id_urban');
+    }
+
+    public function scopeConViajesPendientes($query)
+    {
+        return $query->whereHas('corrida', function ($q) {
+            $q->where('hora_llegada', '>=', now());
+        });
     }
 }
