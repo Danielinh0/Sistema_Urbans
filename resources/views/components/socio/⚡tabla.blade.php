@@ -13,6 +13,7 @@ new class extends Component {
     public $sortDirection = 'asc';
     public $search = '';
     public $perPage = 6;
+    public $filtroEstado = '';
 
     public function sort($column)
     {
@@ -39,6 +40,13 @@ new class extends Component {
         $this->resetPage();
     }
 
+    #[On('filterUpdated')]
+    public function updateFilter($name, $value)
+    {
+        $this->filtroEstado = $value;
+        $this->resetPage();
+    }
+
     #[Computed]
     public function socios()
     {
@@ -47,6 +55,9 @@ new class extends Component {
             ->when($this->search !== '', function ($query) {
                 $query->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
             })
+            ->when($this->filtroEstado !== '', function ($query) {
+                $query->where('estado', $this->filtroEstado);
+            })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
     }
@@ -54,7 +65,12 @@ new class extends Component {
 ?>
 
 <div>
-    <livewire:barra-busqueda placeholder="Busca un socio por su nombre..." />
+    <livewire:barra-busqueda placeholder="Busca un socio por su nombre..." :filters="[
+        'estado' => [
+            'label' => 'Estado',
+            'options' => ['Activo' => 'Activo', 'Inactivo' => 'Inactivo']
+        ]
+    ]" />
 
     <flux:card>
         <flux:table :paginate="$this->socios" horizontal>

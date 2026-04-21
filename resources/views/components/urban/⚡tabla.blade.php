@@ -13,6 +13,8 @@ new class extends Component {
     public $sortDirection = 'asc';
     public $search = '';
     public $perPage = 6;
+    public $filtroAsientos = '';
+    public $filtroEstado = '';
 
     public function sort($column)
     {
@@ -39,13 +41,39 @@ new class extends Component {
         $this->resetPage();
     }
 
+    #[On('filterUpdated')]
+    public function updateFilter($name, $value)
+    {
+        if ($name === 'numero_asientos') {
+            $this->filtroAsientos = $value;
+        }
+        if ($name === 'estado_viaje') {
+            $this->filtroEstado = $value;
+        }
+        $this->resetPage();
+    }
+
     #[Computed]
     public function urbans()
     {
         return Urban::query()
-            ->with('socio:id_socio,nombre,apellido_paterno,apellido_materno')
+            ->with('socio')
             ->when($this->search !== '', function ($query) {
                 $query->whereRaw('LOWER(codigo_urban) like ?', ['%' . strtolower($this->search) . '%']);
+            })
+            ->when($this->filtroEstado === 'ocupado', function ($query) {
+                $query->conViajesPendientes();
+            })
+            ->when($this->filtroEstado === 'libre', function ($query) {
+                $query->whereDoesntHave('corrida', function ($q) {
+                    $q->where('hora_llegada', '>=', now());
+                });
+            })
+            ->when($this->filtroAsientos === '10', function ($query) {
+                $query->where('numero_asientos', '>=', 10)->where('numero_asientos', '<=', 20);
+            })
+            ->when($this->filtroAsientos === '20', function ($query) {
+                $query->where('numero_asientos', '>=', 20)->where('numero_asientos', '<=', 30);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
@@ -54,7 +82,19 @@ new class extends Component {
 ?>
 
 <div>
-    <livewire:barra-busqueda placeholder="Busca una urban por su código..." />
+    <livewire:barra-busqueda placeholder="Busca una urban por su código..." :filters="[
+        'numero_asientos' => [
+            'label' => 'Asientos',
+            'options' => [
+                '10' => '10 - 20 asientos',
+                '20' => '20 - 30 asientos'
+            ]
+        ],
+        'estado_viaje' => [
+            'label' => 'Disponibilidad',
+            'options' => ['ocupado' => 'En viaje / Pendiente', 'libre' => 'Sin viajes próximos']
+        ]
+    ]" />
     <flux:card>
         <flux:table :paginate="$this->urbans" horizontal class="w-full">
             <flux:table.columns>
