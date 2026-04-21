@@ -9,9 +9,9 @@ new class extends Component {
     public $filter = '';
     public $filtrosSeleccionados = [];
 
-    public function updatedFiltrosSeleccionados($value, $key)
+    public function updatedFiltrosSeleccionados()
     {
-        $this->dispatch('filterUpdated', name: $key, value: $value);
+        $this->dispatch('filterUpdated', filters: $this->filtrosSeleccionados);
     }
 
 };

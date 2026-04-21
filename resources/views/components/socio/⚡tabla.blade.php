@@ -41,9 +41,9 @@ new class extends Component {
     }
 
     #[On('filterUpdated')]
-    public function updateFilter($name, $value)
+    public function aplicarFiltros($filters)
     {
-        $this->filtroEstado = $value;
+        $this->filtroEstado = $filters['estado'] ?? '';
         $this->resetPage();
     }
 

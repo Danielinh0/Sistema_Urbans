@@ -42,14 +42,10 @@ new class extends Component {
     }
 
     #[On('filterUpdated')]
-    public function updateFilter($name, $value)
+    public function aplicarFiltro($filters)
     {
-        if ($name === 'numero_asientos') {
-            $this->filtroAsientos = $value;
-        }
-        if ($name === 'estado_viaje') {
-            $this->filtroEstado = $value;
-        }
+        $this->filtroEstado = $filters['estado_viaje'] ?? '';
+        $this->filtroAsientos = $filters['numero_asientos'] ?? '';
         $this->resetPage();
     }
 
