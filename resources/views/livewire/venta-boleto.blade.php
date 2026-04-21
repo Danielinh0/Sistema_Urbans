@@ -428,30 +428,6 @@
                 </div>
             </div>
 
-            {{-- Aborda / Baja --}}
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Aborda en
-                    </flux:label>
-                    <flux:input wire:model="abordarEn" placeholder="Origen…">
-                        <x-slot name="iconLeading">
-                            <flux:icon.map-pin-pen class="size-4" />
-                        </x-slot>
-                    </flux:input>
-                </div>
-                <div>
-                    <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Baja en
-                    </flux:label>
-                    <flux:input wire:model="bajarEn" placeholder="Destino…">
-                        <x-slot name="iconLeading">
-                            <flux:icon.map-pin-x class="size-4" />
-                        </x-slot>
-                    </flux:input>
-                </div>
-            </div>
-
             {{-- Categoría / Descuento --}}
             <div>
                 <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
