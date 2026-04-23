@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('monto_final', 12, 2)->nullable();
             $table->date('fecha');
             $table->time('hora_inicio');
-            $table->time('hora_fin');
+            $table->time('hora_fin')->nullable();
         });
     }
 

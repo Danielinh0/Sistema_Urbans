@@ -9,7 +9,7 @@
     <flux:sidebar sticky collapsible="mobile"
         class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.header>
-            
+
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
 
             <flux:sidebar.collapse class="lg:hidden" />
@@ -20,13 +20,18 @@
 
             <flux:sidebar.group :heading="__('Menu principal')" class="grid gap-4">
                 <x-item-sidebar icon="home" ruta="dashboard" texto="Dashboard" />
-                <x-item-sidebar icon="map-pinned" ruta="ruta.index" texto="Rutas" />
+                <x-item-sidebar icon="map-pinned" ruta="ruta.index" texto="Rutas" :disabled="!$hayTurnoActivo" />
+                @if(auth()->user()->hasRole('admin'))
                 <x-item-sidebar icon="user-round" ruta="socio.index" texto="Socios" />
                 <x-item-sidebar icon="bus" ruta="urban.index" texto="Urbans" />
-                <x-item-sidebar icon="map" ruta="corrida.index" texto="Corridas" />
-                <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" />
-                <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" />
                 <x-item-sidebar icon="users" ruta="usuario.index" texto="Usuarios" />
+                @endif
+                <x-item-sidebar icon="map" ruta="corrida.index" texto="Corridas" :disabled="!$hayTurnoActivo" />
+                <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" :disabled="!$hayTurnoActivo" />
+                <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" :disabled="!$hayTurnoActivo" />
+
+
+
 
             </flux:sidebar.group>
 

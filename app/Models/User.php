@@ -107,7 +107,7 @@ class User extends Authenticatable
     public function turnoActivo()
     {
         return $this->hasOne(Turno::class, 'id_usuario', 'id_usuario')
-            //->whereNull('hora_fin')
+            ->whereNull('hora_fin')
             ->whereDate('fecha', now()->toDateString())
             ->latest('id_turno');
     }

@@ -36,16 +36,13 @@ new class extends Component
             return redirect()->route('dashboard');
         }
 
-        $ahora = now();
-        $horaFinSugerida = $ahora->copy()->addHours(8);
 
         Turno::create([
             'id_usuario' => Auth::user()->id_usuario,
             'id_taquilla' => $this->id_taquilla,
             'monto_inicial' => $this->monto_inicial,
             'fecha' => now()->toDateString(),
-            'hora_inicio' => now()->toTimeString(),
-            'hora_fin' => $horaFinSugerida->toTimeString(),
+            'hora_inicio' => now()->toTimeString()
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Turno abierto con éxito.');

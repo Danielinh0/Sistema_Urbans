@@ -1,11 +1,12 @@
 @props([
-    'icon' => '',
-    'ruta' => '',
-    'texto' => '',
+'icon' => '',
+'ruta' => '',
+'texto' => '',
+'disabled' => false,
 ])
 
 @php
-    $isCurrent = request()->routeIs($ruta);
+$isCurrent = request()->routeIs($ruta);
 @endphp
 
 <flux:sidebar.item
@@ -16,9 +17,9 @@
            hover:data-current:!text-white
            [&_[data-flux-icon]]:!size-5"
     :icon="$icon"
-    :href="$isCurrent ? null : route($ruta)"
+    :href="$disabled ? '#' : route($ruta)"
     :current="$isCurrent"
-    :wire:navigate="!$isCurrent"
->
+    :disabled="$disabled"
+    :wire:navigate="!$isCurrent">
     {{ __($texto) }}
 </flux:sidebar.item>
