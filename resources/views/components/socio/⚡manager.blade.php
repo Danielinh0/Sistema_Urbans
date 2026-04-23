@@ -13,7 +13,7 @@ new class extends Component {
     #[Validate('max:18', message: 'El nombre debe tener como maximo 18 caracteres.')]
     #[Validate('regex:/^[\pL\s\-]+$/u', message: 'El nombre debe contener solo letras.')]
     public $nombre;
-
+    #[Validate('', message: '')]
     #[Validate('nullable', message: '')]
     #[Validate('min:3', message: 'El apellido paterno debe tener al menos 3 caracteres.')]
     #[Validate('max:12', message: 'El apellido paterno debe tener como maximo 12 caracteres.')]
@@ -38,7 +38,8 @@ new class extends Component {
     #[Validate('min:10', message: 'El número telefónico debe tener al menos 10 dígitos.')]
     public $numero_telefonico;
 
-    #[Validate('nullable|email', message: 'El correo debe ser un correo válido.')]
+    #[Validate('nullable')]
+    #[Validate('email', message: 'Ingresa un correo valido')]
     public $correo;
 
     #[On('preparar-edicion-socio')]

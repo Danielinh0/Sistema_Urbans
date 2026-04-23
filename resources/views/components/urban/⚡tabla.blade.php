@@ -115,7 +115,7 @@ new class extends Component {
             <flux:table.rows>
                 @forelse ($this->urbans as $urban)
                     <flux:table.row :key="$urban->id_urban">
-                        <flux:table.cell>{{ $urban->id_urban }}</flux:table.cell>
+                        <flux:table.cell class="w-20">{{ $urban->id_urban }}</flux:table.cell>
                         <flux:table.cell variant="strong">
                             <flux:badge color="orange">{{ $urban->codigo_urban }}</flux:badge>
                         </flux:table.cell>
@@ -134,9 +134,9 @@ new class extends Component {
                             </flux:button>
 
                             {{-- Botón Eliminar --}}
-                            <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                            <flux:button variant="ghost" icon="chevron-double-down" class="!text-rojo_texto"
                                 wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
-                                <span class="hidden md:inline ml-1">Eliminar</span>
+                                <span class="hidden md:inline ml-1">Suspender</span>
                             </flux:button>
                         </flux:table.cell>
                     </flux:table.row>
