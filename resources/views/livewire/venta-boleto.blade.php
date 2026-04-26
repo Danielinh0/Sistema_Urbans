@@ -1,22 +1,5 @@
 <div class="space-y-6 pb-10">
 
-    {{-- ── Flash ──────────────────────────────────────────────── --}}
-    @if($flashMsg)
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
-        {{ $flashType === 'success'
-            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-            : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' }}"
-        wire:key="flash">
-        @if($flashType === 'success')
-        <flux:icon.circle-plus class="size-5 shrink-0" />
-        @else
-        <flux:icon.circle-minus class="size-5 shrink-0" />
-        @endif
-        {{ $flashMsg }}
-        <button wire:click="$set('flashMsg', '')" class="ml-auto opacity-60 hover:opacity-100">✕</button>
-    </div>
-    @endif
-
     {{-- ── 1. Buscador ─────────────────────────────────────────── --}}
     <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6">
         <h3 class="flex items-center gap-2 font-bold text-gray-800 dark:text-white text-base mb-5">
@@ -30,7 +13,7 @@
                 <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     Fecha de Viaje
                 </flux:label>
-                <flux:input type="date" wire:model.live="filtroFecha" />
+                <flux:input x-bind:min="new Date().toISOString().split('T')[0]" type="date" wire:model.live="filtroFecha" />
             </div>
             <div>
                 <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -510,5 +493,40 @@
         </div>{{-- /form card --}}
     </div>{{-- /grid --}}
     @endif
+
+    {{-- ── Toast notification ──────────────────────────────────── --}}
+    @if($flashMsg)
+    <div
+        x-data="{ visible: true }"
+        x-init="setTimeout(() => { visible = false; $wire.set('flashMsg', '') }, 4000)"
+        x-show="visible"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-4"
+        wire:key="toast-{{ $flashMsg }}"
+        class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl text-sm font-medium max-w-sm
+        {{ $flashType === 'success'
+            ? 'bg-emerald-50 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700'
+            : 'bg-red-50 dark:bg-red-900/80 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700' }}">
+        @if($flashType === 'success')
+        <flux:icon.circle-plus class="size-5 shrink-0 text-emerald-500" />
+        @else
+        <flux:icon.circle-minus class="size-5 shrink-0 text-red-500" />
+        @endif
+
+        <span class="flex-1">{{ $flashMsg }}</span>
+
+        <button
+            x-on:click="visible = false; $wire.set('flashMsg', '')"
+            class="ml-1 opacity-50 hover:opacity-100 transition-opacity">
+            <flux:icon.x class="size-4" />
+        </button>
+    </div>
+    @endif
+
+
 
 </div>

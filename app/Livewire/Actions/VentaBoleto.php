@@ -178,45 +178,57 @@ class VentaBoleto extends Component
             'nombreCompleto.min'      => 'El nombre debe tener al menos 3 caracteres.',
         ]);
 
-        //// Agregar que se abra un turno al iniciar el dia y se termine al cerrar sesion
-
         try {
             /** @var \App\Models\User $user */
             $user = Auth::user();
 
-            // 1. Validar Rol
             if (!$user->hasRole('cajero')) {
                 throw new \Exception("Acceso denegado: Solo los cajeros pueden realizar ventas.");
             }
 
-            // 2. Obtener el turno activo usando la relación
             $turnoActivo = $user->turnoActivo;
-
             if (!$turnoActivo) {
-                // Aquí puedes decidir si lanzas excepción o rediriges
-                throw new \Exception("No se encontró un turno abierto");
+                throw new \Exception("No se encontró un turno abierto.");
             }
 
-            // 3. (Opcional) Validar que la taquilla del turno esté operativa
-            $taquilla = $turnoActivo->taquilla;
+            \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
+                $clienteId = $this->resolverCliente();
+                $tarifa    = (float) ($this->corridaData['tarifa_raw'] ?? 0);
+                $subtotal  = $tarifa;
+                $total     = max(0, $tarifa - $this->descuento);
 
-            $clienteId = $this->resolverCliente();
+                // 1. Venta
+                $venta = \App\Models\Venta::create([
+                    'id_cliente' => $clienteId,
+                    'subtotal'   => (int) round($subtotal),
+                    'descuento'  => (int) round($this->descuento),
+                    'total'      => (int) round($total),
+                    'fecha'      => today(),
+                ]);
 
-            $boleto = Boleto::create([
-                'id_corrida'   => $this->corridaId,
-                'id_cliente'   => $clienteId,
-                'id_turno'     => $turnoActivo->id_turno,
-                'folio'        => $this->folio,
-                'estado'       => 'activo',
-                'tipo_de_pago' => $this->tipoPago,
-                'descuento'    => $this->descuento,
-            ]);
+                // 2. DetalleVenta
+                $detalle = \App\Models\DetalleVenta::create([
+                    'id_venta' => $venta->id_venta,
+                ]);
 
-            BoletoCliente::create([
-                'id_boleto'     => $boleto->id_boleto,
-                'id_asiento'    => $this->asientoId,
-                'peso_equipaje' => $this->pesoEquipaje ?: 0,
-            ]);
+                // 3. Boleto
+                $boleto = \App\Models\Boleto::create([
+                    'id_corrida'       => $this->corridaId,
+                    'id_cliente'       => $clienteId,
+                    'id_detalle_venta' => $detalle->id_detalle_venta,
+                    'folio'            => $this->folio,
+                    'estado'           => 'activo',
+                    'tipo_de_pago'     => $this->tipoPago,
+                    'descuento'        => $this->descuento,
+                ]);
+
+                // 4. BoletoCliente
+                \App\Models\BoletoCliente::create([
+                    'id_boleto'     => $boleto->id_boleto,
+                    'id_asiento'    => $this->asientoId,
+                    'peso_equipaje' => $this->pesoEquipaje ?: 0,
+                ]);
+            });
 
             $this->flashMsg  = "✓ Boleto {$this->folio} registrado correctamente.";
             $this->flashType = 'success';
@@ -241,43 +253,51 @@ class VentaBoleto extends Component
         ]);
 
         try {
-
             /** @var \App\Models\User $user */
             $user = Auth::user();
 
-            // 1. Validar Rol
             if (!$user->hasRole('cajero')) {
                 throw new \Exception("Acceso denegado: Solo los cajeros pueden realizar ventas.");
             }
 
-            // 2. Obtener el turno activo usando la relación
             $turnoActivo = $user->turnoActivo;
-
             if (!$turnoActivo) {
-                // Aquí puedes decidir si lanzas excepción o rediriges
-                throw new \Exception("No se encontró un turno abierto");
+                throw new \Exception("No se encontró un turno abierto.");
             }
 
-            // 3. (Opcional) Validar que la taquilla del turno esté operativa
-            $taquilla = $turnoActivo->taquilla;
+            \Illuminate\Support\Facades\DB::transaction(function () {
+                $clienteId = $this->resolverCliente();
+                $tarifa    = (float) ($this->corridaData['tarifa_raw'] ?? 0);
 
-            $clienteId = $this->resolverCliente();
+                // Venta con total 0 — pago pendiente al confirmar
+                $venta = \App\Models\Venta::create([
+                    'id_cliente' => $clienteId,
+                    'subtotal'   => (int) round($tarifa),
+                    'descuento'  => 0,
+                    'total'      => 0,
+                    'fecha'      => today(),
+                ]);
 
-            $boleto = Boleto::create([
-                'id_corrida'   => $this->corridaId,
-                'id_cliente'   => $clienteId,
-                'id_turno'     => $turnoActivo->id_turno,
-                'folio'        => $this->folio,
-                'estado'       => 'apartado',
-                'tipo_de_pago' => $this->tipoPago ?: 'Pendiente',
-                'descuento'    => $this->descuento,
-            ]);
+                $detalle = \App\Models\DetalleVenta::create([
+                    'id_venta' => $venta->id_venta,
+                ]);
 
-            BoletoCliente::create([
-                'id_boleto'     => $boleto->id_boleto,
-                'id_asiento'    => $this->asientoId,
-                'peso_equipaje' => $this->pesoEquipaje ?: 0,
-            ]);
+                $boleto = \App\Models\Boleto::create([
+                    'id_corrida'       => $this->corridaId,
+                    'id_cliente'       => $clienteId,
+                    'id_detalle_venta' => $detalle->id_detalle_venta,
+                    'folio'            => $this->folio,
+                    'estado'           => 'apartado',
+                    'tipo_de_pago'     => 'Pendiente',
+                    'descuento'        => 0,
+                ]);
+
+                \App\Models\BoletoCliente::create([
+                    'id_boleto'     => $boleto->id_boleto,
+                    'id_asiento'    => $this->asientoId,
+                    'peso_equipaje' => $this->pesoEquipaje ?: 0,
+                ]);
+            });
 
             $this->flashMsg  = "⏳ Asiento apartado — Folio: {$this->folio}";
             $this->flashType = 'success';
@@ -288,6 +308,10 @@ class VentaBoleto extends Component
             $this->flashType = 'error';
         }
     }
+
+
+
+
 
     public function cancelar(): void
     {
