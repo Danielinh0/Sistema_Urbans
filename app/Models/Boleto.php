@@ -16,7 +16,7 @@ class Boleto extends Model
 
     protected $fillable = [
         'id_corrida',
-        'id_turno',
+        'id_detalle_venta',
         'id_cliente',
         'folio',
         'estado',
@@ -35,19 +35,9 @@ class Boleto extends Model
         return $this->belongsTo(Corrida::class, 'id_corrida', 'id_corrida');
     }
 
-    public function turno(): BelongsTo
-    {
-        return $this->belongsTo(Turno::class, 'id_turno', 'id_turno');
-    }
-
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(Cliente::class, 'id_cliente', 'id_cliente');
-    }
-
-    public function ventas(): HasMany
-    {
-        return $this->hasMany(Venta::class, 'id_boleto', 'id_boleto');
     }
 
     public function boletoCliente(): HasOne
@@ -58,5 +48,10 @@ class Boleto extends Model
     public function boletoPaquete(): HasOne
     {
         return $this->hasOne(BoletoPaquete::class, 'id_boleto', 'id_boleto');
+    }
+
+    public function detalleVenta(): BelongsTo
+    {
+        return $this->belongsTo(DetalleVenta::class, 'id_detalle_venta', 'id_detalle_venta');
     }
 }

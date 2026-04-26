@@ -24,7 +24,7 @@ new class extends Component {
     public $numero_asientos;
 
     #[Validate('required', message: 'El socio es requerido.')]
-    public $id_socio;
+    public $id_socio = '';
 
     #[Validate('required', message: 'La placa es requerida.')]
     #[Validate('min:3', message: 'La placa debe tener al menos 3 caracteres.')]
@@ -33,6 +33,9 @@ new class extends Component {
     #[On('preparar-edicion-urban')]
     public function prepararEdicion($id)
     {
+        $this->resetErrorBag();
+        session()->forget('error');
+
         $this->urban = Urban::findOrFail($id);
         $this->codigo_urban = $this->urban->codigo_urban;
         $this->numero_asientos = $this->urban->numero_asientos;
@@ -45,6 +48,9 @@ new class extends Component {
     #[On('preparar-eliminacion-urban')]
     public function prepararEliminacion($id)
     {
+        $this->resetErrorBag();
+        session()->forget('error');
+
         $this->urban = Urban::findOrFail($id);
         $this->js("Flux.modal('modal-eliminar-urban').show()");
     }
@@ -53,6 +59,11 @@ new class extends Component {
     {
         $this->validate();
 
+        if ($this->tieneViajesPendientes()) {
+            session()->flash('error', 'No puedes editar este vehículo porque tiene corridas pendientes o  en curso.');
+            return;
+        }
+
         $this->urban->update([
             'codigo_urban' => $this->codigo_urban,
             'numero_asientos' => $this->numero_asientos,
@@ -60,14 +71,41 @@ new class extends Component {
             'placa' => $this->placa,
         ]);
 
-        Asiento::where('id_urban', $this->urban->id_urban)->delete();
+        // 1. Buscamos TODOS los asientos (incluyendo los "borrados" anteriormente)
+        $todosLosAsientos = Asiento::withTrashed()
+            ->where('id_urban', $this->urban->id_urban)
+            ->get();
 
-        for ($i = 0; $i < $this->numero_asientos; $i++) {
-            Asiento::create([
-                'id_urban' => $this->urban->id_urban,
-                'nombre' => $this->codigo_urban . '-' . '0' . ($i + 1),
-                'estado' => 'Libre',
-            ]);
+        $cantidadActual = $todosLosAsientos->count();
+
+        if ($this->numero_asientos > $cantidadActual) {
+            // Si necesito 15 y solo tengo 10 en total (vivos o muertos)...
+
+            // Primero: Restauramos todos los que estaban borrados
+            Asiento::withTrashed()
+                ->where('id_urban', $this->urban->id_urban)
+                ->restore();
+
+            // Segundo: Creamos solo los que faltan para llegar a la nueva meta
+            for ($i = $cantidadActual; $i < $this->numero_asientos; $i++) {
+                Asiento::create([
+                    'id_urban' => $this->urban->id_urban,
+                    'nombre' => $this->codigo_urban . '-' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                    'estado' => 'Libre',
+                ]);
+            }
+        } else {
+            // Si necesito 10 y tengo 15...
+
+            // Primero: Restauramos todos (para limpiar el estado)
+            Asiento::withTrashed()->where('id_urban', $this->urban->id_urban)->restore();
+
+            // Segundo: Borramos (SoftDelete) solo los que sobran al final
+            $sobrantes = $cantidadActual - $this->numero_asientos;
+            Asiento::where('id_urban', $this->urban->id_urban)
+                ->orderBy('id_asiento', 'desc')
+                ->limit($sobrantes)
+                ->delete();
         }
 
         $this->js("Flux.modal('modal-editar-urban').close()");
@@ -76,8 +114,14 @@ new class extends Component {
 
     public function delete()
     {
+        if ($this->tieneViajesPendientes()) {
+            session()->flash('error', 'No puedes eliminar este vehículo porque tiene corridas pendientes o en curso.');
+            return;
+        }
+
         $this->urban->delete();
 
+        // Opcional: Solo borra asientos si realmente ya no los necesitas para historial
         Asiento::where('id_urban', $this->urban->id_urban)->delete();
 
         $this->js("Flux.modal('modal-eliminar-urban').close()");
@@ -90,10 +134,14 @@ new class extends Component {
         return Socio::orderBy('nombre')->get();
     }
 
-    #[Computed]
-    public function corridas()
+    public function tieneViajesPendientes()
     {
-        return Corrida::where('id_urban', $this->urban->id_urban)->get();
+        if (!$this->urban)
+            return false;
+
+        return Urban::where('id_urban', $this->urban->id_urban)
+            ->conViajesPendientes()
+            ->exists();
     }
 };
 ?>
@@ -102,7 +150,11 @@ new class extends Component {
     <flux:modal name="modal-editar-urban" class="w-[60%] p-10">
         @if($urban)
             <flux:heading size="lg" class="mb-6">Editar Urban: {{ $urban->codigo_urban }}</flux:heading>
-
+            @if (session()->has('error'))
+                <div class="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
+                    {{ session('error') }}
+                </div>
+            @endif
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <flux:field>
                     <flux:label badge="Obligatorio">Código de la Urban</flux:label>
@@ -149,6 +201,11 @@ new class extends Component {
         @if($urban)
             <div class="space-y-6">
                 <flux:heading size="lg">Eliminar Urban</flux:heading>
+                @if (session()->has('error'))
+                    <div class="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <flux:text>
                     ¿Estás seguro de que deseas eliminar la urban <b>{{ $urban->codigo_urban }}</b>?
                 </flux:text>

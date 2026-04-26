@@ -20,7 +20,7 @@ new class extends Component {
     public $numero_asientos;
 
     #[Validate('required', message: 'El socio es requerido.')]
-    public $id_socio = null;
+    public $id_socio = '';
 
     #[Validate('required', message: 'La placa es requerida.')]
     #[Validate('min:3', message: 'La placa debe tener al menos 3 caracteres.')]
