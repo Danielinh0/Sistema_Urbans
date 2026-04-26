@@ -66,12 +66,12 @@
                             @foreach ($asignaciones as $i => $a)
                                 <div class="flex gap-1">
                                     <div class="inline-flex items-center justify-center gap-3">
-                                        <flux:badge class="bg-azul_rebajado! text-azul_menu!">
-                                            {{ $this->urbans->firstWhere('id_urban', $a['id_urban'])?->codigo_urban ?? 'Sin urban' }}
-                                        </flux:badge>
-                                        <flux:badge class="bg-azul_menu! text-white!">
-                                            {{ $this->conductores->firstWhere('id_usuario', $a['id_usuario'])?->name ?? 'Sin chofer' }}
-                                        </flux:badge>
+
+                                        <x-badge-azul texto="{{ $this->urbans->firstWhere('id_urban', $a['id_urban'])?->codigo_urban ?? 'Sin urban' }}" />
+
+                                        <x-badge-azul fuerte=true 
+                                        texto="{{ $this->conductores->firstWhere('id_usuario', $a['id_usuario'])?->name ?? 'Sin chofer' }}" />
+
                                     </div>
                                     <div>
                                         <flux:button class="border! border-none! text-zinc-400!" icon="x" type="button" wire:click="quitarAsignacion({{ $i }})"></flux:button>
