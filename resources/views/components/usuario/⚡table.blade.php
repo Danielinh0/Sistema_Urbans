@@ -90,8 +90,12 @@ new class extends Component
                         <flux:table.cell>{{ $usuario->id_usuario }}</flux:table.cell>
                         <flux:table.cell>{{ $usuario->name }} {{ $usuario->apellido_paterno }} {{ $usuario->apellido_materno }}</flux:table.cell>
                         <flux:table.cell>{{ $usuario->email }}</flux:table.cell>
-                        <flux:table.cell>{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}</flux:table.cell>
-                        <flux:table.cell>{{ $usuario->rol_nombre ?? 'N/A' }}</flux:table.cell>
+                        <flux:table.cell variant="strong">
+                            <flux:badge color="yellow">{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}</flux:badge>
+                        </flux:table.cell>
+                        <flux:table.cell variant="strong">
+                            <flux:badge color="green">{{ $usuario->rol_nombre ?? 'N/A' }}</flux:badge>
+                        </flux:table.cell>
                         <flux:table.cell>
                             {{$usuario->direccion->calle->nombre ?? ''}}
                             #{{$usuario->direccion->numero_exterior ?? ''}}, 
