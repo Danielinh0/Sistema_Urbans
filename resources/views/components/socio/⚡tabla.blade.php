@@ -93,62 +93,68 @@ new class extends Component {
                 <x-header-table icon="mail" sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
                     wire:click="sort('correo')">Correo</x-header-table>
                 <x-header-table icon="bus">Urbans</x-header-table>
+                @if(auth()->user()->hasRole('gerente'))
                 <x-header-table align="center">Acciones</x-header-table>
+                @endif
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
-                    <flux:table.row :key="$socio->id_socio">
-                        <flux:table.cell>
-                            {{ $socio->id_socio }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->nombre }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->apellido_paterno }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->apellido_materno }}
-                        </flux:table.cell>
-                        <flux:table.cell class="text-center!">
-                            @if ($socio->estado == 'Activo')
-                                <flux:badge color="green">Activo</flux:badge>
-                            @else
-                                <flux:badge color="red">Inactivo</flux:badge>
-                            @endif
-                        </flux:table.cell>
-                        <flux:table.cell class="text-center!">
-                            {{ $socio->fecha_de_incorporacion }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->numero_telefonico }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->correo }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            @foreach ($socio->urbans as $urban)
-                                <flux:badge color="cyan">{{ $urban->codigo_urban }}</flux:badge>
-                            @endforeach
-                        </flux:table.cell>
-                        <flux:table.cell class="flex gap-2">
-                            <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
-                                wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
-                                <span class="hidden md:inline ml-1">Editar</span>
+                <flux:table.row :key="$socio->id_socio">
+                    <flux:table.cell>
+                        {{ $socio->id_socio }}
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        {{ $socio->nombre }}
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        {{ $socio->apellido_paterno }}
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        {{ $socio->apellido_materno }}
+                    </flux:table.cell>
+                    <flux:table.cell class="text-center!">
+                        @if ($socio->estado == 'Activo')
+                        <flux:badge color="green">Activo</flux:badge>
+                        @else
+                        <flux:badge color="red">Inactivo</flux:badge>
+                        @endif
+                    </flux:table.cell>
+                    <flux:table.cell class="text-center!">
+                        {{ $socio->fecha_de_incorporacion }}
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        {{ $socio->numero_telefonico }}
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        {{ $socio->correo }}
+                    </flux:table.cell>
+                    <flux:table.cell>
+                        @foreach ($socio->urbans as $urban)
+                        <flux:badge color="cyan">{{ $urban->codigo_urban }}</flux:badge>
+                        @endforeach
+                    </flux:table.cell>
+                    <flux:table.cell class="flex gap-2">
+                        @can('update', $socio)
+                        <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
+                            wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
+                            <span class="hidden md:inline ml-1">Editar</span>
 
-                            </flux:button>
-                            <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
-                                wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
-                                <span class="hidden md:inline ml-1">Eliminar</span>
-                            </flux:button>
-                        </flux:table.cell>
-                    </flux:table.row>
+                        </flux:button>
+                        @endcan
+                        @can('delete', $socio)
+                        <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
+                            wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
+                            <span class="hidden md:inline ml-1">Eliminar</span>
+                        </flux:button>
+                        @endcan
+                    </flux:table.cell>
+                </flux:table.row>
                 @empty
-                    <flux:table.row>
-                        <flux:table.cell colspan="8" class="text-center py-4 ">
-                            No se encontraron socios.
-                        </flux:table.cell>
-                    </flux:table.row>
+                <flux:table.row>
+                    <flux:table.cell colspan="8" class="text-center py-4 ">
+                        No se encontraron socios.
+                    </flux:table.cell>
+                </flux:table.row>
                 @endforelse
             </flux:table.rows>
         </flux:table>
