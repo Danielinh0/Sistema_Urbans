@@ -1,11 +1,15 @@
 <form wire:submit="save" class="px-4 py-4">
-            <flux:card >
-                <x-skeleton-form-ruta />
+    <flux:card>
+        <x-skeleton-form-ruta />
 
-                <div class="mt-5">
-                    <flux:button type="submit" variant="primary" class="w-full">Crear Ruta</flux:button>
-                </div>
-            </flux:card> 
- </form>
-
-    
+        <div class="mt-5">
+            <flux:button
+                type="submit"
+                variant="primary"
+                class="w-full"
+                :disabled="!$this->formularioListo">
+                Crear Ruta
+            </flux:button>
+        </div>
+    </flux:card>
+</form>
