@@ -20,13 +20,10 @@
 
             </flux:field>
 
-            <flux:field>
-                <flux:label class="!mt-2 !mb-3" badge="Obligatorio">Agrega una o más urbans a la corrida</flux:label>
-
-                 @if ($this->urbansSeleccionadas->isNotEmpty())
+            @if ($this->urbansSeleccionadas->isNotEmpty())
                     <div class="mt-2 rounded-lg border border-zinc-200 dark:border-white/10 p-2 flex flex-col pl-3 gap-2">
                         <div>
-                            <flux:text>Urbans seleccionadas</flux:text>
+                            <flux:text>Urban y conductor seleccionados</flux:text>
                         </div>
                         <div class=" flex flex-wrap gap-2">
                             @foreach ($this->urbansSeleccionadas as $urban)
@@ -34,42 +31,46 @@
                             @endforeach
                         </div>
                     </div>
-                @endif
+            @endif
 
-                <flux:select wire:model="id_urban_actual" placeholder="Selecciona una urban">
-                    @foreach ($this->urbans as $urban)
-                        @if (!in_array($urban->id_urban, $id_urbans))
-                            <flux:select.option value="{{ $urban->id_urban }}">
-                                {{ $urban->codigo_urban }}
-                            </flux:select.option>
-                        @endif
-                    @endforeach
-                </flux:select>
+            <flux:field>
 
-                <flux:button type="button" wire:click="agregarUrban">Agregar urban </flux:button>
-
-                <flux:error name="id_urbans" />
-            </flux:field>
-  
-            <div class="grid grid-cols-2 gap-6">
-                
-                <flux:field>
-                    <flux:label badge="Obligatorio">Conductor</flux:label>
-
-                        <flux:select wire:model="id_usuario" placeholder="Conductor">
-                            @foreach ($this->usuarios as $conductor)
-                                    <flux:select.option value="{{ $conductor->id_usuario }}">
-                                        {{ $conductor->name }}
+                <div class="grid grid-cols-2 gap-6">
+                    <flux:field>
+                        <flux:label badge="Obligatorio">Urban</flux:label>
+                        <flux:select wire:model="id_urban_actual" placeholder="Selecciona una urban">
+                            @foreach ($this->urbans as $urban)
+                                @if (!in_array($urban->id_urban, $id_urbans))
+                                    <flux:select.option value="{{ $urban->id_urban }}">
+                                        {{ $urban->codigo_urban }}
                                     </flux:select.option>
+                                @endif
                             @endforeach
                         </flux:select>
-                     </flux:field>
+                    </flux:field>    
 
-                    <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha" badge="Obligatorio"/>
+                    <flux:field>
+                            <flux:label badge="Obligatorio">Conductor</flux:label>
 
-                    <x-input-time wire="hora_salida" texto="Hora de salida" />
-                    <x-input-time wire="hora_llegada" texto="Hora de llegada" />
+                            <flux:select wire:model="id_usuario" placeholder="Conductor">
+                                @foreach ($this->conductores as $conductor)
+                                        <flux:select.option value="{{ $conductor->id_usuario }}">
+                                            {{ $conductor->name }}
+                                        </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                     </flux:field> 
+                </div>
                 
+                <flux:button type="button" wire:click="agregarUrban">Agregar </flux:button>
+            </flux:field>
+            
+            <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha" badge="Obligatorio"/>
+
+            <div class="grid grid-cols-2 gap-6">
+
+                <x-input-time wire="hora_salida" texto="Hora de salida" />
+                <x-input-time wire="hora_llegada" texto="Hora de llegada" />
             </div>
     
         </div>

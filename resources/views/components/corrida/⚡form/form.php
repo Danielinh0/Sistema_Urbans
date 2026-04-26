@@ -50,8 +50,8 @@ new class extends Component
     }
 
     #[Computed]
-    public function usuarios(){
-        return User::orderBy('id_usuario')->get();
+    public function conductores(){
+        return User::role('chofer')->orderBy('id_usuario')->get();
     }
 
     #[Computed]
