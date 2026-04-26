@@ -38,7 +38,8 @@ new class extends Component {
     #[Validate('min:10', message: 'El número telefónico debe tener al menos 10 dígitos.')]
     public $numero_telefonico;
 
-    #[Validate('nullable|email', message: 'El correo debe ser un correo válido.')]
+    #[Validate('nullable')]
+    #[Validate('email', message: 'El correo debe ser un correo válido.')]
     public $correo;
 
     #[On('preparar-edicion-socio')]
@@ -61,6 +62,12 @@ new class extends Component {
     {
         $this->socio = Socio::findOrFail($id);
         $this->js("Flux.modal('modal-eliminar-socio').show()");
+    }
+
+
+    public function touchField(string $field): void
+    {
+        $this->validateOnly($field);
     }
 
     public function update()
@@ -93,80 +100,80 @@ new class extends Component {
 <div>
     <flux:modal name="modal-editar-socio" class="w-[60%] p-10">
         @if($socio)
-            <flux:heading size="lg">Editar Socio: {{ $socio->nombre }}</flux:heading>
+        <flux:heading size="lg">Editar Socio: {{ $socio->nombre }}</flux:heading>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-6">
-                <flux:field>
-                    <flux:label badge="Obligatorio">Nombre(s)</flux:label>
-                    <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
-                        description:trailing="Ingrese minimo 3 caracteres" />
-                    <flux:error name="nombre" />
-                </flux:field>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-6">
+            <flux:field>
+                <flux:label badge="Obligatorio">Nombre(s)</flux:label>
+                <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="nombre" />
+            </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Opcional">Apellido Paterno</flux:label>
-                    <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small"
-                        description:trailing="Ingrese minimo 3 caracteres" />
-                    <flux:error name="apellido_paterno" />
-                </flux:field>
+            <flux:field>
+                <flux:label badge="Opcional">Apellido Paterno</flux:label>
+                <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small"
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="apellido_paterno" />
+            </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Opcional">Apellido Materno</flux:label>
-                    <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small"
-                        description:trailing="Ingrese minimo 3 caracteres" />
-                    <flux:error name="apellido_materno" />
-                </flux:field>
+            <flux:field>
+                <flux:label badge="Opcional">Apellido Materno</flux:label>
+                <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small"
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="apellido_materno" />
+            </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Obligatorio">Estado</flux:label>
-                    <flux:select wire:model="estado">
-                        <flux:select.option value="Activo">Activo</flux:select.option>
-                        <flux:select.option value="Inactivo">Inactivo</flux:select.option>
-                    </flux:select>
-                    <flux:error name="estado" />
-                </flux:field>
+            <flux:field>
+                <flux:label badge="Obligatorio">Estado</flux:label>
+                <flux:select wire:model="estado">
+                    <flux:select.option value="Activo">Activo</flux:select.option>
+                    <flux:select.option value="Inactivo">Inactivo</flux:select.option>
+                </flux:select>
+                <flux:error name="estado" />
+            </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Obligatorio">Fecha de Incorporación</flux:label>
-                    <flux:input wire:model="fecha_de_incorporacion" type="date" />
-                    <flux:error name="fecha_de_incorporacion" />
-                </flux:field>
+            <flux:field>
+                <flux:label badge="Obligatorio">Fecha de Incorporación</flux:label>
+                <flux:input wire:model="fecha_de_incorporacion" type="date" />
+                <flux:error name="fecha_de_incorporacion" />
+            </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Obligatorio">Teléfono</flux:label>
-                    <flux:input wire:model="numero_telefonico" />
-                    <flux:error name="numero_telefonico" />
-                </flux:field>
+            <flux:field>
+                <flux:label badge="Obligatorio">Teléfono</flux:label>
+                <flux:input wire:model="numero_telefonico" />
+                <flux:error name="numero_telefonico" />
+            </flux:field>
 
-                <flux:field>
-                    <flux:label badge="Opcional">Correo Electrónico</flux:label>
-                    <flux:input wire:model="correo" />
-                    <flux:error name="correo" />
-                </flux:field>
-            </div>
+            <flux:field>
+                <flux:label badge="Opcional">Correo Electrónico</flux:label>
+                <flux:input wire:model="correo" />
+                <flux:error name="correo" />
+            </flux:field>
+        </div>
 
-            <div class="mt-8">
-                <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
-            </div>
+        <div class="mt-8">
+            <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
+        </div>
         @endif
     </flux:modal>
 
     <flux:modal name="modal-eliminar-socio" class="min-w-[22rem]">
         @if($socio)
-            <div class="space-y-6">
-                <flux:heading size="lg">Eliminar Socio</flux:heading>
-                <flux:text>
-                    ¿Estás seguro de que deseas eliminar a <b>'{{ $socio->nombre }} {{ $socio->apellido_paterno }}
-                        {{ $socio->apellido_materno }}'</b>?
-                </flux:text>
-                <div class="flex gap-2">
-                    <flux:spacer />
-                    <flux:modal.close>
-                        <flux:button variant="ghost">Cancelar</flux:button>
-                    </flux:modal.close>
-                    <flux:button wire:click="delete" variant="danger">Eliminar</flux:button>
-                </div>
+        <div class="space-y-6">
+            <flux:heading size="lg">Eliminar Socio</flux:heading>
+            <flux:text>
+                ¿Estás seguro de que deseas eliminar a <b>'{{ $socio->nombre }} {{ $socio->apellido_paterno }}
+                    {{ $socio->apellido_materno }}'</b>?
+            </flux:text>
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancelar</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="delete" variant="danger">Eliminar</flux:button>
             </div>
+        </div>
         @endif
     </flux:modal>
 </div>
