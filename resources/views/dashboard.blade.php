@@ -216,7 +216,7 @@
 
                             {{-- Botón Detalles --}}
                             <td class="px-6 py-4 text-right">
-                                <a href="#" {{-- route('corrida.show', $corrida['id']) cuando exista --}}
+                                <a href="{{ route('corrida.show', $corrida['id']) }}"
                                     class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold shadow-sm hover:shadow transition-all duration-150">
                                     Detalles
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
