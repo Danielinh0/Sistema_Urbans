@@ -11,8 +11,11 @@ return new class extends Migration
         Schema::create('boleto', function (Blueprint $table) {
             $table->id('id_boleto');
             $table->foreignId('id_corrida')->constrained('corrida', 'id_corrida')->onDelete('cascade');
-            $table->foreignId('id_turno')->constrained('turno', 'id_turno')->onDelete('cascade');
             $table->foreignId('id_cliente')->constrained('cliente', 'id_cliente')->onDelete('cascade');
+
+            // Se agrega la FK en una migración posterior porque 'detalle_venta' se crea después.
+            $table->foreignId('id_detalle_venta');
+
             $table->string('folio')->unique();
             $table->string('estado');
             $table->string('tipo_de_pago');

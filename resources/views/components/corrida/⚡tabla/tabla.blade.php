@@ -36,7 +36,7 @@
 
                     <flux:table.cell class="whitespace-normal">
                         @if ($corrida->urban)
-                        <div>{{ $corrida->urban->codigo_urban }}</div>
+                        <div>    <flux:badge color="sky">  {{ $corrida->urban->codigo_urban }} </flux:badge> </div>
                         @else
                         <span class="text-zinc-500">Sin urban</span>
                         @endif
