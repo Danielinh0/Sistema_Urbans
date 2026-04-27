@@ -36,29 +36,33 @@ new class extends Component
 };
 ?>
 
-<div>
-    <form wire:submit='save' class="p-6">
-        <flux:card>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div>
-                    <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
-                        label="Nombre" description:trailing="Ingrese minimo 3 caracteres" />
-                    @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small" type="text"
-                        label="Apellido Paterno" description:trailing="Ingrese minimo 3 caracteres" />
-                    @error('apellido_paterno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small" type="text"
-                        label="Apellido Materno" description:trailing="Ingrese minimo 3 caracteres" />
-                    @error('apellido_materno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div><br>
-                <div class="mt-8">
-                    <flux:button type="submit" variant="primary" class="w-full">Crear Cliente</flux:button>
-                </div>
-            </div>
-        </flux:card>
-    </form>
-</div>
+<form wire:submit="save" class="p-6">
+    <flux:card>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <flux:field>
+                <flux:label badge="Obligatorio">Nombre(s)</flux:label>
+                <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small" type="text"
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="nombre" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label badge="Obligatorio">Apellido Paterno</flux:label>
+                <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small" type="text"
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="apellido_paterno" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label badge="Opcional">Apellido Materno</flux:label>
+                <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small" type="text"
+                    description:trailing="Ingrese minimo 3 caracteres" />
+                <flux:error name="apellido_materno" />
+            </flux:field>
+        </div>
+
+        <div class="mt-8">
+            <flux:button type="submit" variant="primary" class="w-full">Crear Cliente</flux:button>
+        </div>
+    </flux:card>
+</form>
