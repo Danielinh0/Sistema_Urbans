@@ -93,7 +93,7 @@ new class extends Component {
                 <x-header-table icon="mail" sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
                     wire:click="sort('correo')">Correo</x-header-table>
                 <x-header-table icon="bus">Urbans</x-header-table>
-                @if(auth()->user()->hasRole('gerente'))
+                @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
                 <x-header-table align="center">Acciones</x-header-table>
                 @endif
             </flux:table.columns>

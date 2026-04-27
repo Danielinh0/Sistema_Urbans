@@ -66,10 +66,13 @@ new class extends Component {
                 });
             })
             ->when($this->filtroAsientos === '10', function ($query) {
-                $query->where('numero_asientos', '>=', 10)->where('numero_asientos', '<=', 20);
+                $query->where('numero_asientos', 10);
+            })
+            ->when($this->filtroAsientos === '15', function ($query) {
+                $query->where('numero_asientos', 15);
             })
             ->when($this->filtroAsientos === '20', function ($query) {
-                $query->where('numero_asientos', '>=', 20)->where('numero_asientos', '<=', 30);
+                $query->where('numero_asientos', 20);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
@@ -82,8 +85,9 @@ new class extends Component {
         'numero_asientos' => [
             'label' => 'Asientos',
             'options' => [
-                '10' => '10 - 20 asientos',
-                '20' => '20 - 30 asientos'
+                '10' => '10 asientos',
+                '15' => '15 asientos',
+                '20' => '20 asientos'
             ]
         ],
         'estado_viaje' => [
@@ -94,20 +98,16 @@ new class extends Component {
     <flux:card>
         <flux:table :paginate="$this->urbans" horizontal class="w-full">
             <flux:table.columns>
-                <x-header-table sortable :sorted="$sortBy === 'id_urban'" :direction="$sortDirection"
-                    wire:click="sort('id_urban')">ID</x-header-table>
+                <x-header-table sortable="id_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
 
-                <x-header-table sortable :sorted="$sortBy === 'codigo_urban'" :direction="$sortDirection"
-                    wire:click="sort('codigo_urban')">Código</x-header-table>
+                <x-header-table sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
 
-                <x-header-table icon="armchair" sortable :sorted="$sortBy === 'numero_asientos'"
-                    :direction="$sortDirection" wire:click="sort('numero_asientos')">Asientos</x-header-table>
+                <x-header-table icon="armchair" sortable="numero_asientos"
+                    :sortBy="$sortBy" :sortDirection="$sortDirection">Asientos</x-header-table>
 
-                <x-header-table icon="bus" sortable :sorted="$sortBy === 'placa'" :direction="$sortDirection"
-                    wire:click="sort('placa')">Placa</x-header-table>
+                <x-header-table icon="bus" sortable="placa" :sortBy="$sortBy" :sortDirection="$sortDirection">Placa</x-header-table>
 
-                <x-header-table icon="user" sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
-                    wire:click="sort('id_socio')">Socio</x-header-table>
+                <x-header-table icon="user" sortable="id_socio" :sortBy="$sortBy" :sortDirection="$sortDirection">Socio</x-header-table>
 
                 <x-header-table align="center">Acciones</x-header-table>
             </flux:table.columns>
@@ -125,19 +125,26 @@ new class extends Component {
                             {{ $urban->socio->nombre . ' ' . $urban->socio->apellido_paterno }}
                         </flux:table.cell>
 
-                        <flux:table.cell class="flex gap-2 justify-end">
-                            {{-- Botón Editar: Texto oculto en móviles (hidden), visible en tablets en adelante (md:inline)
-                            --}}
-                            <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
-                                wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
-                                <span class="hidden md:inline ml-1">Editar</span>
-                            </flux:button>
+                        <flux:table.cell class="flex gap-3 justify-end">
+                            {{-- Botón Editar: Solo gerente --}}
+                            @can('update', $urban)
+                            <x-boton-estilo
+                                bg="bg-azul_menu"
+                                c_text="text-white"
+                                icon="pencil"
+                                text="Editar"
+                                evento="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })" />
+                            @endcan
 
-                            {{-- Botón Eliminar --}}
-                            <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
-                                wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
-                                <span class="hidden md:inline ml-1">Eliminar</span>
-                            </flux:button>
+                            {{-- Botón Eliminar: Solo gerente --}}
+                            @can('delete', $urban)
+                            <x-boton-estilo
+                                bg="bg-rojo_boton"
+                                c_text="text-rojo_texto"
+                                icon="trash"
+                                text="Eliminar"
+                                evento="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })" />
+                            @endcan
                         </flux:table.cell>
                     </flux:table.row>
                 @empty

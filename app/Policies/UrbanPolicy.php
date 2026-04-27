@@ -13,7 +13,7 @@ class UrbanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente', 'cajero']);
     }
 
     /**
@@ -21,7 +21,7 @@ class UrbanPolicy
      */
     public function view(User $user, Urban $urban): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente', 'cajero']);
     }
 
     /**
@@ -29,7 +29,7 @@ class UrbanPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -37,7 +37,7 @@ class UrbanPolicy
      */
     public function update(User $user, Urban $urban): bool
     {
-        return false;
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -45,7 +45,7 @@ class UrbanPolicy
      */
     public function delete(User $user, Urban $urban): bool
     {
-        return false;
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -53,7 +53,7 @@ class UrbanPolicy
      */
     public function restore(User $user, Urban $urban): bool
     {
-        return false;
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -61,6 +61,6 @@ class UrbanPolicy
      */
     public function forceDelete(User $user, Urban $urban): bool
     {
-        return false;
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 }

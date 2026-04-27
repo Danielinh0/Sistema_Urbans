@@ -6,7 +6,7 @@
                 <x-heading :icono="'user'" texto="Socios" />
             </div>
 
-            @if(auth()->user()->hasRole('gerente'))
+            @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
             <div>
                 <flux:modal.trigger name="edit-socio">
                     <flux:button icon="user-plus" class="bg-azul_rebajado! cursor-pointer text-azul_menu! hover:bg-azul_menu! hover:text-white!

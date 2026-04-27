@@ -29,7 +29,7 @@ class SocioPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -37,7 +37,7 @@ class SocioPolicy
      */
     public function update(User $user, Socio $socio): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -45,7 +45,7 @@ class SocioPolicy
      */
     public function delete(User $user, Socio $socio): bool
     {
-        return  $user->hasRole('gerente');
+        return  $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -53,7 +53,7 @@ class SocioPolicy
      */
     public function restore(User $user, Socio $socio): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -61,6 +61,6 @@ class SocioPolicy
      */
     public function forceDelete(User $user, Socio $socio): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 }

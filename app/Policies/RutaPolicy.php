@@ -29,7 +29,7 @@ class RutaPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -37,7 +37,7 @@ class RutaPolicy
      */
     public function update(User $user, Ruta $ruta): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -45,7 +45,7 @@ class RutaPolicy
      */
     public function delete(User $user, Ruta $ruta): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -53,7 +53,7 @@ class RutaPolicy
      */
     public function restore(User $user, Ruta $ruta): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**
@@ -61,6 +61,6 @@ class RutaPolicy
      */
     public function forceDelete(User $user, Ruta $ruta): bool
     {
-        return $user->hasRole('gerente');
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 }

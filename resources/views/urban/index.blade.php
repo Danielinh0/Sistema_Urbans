@@ -4,6 +4,8 @@
             <div>
                 <x-heading :icono="'bus'" texto="Urbans" />
             </div>
+
+            @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
             <div>
                 <flux:modal.trigger name="edit-urban">
                     <flux:button icon="bus"
@@ -12,12 +14,13 @@
                         una nueva urban</flux:button>
                 </flux:modal.trigger>
             </div>
+            @endif
         </div>
         <div>
             <livewire:urban.tabla />
         </div>
         <div>
-            <flux:modal name="edit-urban" class="w-[50%] p-10">
+            <flux:modal name="edit-urban" class="w-[50%] p-10" x-on:close="Livewire.dispatch('reset-form')">
                 <div>
                     <flux:heading class="!text-xl !font-bold" size="lg">Crear una nueva urban</flux:heading>
                 </div>

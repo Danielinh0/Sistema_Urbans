@@ -10,7 +10,7 @@
                 <x-heading :icono="'map-pin-house'" texto="Rutas de viaje" />
             </div>
 
-            @if(auth()->user()->hasRole('gerente'))
+            @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
             <div class="pr-2">
                 <flux:modal.trigger name="edit-profile">
                     <flux:button class="bg-azul_rebajado! cursor-pointer text-azul_menu! hover:bg-azul_menu! hover:text-white!
