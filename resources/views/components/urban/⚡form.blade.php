@@ -10,9 +10,10 @@ use Livewire\Attributes\Computed;
 new class extends Component {
 
     #[Validate('required',  message: 'El código de la urban es requerido.')]
+    #[Validate('unique:urban,codigo_urban', message: 'El código de la urban ya existe.')]
     #[Validate('min:3',     message: 'El código debe tener al menos 3 caracteres.')]
     #[Validate('max:10',    message: 'El código no puede tener más de 10 caracteres.')]
-    #[Validate('alpha_num', message: 'El código solo puede contener letras y números.')]
+    #[Validate('regex:/^[A-Za-z0-9\-]+$/', message: 'El código solo puede contener letras, números y guiones.')]
     public $codigo_urban;
 
     #[Validate('required', message: 'El número de asientos es requerido.')]
@@ -26,10 +27,19 @@ new class extends Component {
     public $id_socio = '';
 
     #[Validate('required', message: 'La placa es requerida.')]
+    #[Validate('unique:urban,placa', message: 'La placa ya está registrada.')]
     #[Validate('min:6',    message: 'La placa debe tener al menos 6 caracteres.')]
     #[Validate('max:10',   message: 'La placa no puede tener más de 10 caracteres.')]
-    #[Validate('regex:/^[A-Z0-9\-]+$/', message: 'La placa solo acepta mayúsculas, números y guiones.')]
+    #[Validate(
+        'regex:/^([A-Z]{3}-\d{2}-\d{2}|[A-Z]{3}-\d{3}-[A-Z]|\d{2}-[A-Z]{3}-\d{2})$/',
+        message: 'Formato inválido. Ejemplos válidos: THA-12-34, THB-423-C, 01-MNA-01'
+    )]
     public $placa;
+
+    public function updated($property)
+    {
+        $this->validateOnly($property);
+    }
 
     public function save()
     {
