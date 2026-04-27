@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('venta', function (Blueprint $table) {
             $table->id('id_venta');
-            $table->foreignId('id_boleto')->constrained('boleto', 'id_boleto')->onDelete('cascade');
             $table->foreignId('id_cliente')->nullable()->constrained('cliente', 'id_cliente')->onDelete('set null');
             $table->integer('total');
             $table->integer('subtotal');

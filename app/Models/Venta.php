@@ -41,4 +41,9 @@ class Venta extends Model
     {
         return $this->hasMany(Turno::class, 'id_venta', 'id_venta');
     }
+
+    public function detalleVentas(): HasMany
+    {
+        return $this->hasMany(DetalleVenta::class, 'id_venta', 'id_venta');
+    }
 }
