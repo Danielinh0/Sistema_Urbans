@@ -18,18 +18,21 @@ new class extends Component
 {
     #[Validate('required', message: 'El nombre es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
+    #[Validate('regex:/^[\pL\s\-]+$/u', message: 'El nombre solo debe contener letras.')]
     public $name;
 
     #[Validate('required', message: 'El apellido paterno es requerido.')]
     #[Validate('min:3', message: 'El apellido paterno debe tener al menos 3 caracteres.')]
+    #[Validate('regex:/^[\pL\s\-]+$/u', message: 'El apellido paterno solo debe contener letras.')]
     public $apellido_paterno = null;
 
-    #[Validate('min:3', message: 'El apellido materno debe tener al menos 3 caracteres.')]
+    #[Validate('regex:/^[\pL\s\-]+$/u', message: 'El apellido materno solo debe contener letras.')]
     #[Validate('nullable')]
     public $apellido_materno = null;
 
     #[Validate('required', message: 'El email es requerido.')]
     #[Validate('email', message: 'El email debe ser una dirección de correo válida.')]
+    #[Validate('unique:users,email', message: 'Este correo ya está registrado.')]
     public $email;
     
     #[Validate('required', message: 'la sucursal es requerida.')]
@@ -62,7 +65,6 @@ new class extends Component
 
     #[Validate('required', message: 'La contraseña es requerida.')]
     #[Validate('min:8', message: 'La contraseña debe tener al menos 8 caracteres.')]
-    #[Validate('same:password_confirmation', message: 'Las contraseñas no coinciden.')]
     public $password;
 
     #[Validate('required', message: 'La confirmación de contraseña es requerida.')]
@@ -164,22 +166,22 @@ new class extends Component
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div>
                     <flux:input wire:model.live.blur="name" icon:trailing="a-large-small" type="text"
-                        label="Nombre del usuario" description:trailing="Ingrese minimo 3 caracteres" />
-                    @error('nombre') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        label="Nombre del usuario" placeholder="Ej: Juan Carlos" />
+                    @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small" type="text"
-                        label="Apellido Paterno" description:trailing="Ingrese minimo 3 caracteres" />
+                        label="Apellido Paterno" placeholder="Ej: García" />
                     @error('apellido_paterno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small" type="text"
-                        label="Apellido Materno" description:trailing="Ingrese minimo 3 caracteres" />
+                        label="Apellido Materno" placeholder="Ej: López" />
                     @error('apellido_materno') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="email" icon:trailing="a-large-small" type="email"
-                        label="Correo electrónico" description:trailing="Ingrese un correo válido" />
+                        label="Correo electrónico" placeholder="Ej: juan.garcia@correo.com" />
                     @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
@@ -254,22 +256,22 @@ new class extends Component
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="numero_exterior" icon:trailing="hashtag" type="text"
-                        label="Número exterior" description:trailing="Ingrese el número exterior" />
+                        label="Número exterior" placeholder="Ej: 123" />
                     @error('numero_exterior') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="numero_interior" icon:trailing="hashtag" type="text"
-                        label="Número interior" description:trailing="Ingrese el número interior (opcional)" />
+                        label="Número interior" placeholder="Ej: 4B (opcional)" />
                     @error('numero_interior') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="password" type="password"
-                        label="Contraseña" description:trailing="Ingrese la contraseña" viewable/>
+                        label="Contraseña" placeholder="Mínimo 8 caracteres" viewable/>
                     @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <flux:input wire:model.live.blur="password_confirmation" type="password"
-                        label="Confirmar contraseña" description:trailing="Confirme la contraseña" viewable/>
+                        label="Confirmar contraseña" placeholder="Repita la contraseña" viewable/>
                     @error('password_confirmation') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
