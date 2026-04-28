@@ -125,23 +125,19 @@ new class extends Component {
                             {{ $urban->socio->nombre . ' ' . $urban->socio->apellido_paterno }}
                         </flux:table.cell>
 
-                        <flux:table.cell class="flex gap-1 justify-end !px-2">
+                        <flux:table.cell class="flex gap-1 justify-end !px-2 whitespace-nowrap">
                             @can('update', $urban)
-                            <x-boton-estilo
-                                bg="bg-azul_menu"
-                                c_text="text-white"
-                                icon="pencil"
-                                text="Editar"
-                                evento="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })" />
+                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
+                                wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
+                                Editar
+                            </flux:button>
                             @endcan
 
                             @can('delete', $urban)
-                            <x-boton-estilo
-                                bg="bg-rojo_boton"
-                                c_text="text-rojo_texto"
-                                icon="trash"
-                                text="Eliminar"
-                                evento="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })" />
+                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+                                wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
+                                Eliminar
+                            </flux:button>
                             @endcan
                         </flux:table.cell>
                     </flux:table.row>
