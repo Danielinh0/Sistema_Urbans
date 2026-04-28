@@ -21,7 +21,8 @@ class Corrida extends Model
         'id_ruta',
         'id_usuario',
         'datetime_salida',
-        'datetime_llegada',
+        'datetime_llegada', 
+        'estado',
         'id_urban',
     ];
     
