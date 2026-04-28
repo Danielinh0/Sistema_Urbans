@@ -6,6 +6,7 @@
                 <x-heading :icono="'user'" texto="Socios" />
             </div>
 
+            @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
             <div>
                 <flux:modal.trigger name="edit-socio">
                     <flux:button icon="user-plus" class="bg-azul_rebajado! cursor-pointer text-azul_menu! hover:bg-azul_menu! hover:text-white!
@@ -13,13 +14,14 @@
                         socio </flux:button>
                 </flux:modal.trigger>
             </div>
+            @endif
         </div>
 
         <div>
             <livewire:socio.tabla />
         </div>
     </section>
-    <flux:modal name="edit-socio" class="w-[50%] p-10">
+    <flux:modal name="edit-socio" class="w-[50%] p-10" x-on:close="Livewire.dispatch('reset-form')">
         <div>
             <flux:heading class="!text-xl !font-bold" size="lg">Crea un nuevo socio</flux:heading>
         </div>

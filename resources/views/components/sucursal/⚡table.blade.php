@@ -64,36 +64,40 @@ new class extends Component {
                     <x-header-table sortable="id_sucursal" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID
                         </x-componentes.header_table>
                         {{-- nombre --}}
-                        <x-header-table icon="book-a" sortable="nombre" :sortBy="$sortBy"
-                            :sortDirection="$sortDirection"> Nombre de la sucursal </x-componentes.header_table>
+                    <x-header-table icon="book-a" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection"> Nombre de la sucursal </x-header-table>    
 
-                            <x-header-table icon="map-pin-house"> Ruta </x-componentes.header_table>
-
-                                <flux:table.column></flux:table.column>
-
+                    <x-header-table icon="map-pin-house"> Ruta </x-header-table>
+                    
+                    <x-header-table icon="layout-grid"> Acciones </x-header-table>
+                
                 </flux:table.columns>
 
                 <flux:table.rows>
-                    @forelse ($this->sucursales as $sucursal)
-                        <flux:table.row :key="$sucursal->id_sucursal">
-                            <flux:table.cell>
-                                {{ $sucursal->id_sucursal }}
-                            </flux:table.cell>
-                            <flux:table.cell>
-                                {{ $sucursal->nombre }}
-                            </flux:table.cell>
-                            <flux:table.cell>
-                                {{$sucursal->direccion->calle->nombre ?? ''}}
-                                #{{$sucursal->direccion->numero_exterior ?? ''}},
-                                {{$sucursal->direccion->calle->colonia->nombre ?? ''}},
-                                {{$sucursal->direccion->calle->colonia->codigoPostal->numero ?? ''}},
-                                {{$sucursal->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
-                                {{$sucursal->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
-                            </flux:table.cell>
-                            <flux:table.cell class="flex gap-2">
-                                <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
-                                    wire:click="$dispatch('preparar-edicion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                    Editar
+                @forelse ($this->sucursales as $sucursal)
+                    <flux:table.row :key="$sucursal->id_sucursal">
+                        <flux:table.cell >
+                            {{ $sucursal->id_sucursal }}
+                        </flux:table.cell>
+                        <flux:table.cell >
+                            {{ $sucursal->nombre }}
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            {{$sucursal->direccion->calle->nombre ?? ''}}
+                            #{{$sucursal->direccion->numero_exterior ?? ''}}, 
+                            {{$sucursal->direccion->calle->colonia->nombre ?? ''}}, 
+                            {{$sucursal->direccion->calle->colonia->codigoPostal->numero ?? ''}}, 
+                            {{$sucursal->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
+                            {{$sucursal->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
+                        </flux:table.cell>
+                        <flux:table.cell class="flex gap-2">
+                            <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
+                                wire:click="$dispatch('preparar-edicion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
+                                <span class="hidden xl:inline ml-1">Editar</span>
+                            </flux:button>
+                            @if (!$sucursal->users->count()>0)
+                                <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                                    wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
+                                    <span class="hidden xl:inline ml-1">Eliminar</span>
                                 </flux:button>
                                 @if (!$sucursal->users->count() > 0)
                                     <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"

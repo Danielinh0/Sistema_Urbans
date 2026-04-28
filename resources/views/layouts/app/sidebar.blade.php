@@ -21,7 +21,7 @@
             <flux:sidebar.group :heading="__('Menu principal')" class="grid gap-4">
                 <x-item-sidebar icon="home" ruta="dashboard" texto="Dashboard" />
                 <x-item-sidebar icon="map-pinned" ruta="ruta.index" texto="Rutas" :disabled="!$hayTurnoActivo" />
-                @if(auth()->user()->hasRole('admin'))
+                @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
                 <x-item-sidebar icon="user-round" ruta="socio.index" texto="Socios" />
                 <x-item-sidebar icon="bus" ruta="urban.index" texto="Urbans" />
                 <x-item-sidebar icon="users" ruta="usuario.index" texto="Usuarios" />

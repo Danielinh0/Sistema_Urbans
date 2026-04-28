@@ -2,7 +2,8 @@
 
 use Livewire\Attributes\Validate;
 use App\Models\Ruta;
-
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 new class extends Component {
@@ -30,6 +31,34 @@ new class extends Component {
     public $tarifa_paquete;
 
 
+    public function touchField(string $field): void
+    {
+        $this->validateOnly($field);
+    }
+
+    public function updated($field)
+    {
+        $this->validateOnly($field);
+    }
+
+    #[Computed]
+    public function formularioListo(): bool
+    {
+        return filled($this->nombre)
+            && filled($this->distancia)
+            && filled($this->tiempo_estimado)
+            && filled($this->tarifa_clientes)
+            && filled($this->tarifa_paquete)
+            && $this->getErrorBag()->isEmpty();
+    }
+
+    #[On('reset-form')]
+    public function resetForm()
+    {
+        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete']);
+        $this->resetErrorBag();
+    }
+
     public function save()
     {
         $this->validate();
@@ -45,7 +74,5 @@ new class extends Component {
         $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete']);
         $this->dispatch('ruta-creada');
         session()->flash('status', 'Ruta creada correctamente.');
-
-
     }
 };
