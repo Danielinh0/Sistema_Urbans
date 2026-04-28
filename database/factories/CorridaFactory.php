@@ -14,18 +14,18 @@ class CorridaFactory extends Factory
 
     public function definition(): array
     {
-        $fecha = $this->faker->dateTimeBetween('now', '+30 days');
-        $horaSalida = $this->faker->time('H:i');
-        $horaLlegadaDate = clone $fecha;
-        $horaLlegadaDate->modify('+4 hours');
+        
+        $salida = $this->faker->dateTimeBetween('now', '+20 days');
+        $llegada = (clone $salida)->modify('+'.rand(2, 8).' hours');
+
 
         return [
             'id_ruta' => Ruta::all()->random()->id_ruta,
             'id_usuario' => User::all()->random()->id_usuario,
             'id_urban' => Urban::all()->random()->id_urban,
-            'fecha' => $fecha->format('Y-m-d'),
-            'hora_salida' => $horaSalida,
-            'hora_llegada' => $horaLlegadaDate->format('H:i'),
+            'datetime_salida' => $salida,
+            'datetime_llegada' => $llegada,
+            'estado' => $this->faker->randomElement(['programada', 'reservada', 'finalizada', 'cancelada', 'en viaje']),
         ];
     }
 }
