@@ -20,36 +20,11 @@ class Corrida extends Model
     protected $fillable = [
         'id_ruta',
         'id_usuario',
-        'fecha',
-        'hora_salida',
-        'hora_llegada',
+        'datetime_salida',
+        'datetime_llegada',
         'id_urban',
     ];
-
-    protected function horaSalida(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value ? Carbon::parse($value) : null,
-            set: fn($value) => $value,
-        );
-    }
-
-    protected function horaLlegada(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value ? Carbon::parse($value) : null,
-            set: fn($value) => $value,
-        );
-    }
-
-    protected function fecha(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value ? Carbon::parse($value) : null,
-            set: fn($value) => $value,
-        );
-    }
-
+    
     public function ruta(): BelongsTo
     {
         return $this->belongsTo(Ruta::class, 'id_ruta', 'id_ruta');

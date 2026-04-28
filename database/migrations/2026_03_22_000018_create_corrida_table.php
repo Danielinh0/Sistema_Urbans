@@ -12,10 +12,13 @@ return new class extends Migration
             $table->id('id_corrida');
             $table->foreignId('id_ruta')->constrained('ruta', 'id_ruta')->onDelete('cascade');
             $table->foreignId('id_usuario')->constrained('users', 'id_usuario')->onDelete('cascade');
-            $table->date('fecha');
-            $table->time('hora_salida');
-            $table->time('hora_llegada')->nullable();
+
+            $table->dateTime('datetime_llegada')->nullable();
+            $table->dateTime('datetime_salida');
+            $table->string('estado');
+
             $table->foreignId('id_urban')->constrained('urban', 'id_urban')->onDelete('cascade');
+
         });
     }
 
