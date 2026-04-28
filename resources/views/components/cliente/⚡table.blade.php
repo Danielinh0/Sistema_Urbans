@@ -61,12 +61,12 @@ new class extends Component
         <flux:card>
             <flux:table :paginate="$this->clientes">
                 <flux:table.columns >
-                    <flux:table.column sortable :sorted="$sortBy === 'id_cliente'" :direction="$sortDirection" wire:click="sort('id_cliente')">ID</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection" wire:click="sort('nombre')">Nombre</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'apellido_paterno'" :direction="$sortDirection" wire:click="sort('apellido_paterno')">Apellido Paterno</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'apellido_materno'" :direction="$sortDirection" wire:click="sort('apellido_materno')">Apellido Materno</flux:table.column>
-                    <flux:table.column>Cantidad de compras</flux:table.column>
-                    <flux:table.column>Acciones</flux:table.column>
+                    <x-header-table sortable="id_cliente" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                    <x-header-table icon="user-round" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
+                    <x-header-table sortable="apellido_paterno" :sortBy="$sortBy" :sortDirection="$sortDirection">Apellido Paterno</x-header-table>
+                    <x-header-table sortable="apellido_materno" :sortBy="$sortBy" :sortDirection="$sortDirection">Apellido Materno</x-header-table>
+                    <x-header-table icon="tickets">Cantidad de compras</x-header-table>
+                    <x-header-table icon="layout-grid">Acciones</x-header-table>
                 </flux:table.columns>
                 <flux:table.rows>
                     @forelse ($this->clientes as $cliente)
@@ -89,12 +89,12 @@ new class extends Component
                             <flux:table.cell class="flex gap-2">
                                 <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
                                     wire:click="$dispatch('preparar-edicion-cliente', { id: {{ $cliente->id_cliente }} })">
-                                    Editar
+                                    <span class="hidden xl:inline ml-1">Editar</span>
                                 </flux:button>
                                 @if (!$cliente->ventas->count()>0 and !$cliente->boletos->count()>0)
                                     <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
                                         wire:click="$dispatch('preparar-eliminacion-cliente', { id: {{ $cliente->id_cliente }} })">
-                                        Eliminar
+                                        <span class="hidden xl:inline ml-1">Eliminar</span>
                                     </flux:button>       
                                 @endif
                                 

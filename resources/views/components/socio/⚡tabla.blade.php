@@ -73,7 +73,7 @@ new class extends Component {
     ]" />
 
     <flux:card>
-        <flux:table :paginate="$this->socios" horizontal>
+        <flux:table :paginate="$this->socios">
             <flux:table.columns>
                 <x-header-table sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
                     wire:click="sort('id_socio')">ID</x-header-table>
@@ -93,7 +93,7 @@ new class extends Component {
                 <x-header-table icon="mail" sortable :sorted="$sortBy === 'correo'" :direction="$sortDirection"
                     wire:click="sort('correo')">Correo</x-header-table>
                 <x-header-table icon="bus">Urbans</x-header-table>
-                <x-header-table align="center">Acciones</x-header-table>
+                <x-header-table icon="layout-grid" align="center">Acciones</x-header-table>
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
@@ -132,14 +132,13 @@ new class extends Component {
                             @endforeach
                         </flux:table.cell>
                         <flux:table.cell class="flex gap-2">
-                            <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
+                            <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
-                                <span class="hidden md:inline ml-1">Editar</span>
-
+                                <span class="hidden xl:inline ml-1">Editar</span>
                             </flux:button>
-                            <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
+                            <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
                                 wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
-                                <span class="hidden md:inline ml-1">Eliminar</span>
+                                <span class="hidden xl:inline ml-1">Eliminar</span>
                             </flux:button>
                         </flux:table.cell>
                     </flux:table.row>

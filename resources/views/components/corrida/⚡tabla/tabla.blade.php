@@ -21,7 +21,7 @@
 
                 <x-header-table icon="alarm-clock" sortable="hora_llegada" :sortBy="$sortBy" :sortDirection="$sortDirection"> Llegada </x-header-table>
 
-                <flux:table.column></flux:table.column>
+                <x-header-table icon="layout-grid"> Acciones </x-header-table>
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->corridas as $corrida)
@@ -30,7 +30,7 @@
                         {{ $corrida->id_corrida }}
                     </flux:table.cell>
 
-                    <flux:table.cell class="whitespace-nowrap">
+                    <flux:table.cell>
                         {{ Str::limit($corrida->ruta->nombre ?? 'Sin ruta', 30, '...') }}
                     </flux:table.cell>
 
@@ -68,11 +68,15 @@
 
                     <flux:table.cell class="flex gap-3">
 
-                        <x-boton-estilo bg="bg-azul_menu" c_text="text-white" icon="map-pin-pen" text="Editar"
-                            evento="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })" />
+                        <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
+                            wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
+                            <span class="hidden xl:inline ml-1">Editar</span>
+                        </flux:button>
 
-                        <x-boton-estilo bg="bg-rojo_boton" c_text="text-rojo_texto" icon="map-pin-x" text="Eliminar"
-                            evento="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })" />
+                        <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                            wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
+                            <span class="hidden xl:inline ml-1">Eliminar</span>
+                        </flux:button>
 
                     </flux:table.cell>
 

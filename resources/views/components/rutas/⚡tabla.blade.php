@@ -60,19 +60,19 @@ new class extends Component {
             <flux:table :paginate="$this->rutas">
                 <flux:table.columns>
 
-                    <x-header-table sortable="id_ruta" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-componentes.header_table>    
+                    <x-header-table sortable="id_ruta" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-header-table>    
                         
-                     <x-header-table icon="map-pinned"> Ruta </x-componentes.header_table>
+                     <x-header-table icon="map-pinned"> Ruta </x-header-table>
 
-                    <x-header-table icon="land-plot"> Distancia (km) </x-componentes.header_table>
+                    <x-header-table icon="land-plot"> Distancia (km) </x-header-table>
 
-                    <x-header-table icon="alarm-clock" sortable="tiempo_estimado" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tiempo Est. </x-componentes.header_table>    
+                    <x-header-table icon="alarm-clock" sortable="tiempo_estimado" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tiempo Est. </x-header-table>    
                     
-                    <x-header-table icon="tickets" sortable="tarifa_clientes" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tarifa Personas </x-componentes.header_table>    
+                    <x-header-table icon="tickets" sortable="tarifa_clientes" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tarifa Personas </x-header-table>    
 
-                    <x-header-table icon="package" sortable="tarifa_paquete" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tarifa Paquetes </x-componentes.header_table>   
+                    <x-header-table icon="package" sortable="tarifa_paquete" :sortBy="$sortBy" :sortDirection="$sortDirection"> Tarifa Paquetes </x-header-table>   
 
-                    <flux:table.column ></flux:table.column>
+                    <x-header-table icon="layout-grid"> Acciones </x-header-table>
                 </flux:table.columns>
                 <flux:table.rows>
                     @forelse ($this->rutas as $ruta)
@@ -81,7 +81,7 @@ new class extends Component {
                                 {{ $ruta->id_ruta }}
                             </flux:table.cell>
 
-                            <flux:table.cell class="whitespace-nowrap">
+                            <flux:table.cell>
                             {{ Str::limit($ruta->nombre, 30, '...') }}     
                             </flux:table.cell>
 
@@ -107,11 +107,15 @@ new class extends Component {
                             
                             <flux:table.cell class="flex gap-3">
 
-                                <x-boton-estilo bg="bg-azul_menu" c_text="text-white" icon="map-pin-pen" text="Editar" 
-                                evento="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })"/>
+                                <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
+                                    wire:click="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })">
+                                    <span class="hidden xl:inline ml-1">Editar</span>
+                                </flux:button>
 
-                                <x-boton-estilo bg="bg-rojo_boton" c_text="text-rojo_texto" icon="map-pin-x" text="Eliminar" 
-                                evento="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })" />
+                                <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                                    wire:click="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })">
+                                    <span class="hidden xl:inline ml-1">Eliminar</span>
+                                </flux:button>
 
                             </flux:table.cell>
 

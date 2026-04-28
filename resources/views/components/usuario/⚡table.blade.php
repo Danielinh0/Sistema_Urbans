@@ -72,13 +72,13 @@ new class extends Component
         <flux:card>
             <flux:table :paginate="$this->usuarios">
                 <flux:table.columns>
-                    <flux:table.column sortable :sorted="$sortBy === 'id_usuario'" :direction="$sortDirection" wire:click="sort('id_usuario')">ID</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Nombre</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'email'" :direction="$sortDirection" wire:click="sort('email')">Email</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'id_sucursal'" :direction="$sortDirection" wire:click="sort('id_sucursal')">Sucursal</flux:table.column>
-                    <flux:table.column sortable :sorted="$sortBy === 'rol_nombre'" :direction="$sortDirection" wire:click="sort('rol_nombre')" >Tipo de usuario</flux:table.column>
-                    <flux:table.column >Direccion</flux:table.column>
-                    <flux:table.column>Acciones</flux:table.column>
+                    <x-header-table sortable="id_usuario" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                    <x-header-table icon="user-round" sortable="name" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
+                    <x-header-table icon="mail" sortable="email" :sortBy="$sortBy" :sortDirection="$sortDirection">Email</x-header-table>
+                    <x-header-table icon="building-2" sortable="id_sucursal" :sortBy="$sortBy" :sortDirection="$sortDirection">Sucursal</x-header-table>
+                    <x-header-table icon="user-round-plus" sortable="rol_nombre" :sortBy="$sortBy" :sortDirection="$sortDirection">Tipo de usuario</x-header-table>
+                    <x-header-table icon="map-pin-house">Direccion</x-header-table>
+                    <x-header-table icon="layout-grid" align="center">Acciones</x-header-table>
                 </flux:table.columns>
                 <flux:table.rows>
                     @forelse ($this->usuarios as $usuario)
@@ -99,12 +99,12 @@ new class extends Component
                             <flux:table.cell class="flex gap-2">
                                 <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
                                     wire:click="$dispatch('preparar-edicion-usuario', { id: {{ $usuario->id_usuario }} })">
-                                    Editar
+                                    <span class="hidden xl:inline ml-1">Editar</span>
                                 </flux:button>
                                 @if (!$usuario->corridas->count()>0 || !$usuario->turnos->count()>0)
                                     <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
                                         wire:click="$dispatch('preparar-eliminacion-usuario', { id: {{ $usuario->id_usuario }} })">
-                                        Eliminar
+                                        <span class="hidden xl:inline ml-1">Eliminar</span>
                                     </flux:button>
                                 @endif
                                 
