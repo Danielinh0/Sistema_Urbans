@@ -17,7 +17,8 @@ new class extends Component
     public $filtroSucursal = '';
     public $filtroRol = '';
 
-    public function sort($column) {
+    public function sort($column)
+    {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -60,30 +61,30 @@ new class extends Component
     }
 
     #[Computed]
-    public function usuarios(){
+    public function usuarios()
+    {
         $allowedSorts = ['id_usuario', 'name', 'email', 'id_sucursal', 'rol_nombre'];
         $sortColumn = in_array($this->sortBy, $allowedSorts, true) ? $this->sortBy : 'id_usuario';
         $search = trim($this->search);
+
         return User::query()
             ->with(['sucursal', 'direccion.calle.colonia.codigoPostal.estado.pais'])
+            ->withCount(['corridas', 'turnos'])
             ->withMin('roles as rol_nombre', 'name')
-            ->when($this->search !== '', function ($query) use ($search){
+            ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'ILIKE', "%{$search}%")
-                    ->orWhere('apellido_paterno', 'ILIKE', "%{$search}%")
-                    ->orWhere('apellido_materno', 'ILIKE', "%{$search}%")
-                    ->orWhere('email', 'ILIKE', "%{$search}%");
+                        ->orWhere('apellido_paterno', 'ILIKE', "%{$search}%")
+                        ->orWhere('apellido_materno', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%")
+                        ->orWhereHas('sucursal', function ($sq) use ($search) {
+                            $sq->where('nombre', 'ILIKE', "%{$search}%");
+                        })
+                        ->orWhereHas('roles', function ($rq) use ($search) {
+                            $rq->where('name', 'ILIKE', "%{$search}%");
+                        });
                 });
             })
-            ->when($this->filtroSucursal !== '', function ($query) {
-                $query->where('id_sucursal', $this->filtroSucursal);
-            })
-            ->when($this->filtroRol !== '', function ($query) {
-                $query->whereHas('roles', function ($q) {
-                    $q->where('name', $this->filtroRol);
-                });
-            })
-            
             ->orderBy($sortColumn, $this->sortDirection)
             ->paginate(10);
     }
@@ -91,71 +92,125 @@ new class extends Component
 ?>
 
 <div>
-    <livewire:barra-busqueda placeholder="Busca un Usuario..." :filters="[
-        'id_sucursal' => [
-            'label' => 'Sucursal',
-            'options' => $this->sucursales->pluck('nombre', 'id_sucursal')->toArray()
-        ],
-        'rol_nombre' => [
-            'label' => 'Roles',
-            'options' => $this->all_roles->pluck('name', 'name')->toArray()
-        ]
-    ]"/>
+    <livewire:barra-busqueda placeholder="Busca un Usuario..." />
+
     <div>
-        <flux:card>
-            <flux:table :paginate="$this->usuarios">
+        <flux:card class="!p-2 overflow-x-auto">
+            <flux:table :paginate="$this->usuarios" class="w-full min-w-[34rem] md:min-w-[46rem] xl:min-w-[70rem] text-sm compact-table usuarios-table" dense>
                 <flux:table.columns>
-                    <x-header-table sortable="id_usuario" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
-                    <x-header-table icon="user-round" sortable="name" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
-                    <x-header-table icon="mail" sortable="email" :sortBy="$sortBy" :sortDirection="$sortDirection">Email</x-header-table>
-                    <x-header-table icon="building-2" sortable="id_sucursal" :sortBy="$sortBy" :sortDirection="$sortDirection">Sucursal</x-header-table>
-                    <x-header-table icon="user-round-plus" sortable="rol_nombre" :sortBy="$sortBy" :sortDirection="$sortDirection">Tipo de usuario</x-header-table>
-                    <x-header-table icon="map-pin-house">Direccion</x-header-table>
-                    <x-header-table icon="layout-grid" align="center">Acciones</x-header-table>
+                    <x-header-table sortable="id_usuario" class="w-[3.25rem] text-center col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                        ID
+                    </x-header-table>
+
+                    <x-header-table sortable="name" class="w-[11rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                        Nombre
+                    </x-header-table>
+
+                    <x-header-table icon="mail" sortable="email" class="w-[13rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                        Email
+                    </x-header-table>
+
+                    <x-header-table icon="building-2" sortable="id_sucursal" class="w-[13rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                        Sucursal
+                    </x-header-table>
+
+                    <x-header-table icon="shield-check" sortable="rol_nombre" class="w-[6rem] text-center" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                        Tipo
+                    </x-header-table>
+
+                    <x-header-table icon="map-pin" class="w-[15rem] col-hide-lg">
+                        Dirección
+                    </x-header-table>
+
+                    <x-header-table icon="wrench" class="w-[10rem] text-center">
+                        Acciones
+                    </x-header-table>
                 </flux:table.columns>
+
                 <flux:table.rows>
                     @forelse ($this->usuarios as $usuario)
-                        <flux:table.row :key="$usuario->id_usuario"> 
-                            <flux:table.cell>{{ $usuario->id_usuario }}</flux:table.cell>
-                            <flux:table.cell>{{ $usuario->name }} {{ $usuario->apellido_paterno }} {{ $usuario->apellido_materno }}</flux:table.cell>
-                            <flux:table.cell>{{ $usuario->email }}</flux:table.cell>
-                            <flux:table.cell variant="strong">
-                                <flux:badge color="yellow">{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}</flux:badge>
+                        @php
+                            $nombreCompleto = trim($usuario->name . ' ' . $usuario->apellido_paterno);
+                            $direccion = trim(
+                                ($usuario->direccion->calle->nombre ?? '') . ' #' .
+                                ($usuario->direccion->numero_exterior ?? '') . ', ' .
+                                ($usuario->direccion->calle->colonia->nombre ?? ''),
+                                ' #,'
+                            );
+                        @endphp
+
+                        <flux:table.row :key="$usuario->id_usuario">
+                            <flux:table.cell class="!px-2 w-[3.25rem] text-center tabular-nums col-hide-sm">
+                                {{ $usuario->id_usuario }}
                             </flux:table.cell>
-                            <flux:table.cell variant="strong">
-                                <flux:badge color="green">{{ $usuario->rol_nombre ?? 'N/A' }}</flux:badge>
+
+                            <flux:table.cell class="!px-2 w-[11rem]">
+                                <div class="truncate" title="{{ $nombreCompleto }}">
+                                    {{ $nombreCompleto }}
+                                </div>
                             </flux:table.cell>
-                            <flux:table.cell>
-                                {{$usuario->direccion->calle->nombre ?? ''}}
-                                #{{$usuario->direccion->numero_exterior ?? ''}}, 
-                                {{$usuario->direccion->calle->colonia->nombre ?? ''}}, 
-                                {{$usuario->direccion->calle->colonia->codigoPostal->numero ?? ''}}, 
-                                {{$usuario->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
-                                {{$usuario->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
+
+                            <flux:table.cell class="!px-2 w-[13rem] col-hide-md">
+                                <div class="truncate" title="{{ $usuario->email }}">
+                                    {{ $usuario->email }}
+                                </div>
                             </flux:table.cell>
-                            <flux:table.cell class="flex gap-2">
-                                <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
-                                    wire:click="$dispatch('preparar-edicion-usuario', { id: {{ $usuario->id_usuario }} })">
-                                    <span class="hidden xl:inline ml-1">Editar</span>
-                                </flux:button>
-                                @if (!$usuario->corridas->count()>0 || !$usuario->turnos->count()>0)
-                                    <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+
+                            <flux:table.cell class="!px-2 w-[13rem]">
+                                <div class="truncate" title="{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}">
+                                    {{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}
+                                </div>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="!px-2 w-[6rem] text-center">
+                                <span class="inline-flex max-w-full justify-center truncate">
+                                    {{ $usuario->rol_nombre ?? 'N/A' }}
+                                </span>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="!px-2 w-[15rem] col-hide-lg">
+                                <div class="truncate" title="{{ $direccion ?: 'N/A' }}">
+                                    {{ $direccion ?: 'N/A' }}
+                                </div>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="!px-2 w-[10rem]">
+                                <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="pencil"
+                                        class="!text-azul_menu !px-1.5"
+                                        title="Editar usuario"
+                                        aria-label="Editar usuario"
+                                        wire:click="$dispatch('preparar-edicion-usuario', { id: {{ $usuario->id_usuario }} })">
+                                        Editar
+                                    </flux:button>
+
+                                    <flux:button
+                                        size="sm"
+                                        variant="ghost"
+                                        icon="trash"
+                                        class="!text-rojo_texto !px-1.5"
+                                        title="Eliminar usuario"
+                                        aria-label="Eliminar usuario"
                                         wire:click="$dispatch('preparar-eliminacion-usuario', { id: {{ $usuario->id_usuario }} })">
                                         <span class="hidden xl:inline ml-1">Eliminar</span>
                                     </flux:button>
-                                @endif
+                                </div>
                             </flux:table.cell>
                         </flux:table.row>
                     @empty
                         <flux:table.row>
-                            <flux:table.cell colspan="7" class="text-center py-4 ">
+                            <flux:table.cell colspan="7" class="text-center py-4">
                                 No se encontraron usuarios.
                             </flux:table.cell>
-                        </flux:table.row>    
+                        </flux:table.row>
                     @endforelse
                 </flux:table.rows>
             </flux:table>
         </flux:card>
+
         <livewire:usuario.manager />
     </div>
 </div>

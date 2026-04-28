@@ -95,55 +95,49 @@ new class extends Component {
             'options' => ['ocupado' => 'En viaje / Pendiente', 'libre' => 'Sin viajes próximos']
         ]
     ]" />
-    <flux:card>
-        <flux:table :paginate="$this->urbans" class="w-full">
+    <flux:card class="!p-2 overflow-x-auto">
+        <flux:table :paginate="$this->urbans" class="w-full text-sm compact-table" dense>
             <flux:table.columns>
-                <x-header-table sortable="id_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                <x-header-table sortable="id_urban" class="col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
 
                 <x-header-table sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
 
-                <x-header-table icon="armchair" sortable="numero_asientos"
+                <x-header-table icon="armchair" sortable="numero_asientos" class="col-hide-sm"
                     :sortBy="$sortBy" :sortDirection="$sortDirection">Asientos</x-header-table>
 
                 <x-header-table icon="bus" sortable="placa" :sortBy="$sortBy" :sortDirection="$sortDirection">Placa</x-header-table>
 
                 <x-header-table icon="user" sortable="id_socio" :sortBy="$sortBy" :sortDirection="$sortDirection">Socio</x-header-table>
 
-                <x-header-table icon="layout-grid" align="center">Acciones</x-header-table>
+                <x-header-table icon="wrench" align="center">Acciones</x-header-table>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($this->urbans as $urban)
                     <flux:table.row :key="$urban->id_urban">
-                        <flux:table.cell class="w-20">{{ $urban->id_urban }}</flux:table.cell>
-                        <flux:table.cell variant="strong">
-                            <flux:badge color="orange">{{ $urban->codigo_urban }}</flux:badge>
+                        <flux:table.cell class="!px-2 col-hide-sm">{{ $urban->id_urban }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!px-2">
+                            <flux:badge color="orange" size="sm">{{ $urban->codigo_urban }}</flux:badge>
                         </flux:table.cell>
-                        <flux:table.cell class="pl-15">{{ $urban->numero_asientos }}</flux:table.cell>
-                        <flux:table.cell>{{ $urban->placa }}</flux:table.cell>
-                        <flux:table.cell>
+                        <flux:table.cell class="!px-2 col-hide-sm">{{ $urban->numero_asientos }}</flux:table.cell>
+                        <flux:table.cell class="!px-2">{{ $urban->placa }}</flux:table.cell>
+                        <flux:table.cell class="!px-2">
                             {{ $urban->socio->nombre . ' ' . $urban->socio->apellido_paterno }}
                         </flux:table.cell>
 
-                        <flux:table.cell class="flex gap-3 justify-end">
-                            {{-- Botón Editar: Solo gerente --}}
+                        <flux:table.cell class="flex gap-1 justify-end !px-2 whitespace-nowrap">
                             @can('update', $urban)
-                            <x-boton-estilo
-                                bg="bg-azul_menu"
-                                c_text="text-white"
-                                icon="pencil"
-                                text="Editar"
-                                evento="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })" />
+                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
+                                wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
+                                Editar
+                            </flux:button>
                             @endcan
 
-                            {{-- Botón Eliminar: Solo gerente --}}
                             @can('delete', $urban)
-                            <x-boton-estilo
-                                bg="bg-rojo_boton"
-                                c_text="text-rojo_texto"
-                                icon="trash"
-                                text="Eliminar"
-                                evento="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })" />
+                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+                                wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
+                                Eliminar
+                            </flux:button>
                             @endcan
                         </flux:table.cell>
                     </flux:table.row>

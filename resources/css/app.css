@@ -86,4 +86,22 @@ select:focus[data-flux-control] {
     font-weight: bold !important;
 }
 
+/* Tabla compacta */
+.compact-table [data-flux-table-cell],
+.compact-table [data-flux-table-column] {
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+}
+
+.compact-table [data-flux-table-row] {
+    gap: 0 !important;
+}
+
+/* Responsive: ocultar columnas menos importantes en pantallas pequeñas */
+@media (max-width: 768px) {
+    .compact-table .col-hide-sm {
+        display: none !important;
+    }
+}
+
 
