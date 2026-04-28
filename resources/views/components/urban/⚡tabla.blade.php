@@ -92,7 +92,7 @@ new class extends Component {
         ]
     ]" />
     <flux:card>
-        <flux:table :paginate="$this->urbans" horizontal class="w-full">
+        <flux:table :paginate="$this->urbans" class="w-full">
             <flux:table.columns>
                 <x-header-table sortable :sorted="$sortBy === 'id_urban'" :direction="$sortDirection"
                     wire:click="sort('id_urban')">ID</x-header-table>
@@ -109,7 +109,7 @@ new class extends Component {
                 <x-header-table icon="user" sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
                     wire:click="sort('id_socio')">Socio</x-header-table>
 
-                <x-header-table align="center">Acciones</x-header-table>
+                <x-header-table icon="layout-grid" align="center">Acciones</x-header-table>
             </flux:table.columns>
 
             <flux:table.rows>
@@ -125,18 +125,15 @@ new class extends Component {
                             {{ $urban->socio->nombre . ' ' . $urban->socio->apellido_paterno }}
                         </flux:table.cell>
 
-                        <flux:table.cell class="flex gap-2 justify-end">
-                            {{-- Botón Editar: Texto oculto en móviles (hidden), visible en tablets en adelante (md:inline)
-                            --}}
+                        <flux:table.cell class="flex gap-2 whitespace-nowrap">
                             <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
-                                <span class="hidden md:inline ml-1">Editar</span>
+                                <span class="hidden xl:inline ml-1">Editar</span>
                             </flux:button>
 
-                            {{-- Botón Eliminar --}}
                             <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
                                 wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
-                                <span class="hidden md:inline ml-1">Eliminar</span>
+                                <span class="hidden xl:inline ml-1">Eliminar</span>
                             </flux:button>
                         </flux:table.cell>
                     </flux:table.row>

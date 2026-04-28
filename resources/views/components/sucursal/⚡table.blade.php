@@ -63,11 +63,11 @@ new class extends Component
                 <flux:table.columns>
                     <x-header-table sortable="id_sucursal" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-componentes.header_table>    
                         {{-- nombre --}}
-                    <x-header-table icon="book-a" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection"> Nombre de la sucursal </x-componentes.header_table>    
+                    <x-header-table icon="book-a" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection"> Nombre de la sucursal </x-header-table>    
 
-                    <x-header-table icon="map-pin-house"> Ruta </x-componentes.header_table>
+                    <x-header-table icon="map-pin-house"> Ruta </x-header-table>
                     
-                        <flux:table.column></flux:table.column>
+                    <x-header-table icon="layout-grid"> Acciones </x-header-table>
                 
                 </flux:table.columns>
 
@@ -91,12 +91,12 @@ new class extends Component
                         <flux:table.cell class="flex gap-2">
                             <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                Editar
+                                <span class="hidden xl:inline ml-1">Editar</span>
                             </flux:button>
                             @if (!$sucursal->users->count()>0)
                                 <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
                                     wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                    Eliminar
+                                    <span class="hidden xl:inline ml-1">Eliminar</span>
                                 </flux:button>
                             @endif
                             
