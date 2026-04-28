@@ -15,6 +15,8 @@ return new class extends Migration
             $table->decimal('distancia', 10, 2);
             $table->decimal('tarifa_clientes', 10, 2);
             $table->decimal('tarifa_paquete', 10, 2);
+            $table->foreignId('id_sucursal_salida')->constrained('sucursal', 'id_sucursal')->onDelete('cascade');
+            $table->foreignId('id_sucursal_llegada')->constrained('sucursal', 'id_sucursal')->onDelete('cascade');
         });
     }
 
