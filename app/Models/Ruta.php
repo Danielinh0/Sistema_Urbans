@@ -20,6 +20,8 @@ class Ruta extends Model
         'tiempo_estimado',
         'tarifa_clientes',
         'tarifa_paquete',
+        'id_sucursal_salida',
+        'id_sucursal_llegada',
     ];
     
     protected function tiempoEstimado(): Attribute
@@ -34,4 +36,15 @@ class Ruta extends Model
     {
         return $this->hasMany(Corrida::class, 'id_ruta', 'id_ruta');
     }
+
+    public function sucursalSalida()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal_salida', 'id_sucursal');
+    }
+
+    public function sucursalLlegada()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal_llegada', 'id_sucursal');
+    }
+
 }
