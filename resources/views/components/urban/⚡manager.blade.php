@@ -13,21 +13,26 @@ new class extends Component {
     public ?Urban $urban = null;
 
     // Reglas de validación idénticas al formulario de creación
-    #[Validate('required', message: 'El codigo de la urban es requerido.')]
-    #[Validate('min:3', message: 'El codigo de la urban debe tener al menos 3 caracteres.')]
+    #[Validate('required',  message: 'El código de la urban es requerido.')]
+    #[Validate('min:3',     message: 'El código debe tener al menos 3 caracteres.')]
+    #[Validate('max:10',    message: 'El código no puede tener más de 10 caracteres.')]
+    #[Validate('regex:/^[A-Za-z0-9\-]+$/', message: 'El código solo puede contener letras, números y guiones.')]
     public $codigo_urban;
 
-    #[Validate('required', message: 'El numero de asientos es requerido.')]
-    #[Validate('numeric', message: 'El numero de asientos debe ser un valor numerico.')]
-    #[Validate('min:5', message: 'El numero de asientos debe tener al menos 5 asientos.')]
-    #[Validate('regex:/^[0-9]+$/', message: 'El numero de asientos debe ser un valor numerico positivo.')]
+    #[Validate('required', message: 'El número de asientos es requerido.')]
+    #[Validate('integer',  message: 'El número de asientos debe ser un número entero.')]
+    #[Validate('min:5',    message: 'Debe tener al menos 5 asientos.')]
+    #[Validate('max:60',   message: 'No puede tener más de 60 asientos.')]
     public $numero_asientos;
 
-    #[Validate('required', message: 'El socio es requerido.')]
+    #[Validate('required',              message: 'El socio es requerido.')]
+    #[Validate('exists:socio,id_socio', message: 'El socio seleccionado no existe.')]
     public $id_socio = '';
 
     #[Validate('required', message: 'La placa es requerida.')]
-    #[Validate('min:3', message: 'La placa debe tener al menos 3 caracteres.')]
+    #[Validate('min:6',    message: 'La placa debe tener al menos 6 caracteres.')]
+    #[Validate('max:10',   message: 'La placa no puede tener más de 10 caracteres.')]
+    #[Validate('regex:/^([A-Z]{3}-\d{2}-\d{2}|[A-Z]{3}-\d{3}-[A-Z]|\d{2}-[A-Z]{3}-\d{2})$/', message: 'Formato inválido. Ejemplos válidos: THA-12-34, THB-423-C, 01-MNA-01')]
     public $placa;
 
     #[On('preparar-edicion-urban')]
@@ -55,8 +60,55 @@ new class extends Component {
         $this->js("Flux.modal('modal-eliminar-urban').show()");
     }
 
+    public function updated($property)
+    {
+        if ($property === 'codigo_urban') {
+            $this->validate([
+                'codigo_urban' => [
+                    'required',
+                    'min:3',
+                    'max:10',
+                    'regex:/^[A-Za-z0-9\-]+$/',
+                    \Illuminate\Validation\Rule::unique('urban', 'codigo_urban')->ignore($this->urban?->id_urban, 'id_urban')
+                ]
+            ], [
+                'codigo_urban.unique' => 'El código de la urban ya existe.',
+            ]);
+        } elseif ($property === 'placa') {
+            $this->validate([
+                'placa' => [
+                    'required',
+                    'min:6',
+                    'max:10',
+                    'regex:/^([A-Z]{3}-\d{2}-\d{2}|[A-Z]{3}-\d{3}-[A-Z]|\d{2}-[A-Z]{3}-\d{2})$/',
+                    \Illuminate\Validation\Rule::unique('urban', 'placa')->ignore($this->urban?->id_urban, 'id_urban')
+                ]
+            ], [
+                'placa.unique' => 'La placa ya está registrada.',
+                'placa.regex' => 'Formato inválido. Ejemplos válidos: THA-12-34, THB-423-C, 01-MNA-01'
+            ]);
+        } else {
+            $this->validateOnly($property);
+        }
+    }
+
     public function update()
     {
+        // Validar unicidad ignorando a esta urban
+        $this->validate([
+            'codigo_urban' => [
+                'required',
+                \Illuminate\Validation\Rule::unique('urban', 'codigo_urban')->ignore($this->urban->id_urban, 'id_urban')
+            ],
+            'placa' => [
+                'required',
+                \Illuminate\Validation\Rule::unique('urban', 'placa')->ignore($this->urban->id_urban, 'id_urban')
+            ]
+        ], [
+            'codigo_urban.unique' => 'El código de la urban ya existe.',
+            'placa.unique' => 'La placa ya está registrada.'
+        ]);
+
         $this->validate();
 
         if ($this->tieneViajesPendientes()) {
@@ -156,37 +208,52 @@ new class extends Component {
                 </div>
             @endif
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                {{-- Código de la Urban --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Código de la Urban</flux:label>
-                    <flux:input wire:model.live.blur="codigo_urban" icon:trailing="a-large-small" type="text"
-                        description:trailing="Ingrese minimo 3 caracteres" />
+                    <flux:input wire:model.live.blur="codigo_urban"
+                        type="text"
+                        placeholder="Ej: URB001"
+                        icon-trailing="a-large-small" />
+                    <flux:description>Alfanumérico, de 3 a 10 caracteres</flux:description>
                     <flux:error name="codigo_urban" />
                 </flux:field>
 
+                {{-- Número de Asientos --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Número de Asientos</flux:label>
-                    <flux:input wire:model.live.blur="numero_asientos" icon:trailing="a-large-small" type="number"
-                        description:trailing="Ingrese el numero de asientos" />
+                    <flux:select wire:model.live="numero_asientos" placeholder="Seleccione la cantidad de asientos">
+                        <flux:select.option value="10">10 asientos</flux:select.option>
+                        <flux:select.option value="15">15 asientos</flux:select.option>
+                        <flux:select.option value="20">20 asientos</flux:select.option>
+                    </flux:select>
+                    <flux:description>Capacidad del vehículo: 10, 15 o 20 asientos</flux:description>
                     <flux:error name="numero_asientos" />
                 </flux:field>
 
+                {{-- Socio --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Socio</flux:label>
-                    <flux:select wire:model="id_socio" placeholder="Seleccione el socio"
-                        description:trailing="Seleccione el socio" searchable>
+                    <flux:select wire:model="id_socio" placeholder="Seleccione el socio responsable"
+                        searchable>
                         @foreach ($this->socios as $socio)
                             <flux:select.option value="{{ $socio->id_socio }}">
                                 {{ $socio->nombre }} {{ $socio->apellido_paterno }} {{ $socio->apellido_materno }}
                             </flux:select.option>
                         @endforeach
                     </flux:select>
+                    <flux:description>Socio propietario del vehículo</flux:description>
                     <flux:error name="id_socio" />
                 </flux:field>
 
+                {{-- Placa --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Placa</flux:label>
-                    <flux:input wire:model.live.blur="placa" icon:trailing="a-large-small" type="text"
-                        description:trailing="Ingrese la placa" />
+                    <flux:input wire:model.live.blur="placa"
+                        type="text"
+                        placeholder="Ej: ABC-1234"
+                        icon-trailing="a-large-small" />
+                    <flux:description>Solo mayúsculas, números y guiones (6-10 caracteres)</flux:description>
                     <flux:error name="placa" />
                 </flux:field>
             </div>

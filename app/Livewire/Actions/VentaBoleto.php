@@ -179,33 +179,56 @@ class VentaBoleto extends Component
         ]);
 
         try {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
 
-            $idUsuarioLogueado = Auth::id();
-
-            $turnoActivo = \App\Models\Turno::where('id_usuario', $idUsuarioLogueado)
-                ->latest('id_turno')
-                ->first();
-
-            if (!$turnoActivo) {
-                throw new \Exception("No tienes un turno abierto.");
+            if (!$user->hasRole('cajero')) {
+                throw new \Exception("Acceso denegado: Solo los cajeros pueden realizar ventas.");
             }
-            $clienteId = $this->resolverCliente();
 
-            $boleto = Boleto::create([
-                'id_corrida'   => $this->corridaId,
-                'id_cliente'   => $clienteId,
-                'id_turno'     => $turnoActivo->id_turno,
-                'folio'        => $this->folio,
-                'estado'       => 'activo',
-                'tipo_de_pago' => $this->tipoPago,
-                'descuento'    => $this->descuento,
-            ]);
+            $turnoActivo = $user->turnoActivo;
+            if (!$turnoActivo) {
+                throw new \Exception("No se encontró un turno abierto.");
+            }
 
-            BoletoCliente::create([
-                'id_boleto'     => $boleto->id_boleto,
-                'id_asiento'    => $this->asientoId,
-                'peso_equipaje' => $this->pesoEquipaje ?: 0,
-            ]);
+            \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
+                $clienteId = $this->resolverCliente();
+                $tarifa    = (float) ($this->corridaData['tarifa_raw'] ?? 0);
+                $subtotal  = $tarifa;
+                $total     = max(0, $tarifa - $this->descuento);
+
+                // 1. Venta
+                $venta = \App\Models\Venta::create([
+                    'id_cliente' => $clienteId,
+                    'subtotal'   => (int) round($subtotal),
+                    'descuento'  => (int) round($this->descuento),
+                    'total'      => (int) round($total),
+                    'fecha'      => today(),
+                ]);
+
+                // 2. DetalleVenta
+                $detalle = \App\Models\DetalleVenta::create([
+                    'id_venta' => $venta->id_venta,
+                ]);
+
+                // 3. Boleto
+                $boleto = \App\Models\Boleto::create([
+                    'id_corrida'       => $this->corridaId,
+                    'id_cliente'       => $clienteId,
+                    'id_detalle_venta' => $detalle->id_detalle_venta,
+                    'folio'            => $this->folio,
+                    'estado'           => 'activo',
+                    'tipo_de_pago'     => $this->tipoPago,
+                    'descuento'        => $this->descuento,
+                ]);
+
+                // 4. BoletoCliente
+                \App\Models\BoletoCliente::create([
+                    'id_boleto'     => $boleto->id_boleto,
+                    'id_asiento'    => $this->asientoId,
+                    'peso_equipaje' => $this->pesoEquipaje ?: 0,
+                ]);
+            });
 
             $this->flashMsg  = "✓ Boleto {$this->folio} registrado correctamente.";
             $this->flashType = 'success';
@@ -223,35 +246,58 @@ class VentaBoleto extends Component
             'corridaId'      => 'required',
             'asientoId'      => 'required',
             'nombreCompleto' => 'required|min:3',
+        ], [
+            'corridaId.required'      => 'Selecciona una corrida.',
+            'asientoId.required'      => 'Selecciona un asiento.',
+            'nombreCompleto.required' => 'Ingresa el nombre del pasajero.',
         ]);
 
         try {
-            $idUsuarioLogueado = Auth::id();
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
 
-            $turnoActivo = \App\Models\Turno::where('id_usuario', $idUsuarioLogueado)
-                ->latest('id_turno')
-                ->first();
-
-            if (!$turnoActivo) {
-                throw new \Exception("No tienes un turno abierto.");
+            if (!$user->hasRole('cajero')) {
+                throw new \Exception("Acceso denegado: Solo los cajeros pueden realizar ventas.");
             }
-            $clienteId = $this->resolverCliente();
 
-            $boleto = Boleto::create([
-                'id_corrida'   => $this->corridaId,
-                'id_cliente'   => $clienteId,
-                'id_turno'     => $turnoActivo->id_turno,
-                'folio'        => $this->folio,
-                'estado'       => 'apartado',
-                'tipo_de_pago' => $this->tipoPago ?: 'Pendiente',
-                'descuento'    => $this->descuento,
-            ]);
+            $turnoActivo = $user->turnoActivo;
+            if (!$turnoActivo) {
+                throw new \Exception("No se encontró un turno abierto.");
+            }
 
-            BoletoCliente::create([
-                'id_boleto'     => $boleto->id_boleto,
-                'id_asiento'    => $this->asientoId,
-                'peso_equipaje' => $this->pesoEquipaje ?: 0,
-            ]);
+            \Illuminate\Support\Facades\DB::transaction(function () {
+                $clienteId = $this->resolverCliente();
+                $tarifa    = (float) ($this->corridaData['tarifa_raw'] ?? 0);
+
+                // Venta con total 0 — pago pendiente al confirmar
+                $venta = \App\Models\Venta::create([
+                    'id_cliente' => $clienteId,
+                    'subtotal'   => (int) round($tarifa),
+                    'descuento'  => 0,
+                    'total'      => 0,
+                    'fecha'      => today(),
+                ]);
+
+                $detalle = \App\Models\DetalleVenta::create([
+                    'id_venta' => $venta->id_venta,
+                ]);
+
+                $boleto = \App\Models\Boleto::create([
+                    'id_corrida'       => $this->corridaId,
+                    'id_cliente'       => $clienteId,
+                    'id_detalle_venta' => $detalle->id_detalle_venta,
+                    'folio'            => $this->folio,
+                    'estado'           => 'apartado',
+                    'tipo_de_pago'     => 'Pendiente',
+                    'descuento'        => 0,
+                ]);
+
+                \App\Models\BoletoCliente::create([
+                    'id_boleto'     => $boleto->id_boleto,
+                    'id_asiento'    => $this->asientoId,
+                    'peso_equipaje' => $this->pesoEquipaje ?: 0,
+                ]);
+            });
 
             $this->flashMsg  = "⏳ Asiento apartado — Folio: {$this->folio}";
             $this->flashType = 'success';
@@ -262,6 +308,10 @@ class VentaBoleto extends Component
             $this->flashType = 'error';
         }
     }
+
+
+
+
 
     public function cancelar(): void
     {
@@ -279,17 +329,14 @@ class VentaBoleto extends Component
             return;
         }
 
-        // 1. Obtenemos los asientos ocupados para ESTA corrida específica.
-        // Relacionamos BoletoCliente -> Boleto para filtrar por id_corrida y estado.
         $asientosOcupadosMap = BoletoCliente::whereHas('boleto', function ($query) use ($corrida) {
             $query->where('id_corrida', $corrida->id_corrida)
                 ->whereIn('estado', ['activo', 'apartado']);
         })
-            ->with('boleto:id_boleto,estado') // Cargamos el estado del boleto
+            ->with('boleto:id_boleto,estado')
             ->get()
-            ->keyBy('id_asiento'); // Usamos el id_asiento como llave para búsqueda rápida
+            ->keyBy('id_asiento');
 
-        // 2. Traemos la lista maestra de asientos de la unidad (Urban)
         $todosAsientos = Asiento::where('id_urban', $corrida->urban->id_urban)
             ->orderBy('nombre')
             ->get();
@@ -298,27 +345,27 @@ class VentaBoleto extends Component
         $asientosPlano = [];
 
         foreach ($todosAsientos as $a) {
-            // --- Lógica de Posicionamiento (A01, A02, etc.) ---
-            $numero = (int) substr($a->nombre, 1);
-            if ($numero <= 12) {
-                $fila = (string) ceil($numero / 3);
-                $posicion = ($numero - 1) % 3 + 1;
-                $lado = ($posicion <= 2) ? 'left' : 'right';
+            // Extraer solo el número del nombre (ej: "A01" -> 1)
+            $numero = (int) filter_var($a->nombre, FILTER_SANITIZE_NUMBER_INT);
+
+            // --- Lógica de Posicionamiento Especial ---
+            if ($numero == 3) {
+                $fila = 0;
+                $lado = 'right';
+            } elseif ($numero <= 15) {
+                $fila = (int) ceil($numero / 3);
+                $posicionEnFila = ($numero - 1) % 3;
+
+                $lado = ($posicionEnFila < 2) ? 'left' : 'right';
             } else {
-                $fila = '5';
-                $posicion = $numero - 12;
-                $lado = ($posicion <= 4) ? 'left' : 'right';
+                $fila = 6;
+                $posicionUltimaFila = $numero - 16;
+                $lado = ($posicionUltimaFila < 2) ? 'left' : 'right';
             }
-
-            // --- Determinación del Estado ---
+            // 2. Estado del asiento
             $estadoFinal = 'libre';
-
-            // Verificamos si este ID de asiento existe en nuestro mapa de boletos de la corrida
             if ($asientosOcupadosMap->has($a->id_asiento)) {
-                $boletoRelacionado = $asientosOcupadosMap->get($a->id_asiento)->boleto;
-
-                // Mapeamos el estado del boleto al estado del asiento para la UI
-                $estadoFinal = match (strtolower($boletoRelacionado->estado)) {
+                $estadoFinal = match (strtolower($asientosOcupadosMap->get($a->id_asiento)->boleto->estado)) {
                     'activo'   => 'ocupado',
                     'apartado' => 'apartado',
                     default    => 'libre',
@@ -331,12 +378,16 @@ class VentaBoleto extends Component
                 'estado' => $estadoFinal,
             ];
 
-            $asientosPlano[] = $datosAsiento;
+            // 3. Organizar en el array (Aseguramos que las llaves existan)
+            if (!isset($organizados[$fila])) {
+                $organizados[$fila] = ['left' => [], 'right' => []];
+            }
+
             $organizados[$fila][$lado][] = $datosAsiento;
+            $asientosPlano[] = $datosAsiento;
         }
 
-        ksort($organizados, SORT_NUMERIC);
-
+        ksort($organizados);
         $this->asientosOrganizados = $organizados;
         $this->asientos = $asientosPlano;
     }

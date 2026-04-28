@@ -18,6 +18,9 @@ use App\Http\Controllers\{
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/turno/abrir', function () {
+        return view('turno.create');
+    })->name('turno.create');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('asiento')->group(function () {
@@ -70,11 +73,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('/create', 'create')->name('create');
-                    Route::get('/store', 'store')->name('store');
+                    Route::post('/store', 'store')->name('store');
                     Route::get('/{id}', 'show')->name('show');
                     Route::get('/{id}/edit', 'edit')->name('edit');
-                    Route::get('/{id}', 'update')->name('update');
-                    Route::get('/{id}', 'destroy')->name('destroy');
+                    Route::put('/{id}', 'update')->name('update');
+                    Route::delete('/{id}', 'destroy')->name('destroy');
                 }
             );
         }

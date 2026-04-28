@@ -16,7 +16,7 @@
 
     {{-- Contenido centrado sobre el fondo --}}
     <div class="relative min-h-screen flex flex-col items-center justify-center p-6">
-        <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl px-8 py-10 flex flex-col gap-6">
+        <div class="w-full max-w-sm bg-white dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-2xl shadow-2xl px-8 py-10 flex flex-col gap-6">
 
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 scale-120" wire:navigate>

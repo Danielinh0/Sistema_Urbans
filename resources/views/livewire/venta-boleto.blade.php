@@ -1,22 +1,5 @@
 <div class="space-y-6 pb-10">
 
-    {{-- ── Flash ──────────────────────────────────────────────── --}}
-    @if($flashMsg)
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
-        {{ $flashType === 'success'
-            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-            : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' }}"
-        wire:key="flash">
-        @if($flashType === 'success')
-        <flux:icon.circle-plus class="size-5 shrink-0" />
-        @else
-        <flux:icon.circle-minus class="size-5 shrink-0" />
-        @endif
-        {{ $flashMsg }}
-        <button wire:click="$set('flashMsg', '')" class="ml-auto opacity-60 hover:opacity-100">✕</button>
-    </div>
-    @endif
-
     {{-- ── 1. Buscador ─────────────────────────────────────────── --}}
     <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6">
         <h3 class="flex items-center gap-2 font-bold text-gray-800 dark:text-white text-base mb-5">
@@ -30,7 +13,7 @@
                 <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     Fecha de Viaje
                 </flux:label>
-                <flux:input type="date" wire:model.live="filtroFecha" />
+                <flux:input x-bind:min="new Date().toISOString().split('T')[0]" type="date" wire:model.live="filtroFecha" />
             </div>
             <div>
                 <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -223,26 +206,48 @@
                                     rounded-r-lg border border-gray-400 dark:border-neutral-500 shadow-sm"></div>
 
                         {{-- Puerta deslizante (visual) --}}
-                        <div class="absolute -right-1 top-1/2 translate-y-2 w-1.5 h-16
+                        <div class="absolute -right-1 top-1/4 w-1.5 h-16
                                     bg-gray-400 dark:bg-neutral-500 rounded-r-lg"></div>
 
-                        {{-- Área del conductor --}}
-                        <div class="flex items-center gap-3 mb-3 mt-1">
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700
-                                            flex items-center justify-center shadow-md">
-                                    <flux:icon.bus class="size-6 text-white" />
+                        {{-- Área del conductor y Copiloto (Fila 0) --}}
+                        <div class="flex items-center justify-between mb-3 mt-1">
+                            {{-- Lado Conductor --}}
+                            <div class="flex items-center gap-3">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700
+                        flex items-center justify-center shadow-md">
+                                        <flux:icon.bus class="size-6 text-white" />
+                                    </div>
+                                    <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Conductor</span>
                                 </div>
-                                <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Conductor</span>
+                                @if($corridaData && $corridaData['chofer'])
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
+                                        {{ $corridaData['chofer'] }}
+                                    </p>
+                                </div>
+                                @endif
                             </div>
-                            @if($corridaData && $corridaData['chofer'])
-                            <div>
-                                <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
-                                    {{ $corridaData['chofer'] }}
-                                </p>
-                                <p class="text-[10px] text-gray-400 dark:text-gray-500">{{ $corridaData['codigo_urban'] }}</p>
+
+                            {{-- Lado Copiloto (Aquí va el Asiento 3) --}}
+                            <div class="flex flex-col items-center gap-1">
+                                @if(isset($asientosOrganizados[0]['right'][0]))
+                                @php
+                                $seat = $asientosOrganizados[0]['right'][0];
+                                $sc = match(true) {
+                                $asientoId === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10',
+                                $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed',
+                                $seat['estado'] === 'apartado'=> 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed',
+                                default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer',
+                                };
+                                @endphp
+                                <button wire:click="seleccionarAsiento({{ $seat['id'] }})"
+                                    class="relative w-11 h-11 rounded-xl text-[11px] font-bold border-2 transition-all duration-150 flex items-center justify-center {{ $sc }}"
+                                    @if(in_array($seat['estado'], ['ocupado','apartado'])) disabled @endif>
+                                    {{ $seat['nombre'] }}
+                                </button>
+                                @endif
                             </div>
-                            @endif
                         </div>
 
                         {{-- Divisor pasajeros / conductor --}}
@@ -251,8 +256,9 @@
                         {{-- Filas de asientos --}}
                         <div class="space-y-3 relative z-10">
                             @foreach($asientosOrganizados as $fila => $lados)
+                            @continue($fila == 0)
+
                             @php
-                            // Verificamos si es la última fila (generalmente de 4 asientos juntos sin pasillo)
                             $totalEnFila = count($lados['left']) + count($lados['right']);
                             $esFilaTrasera = $totalEnFila >= 4;
                             @endphp
@@ -405,30 +411,6 @@
                 </div>
             </div>
 
-            {{-- Aborda / Baja --}}
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Aborda en
-                    </flux:label>
-                    <flux:input wire:model="abordarEn" placeholder="Origen…">
-                        <x-slot name="iconLeading">
-                            <flux:icon.map-pin-pen class="size-4" />
-                        </x-slot>
-                    </flux:input>
-                </div>
-                <div>
-                    <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Baja en
-                    </flux:label>
-                    <flux:input wire:model="bajarEn" placeholder="Destino…">
-                        <x-slot name="iconLeading">
-                            <flux:icon.map-pin-x class="size-4" />
-                        </x-slot>
-                    </flux:input>
-                </div>
-            </div>
-
             {{-- Categoría / Descuento --}}
             <div>
                 <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -511,5 +493,40 @@
         </div>{{-- /form card --}}
     </div>{{-- /grid --}}
     @endif
+
+    {{-- ── Toast notification ──────────────────────────────────── --}}
+    @if($flashMsg)
+    <div
+        x-data="{ visible: true }"
+        x-init="setTimeout(() => { visible = false; $wire.set('flashMsg', '') }, 4000)"
+        x-show="visible"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-4"
+        wire:key="toast-{{ $flashMsg }}"
+        class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl text-sm font-medium max-w-sm
+        {{ $flashType === 'success'
+            ? 'bg-emerald-50 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700'
+            : 'bg-red-50 dark:bg-red-900/80 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700' }}">
+        @if($flashType === 'success')
+        <flux:icon.circle-plus class="size-5 shrink-0 text-emerald-500" />
+        @else
+        <flux:icon.circle-minus class="size-5 shrink-0 text-red-500" />
+        @endif
+
+        <span class="flex-1">{{ $flashMsg }}</span>
+
+        <button
+            x-on:click="visible = false; $wire.set('flashMsg', '')"
+            class="ml-1 opacity-50 hover:opacity-100 transition-opacity">
+            <flux:icon.x class="size-4" />
+        </button>
+    </div>
+    @endif
+
+
 
 </div>

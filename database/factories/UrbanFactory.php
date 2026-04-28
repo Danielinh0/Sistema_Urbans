@@ -16,7 +16,7 @@ class UrbanFactory extends Factory
             'id_socio' => Socio::all()->random()->id_socio,
             'placa' => $this->faker->unique()->regexify('[A-Z]{3}[0-9]{3}'),
             'codigo_urban' => 'URB-' . $this->faker->unique()->numberBetween(100, 999),
-            'numero_asientos' => $this->faker->numberBetween(15, 30),
+            'numero_asientos' => 19,
         ];
     }
 }

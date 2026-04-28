@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ruta;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RutaController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('viewAny', Ruta::class);
         return view('ruta.index');
     }
 
@@ -19,6 +24,7 @@ class RutaController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Ruta::class);
         return view('ruta.create');
     }
 
@@ -27,7 +33,11 @@ class RutaController extends Controller
      */
     public function store(Request $request)
     {
-        return view('ruta.index');
+        $this->authorize('create', Ruta::class);
+
+        // Tu lógica para guardar aquí...
+
+        return redirect()->route('ruta.index');
     }
 
     /**
@@ -35,6 +45,9 @@ class RutaController extends Controller
      */
     public function show($id)
     {
+        $ruta = Ruta::findOrFail($id);
+        $this->authorize('view', $ruta);
+
         return view('ruta.show', ['id' => $id]);
     }
 
@@ -43,6 +56,9 @@ class RutaController extends Controller
      */
     public function edit($id)
     {
+        $ruta = Ruta::findOrFail($id);
+        $this->authorize('update', $ruta);
+
         return view('ruta.edit', ['id' => $id]);
     }
 
@@ -51,7 +67,9 @@ class RutaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        return view('ruta.index');
+        $ruta = Ruta::findOrFail($id);
+        $this->authorize('update', $ruta);
+        return redirect()->route('ruta.index');
     }
 
     /**
@@ -59,6 +77,8 @@ class RutaController extends Controller
      */
     public function destroy(string $id)
     {
-        return view('ruta.index');
+        $ruta = Ruta::findOrFail($id);
+        $this->authorize('delete', $ruta);
+        return redirect()->route('ruta.index');
     }
 }

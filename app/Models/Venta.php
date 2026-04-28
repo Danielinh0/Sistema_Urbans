@@ -15,7 +15,6 @@ class Venta extends Model
     protected $primaryKey = 'id_venta';
 
     protected $fillable = [
-        'id_boleto',
         'id_cliente',
         'total',
         'subtotal',
@@ -27,10 +26,6 @@ class Venta extends Model
         'fecha' => 'date',
     ];
 
-    public function boleto(): BelongsTo
-    {
-        return $this->belongsTo(Boleto::class, 'id_boleto', 'id_boleto');
-    }
 
     public function cliente(): BelongsTo
     {

@@ -14,11 +14,11 @@ return new class extends Migration
             $table->foreignId('id_taquilla')->constrained('taquilla', 'id_taquilla')->onDelete('cascade');
             // Se agrega la clave foránea 'id_venta' en una migración posterior porque 'venta' es creada después de 'turno'.
             $table->foreignId('id_venta')->nullable();
-            $table->integer('monto_inicial');
-            $table->integer('monto_final');
+            $table->decimal('monto_inicial', 12, 2)->default(0);
+            $table->decimal('monto_final', 12, 2)->nullable();
             $table->date('fecha');
             $table->time('hora_inicio');
-            $table->time('hora_fin');
+            $table->time('hora_fin')->nullable();
         });
     }
 
