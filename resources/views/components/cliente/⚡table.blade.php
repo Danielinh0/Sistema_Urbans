@@ -60,31 +60,23 @@ new class extends Component
     <div>
         <flux:card>
             <flux:table :paginate="$this->clientes">
-                <flux:table.columns >
+                <flux:table.columns>
                     <x-header-table sortable="id_cliente" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
                     <x-header-table icon="user-round" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
                     <x-header-table sortable="apellido_paterno" :sortBy="$sortBy" :sortDirection="$sortDirection">Apellido Paterno</x-header-table>
                     <x-header-table sortable="apellido_materno" :sortBy="$sortBy" :sortDirection="$sortDirection">Apellido Materno</x-header-table>
-                    <x-header-table icon="tickets">Cantidad de compras</x-header-table>
-                    <x-header-table icon="layout-grid">Acciones</x-header-table>
+                    <x-header-table icon="shopping-bag">Cantidad de compras</x-header-table>
+                    <x-header-table icon="layout-grid" align="center">Acciones</x-header-table>
                 </flux:table.columns>
                 <flux:table.rows>
                     @forelse ($this->clientes as $cliente)
                         <flux:table.row :key="$cliente->id_cliente">
+                            <flux:table.cell>{{ $cliente->id_cliente }}</flux:table.cell>
+                            <flux:table.cell>{{ $cliente->nombre }}</flux:table.cell>
+                            <flux:table.cell>{{ $cliente->apellido_paterno }}</flux:table.cell>
+                            <flux:table.cell>{{ $cliente->apellido_materno }}</flux:table.cell>
                             <flux:table.cell>
-                                {{ $cliente->id_cliente }}
-                            </flux:table.cell>
-                            <flux:table.cell>
-                                {{ $cliente->nombre }}
-                            </flux:table.cell>
-                            <flux:table.cell>
-                                {{ $cliente->apellido_paterno }}
-                            </flux:table.cell>
-                            <flux:table.cell>
-                                {{ $cliente->apellido_materno }}
-                            </flux:table.cell>
-                            <flux:table.cell>
-                                {{ $cliente->ventas->count() }}
+                                <flux:badge color="cyan">{{ $cliente->ventas->count() }}</flux:badge>
                             </flux:table.cell>
                             <flux:table.cell class="flex gap-2">
                                 <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
@@ -97,12 +89,14 @@ new class extends Component
                                         <span class="hidden xl:inline ml-1">Eliminar</span>
                                     </flux:button>       
                                 @endif
-                                
                             </flux:table.cell>
                         </flux:table.row>
-                        
                     @empty
-                        
+                        <flux:table.row>
+                            <flux:table.cell colspan="6" class="text-center py-4">
+                                No se encontraron clientes.
+                            </flux:table.cell>
+                        </flux:table.row>
                     @endforelse
                 </flux:table.rows>
             </flux:table>

@@ -63,13 +63,34 @@ new class extends Component
 <div>
     <flux:modal name="modal-editar-cliente" class="w-[60%] p-10">
         @if ($cliente)
-            <flux:heading size="lg">Editar Cliente: {{ $cliente->nombre }} {{ $cliente->apellido_paterno }} {{ $cliente->apellido_materno }}</flux:heading>
+            <flux:heading class="!text-xl !font-bold" size="lg">
+                Editar cliente: {{ $cliente->nombre }} {{ $cliente->apellido_paterno }} {{ $cliente->apellido_materno }}
+            </flux:heading>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-6">
-                <flux:input wire:model.live.blur="nombre" label="Nombre" />
-                <flux:input wire:model.live.blur="apellido_paterno" label="Apellido Paterno" />
-                <flux:input wire:model.live.blur="apellido_materno" label="Apellido Materno" />
+                <flux:field>
+                    <flux:label badge="Obligatorio">Nombre(s)</flux:label>
+                    <flux:input wire:model.live.blur="nombre" icon:trailing="a-large-small"
+                        description:trailing="Ingrese minimo 3 caracteres" />
+                    <flux:error name="nombre" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label badge="Obligatorio">Apellido Paterno</flux:label>
+                    <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small"
+                        description:trailing="Ingrese minimo 3 caracteres" />
+                    <flux:error name="apellido_paterno" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label badge="Obligatorio">Apellido Materno</flux:label>
+                    <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small"
+                        description:trailing="Ingrese minimo 3 caracteres" />
+                    <flux:error name="apellido_materno" />
+                </flux:field>
 
             </div>
+
             <div class="mt-8">
                 <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
             </div>
@@ -81,7 +102,8 @@ new class extends Component
             <div class="space-y-6">
                 <flux:heading size="lg">Eliminar Cliente</flux:heading>
                 <flux:text>
-                    ¿Estás seguro de que deseas eliminar el cliente <b>{{ $cliente->nombre }} {{ $cliente->apellido_paterno }} {{ $cliente->apellido_materno }}</b>?
+                    ¿Estás seguro de que deseas eliminar al cliente
+                    <b>{{ $cliente->nombre }} {{ $cliente->apellido_paterno }} {{ $cliente->apellido_materno }}</b>?
                 </flux:text>
                 <div class="flex gap-2">
                     <flux:spacer />

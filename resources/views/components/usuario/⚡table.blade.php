@@ -5,6 +5,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Sucursal;
 
 new class extends Component
 {
@@ -13,6 +14,8 @@ new class extends Component
     public $sortBy = 'id_usuario';
     public $sortDirection = 'desc';
     public $search = '';
+    public $filtroSucursal = '';
+    public $filtroRol = '';
 
     public function sort($column) {
         if ($this->sortBy === $column) {
@@ -38,6 +41,24 @@ new class extends Component
         $this->resetPage();
     }
 
+    #[On('filterUpdated')]
+    public function aplicarFiltros($filters)
+    {
+        $this->filtroSucursal = $filters['id_sucursal'] ?? '';
+        $this->filtroRol = $filters['rol_nombre'] ?? '';
+        $this->resetPage();
+    }
+
+    #[Computed]
+    public function sucursales(){
+        return Sucursal::orderBy('nombre')->get();
+    }
+
+    #[Computed]
+    public function all_roles(){
+        return \Spatie\Permission\Models\Role::orderBy('name')->get();
+    }
+
     #[Computed]
     public function usuarios(){
         $allowedSorts = ['id_usuario', 'name', 'email', 'id_sucursal', 'rol_nombre'];
@@ -47,19 +68,22 @@ new class extends Component
             ->with(['sucursal', 'direccion.calle.colonia.codigoPostal.estado.pais'])
             ->withMin('roles as rol_nombre', 'name')
             ->when($this->search !== '', function ($query) use ($search){
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'ILIKE', "%{$search}%")
-                ->orWhere('apellido_paterno', 'ILIKE', "%{$search}%")
-                ->orWhere('apellido_materno', 'ILIKE', "%{$search}%")
-                ->orWhere('email', 'ILIKE', "%{$search}%")
-                ->orWhereHas('sucursal', function($sq) use ($search){
-                    $sq->where('nombre', 'ILIKE', "%{$search}%");
-                })
-                ->orWhereHas('roles', function($rq) use ($search){
-                    $rq->where('name', 'ILIKE', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'ILIKE', "%{$search}%")
+                    ->orWhere('apellido_paterno', 'ILIKE', "%{$search}%")
+                    ->orWhere('apellido_materno', 'ILIKE', "%{$search}%")
+                    ->orWhere('email', 'ILIKE', "%{$search}%");
                 });
-            });
-        })
+            })
+            ->when($this->filtroSucursal !== '', function ($query) {
+                $query->where('id_sucursal', $this->filtroSucursal);
+            })
+            ->when($this->filtroRol !== '', function ($query) {
+                $query->whereHas('roles', function ($q) {
+                    $q->where('name', $this->filtroRol);
+                });
+            })
+            
             ->orderBy($sortColumn, $this->sortDirection)
             ->paginate(10);
     }
@@ -67,7 +91,16 @@ new class extends Component
 ?>
 
 <div>
-    <livewire:barra-busqueda placeholder="Busca un Usuario..." />
+    <livewire:barra-busqueda placeholder="Busca un Usuario..." :filters="[
+        'id_sucursal' => [
+            'label' => 'Sucursal',
+            'options' => $this->sucursales->pluck('nombre', 'id_sucursal')->toArray()
+        ],
+        'rol_nombre' => [
+            'label' => 'Roles',
+            'options' => $this->all_roles->pluck('name', 'name')->toArray()
+        ]
+    ]"/>
     <div>
         <flux:card>
             <flux:table :paginate="$this->usuarios">
@@ -86,16 +119,20 @@ new class extends Component
                             <flux:table.cell>{{ $usuario->id_usuario }}</flux:table.cell>
                             <flux:table.cell>{{ $usuario->name }} {{ $usuario->apellido_paterno }} {{ $usuario->apellido_materno }}</flux:table.cell>
                             <flux:table.cell>{{ $usuario->email }}</flux:table.cell>
-                            <flux:table.cell>{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}</flux:table.cell>
-                            <flux:table.cell>{{ $usuario->rol_nombre ?? 'N/A' }}</flux:table.cell>
+                            <flux:table.cell variant="strong">
+                                <flux:badge color="yellow">{{ $usuario->sucursal ? $usuario->sucursal->nombre : 'N/A' }}</flux:badge>
+                            </flux:table.cell>
+                            <flux:table.cell variant="strong">
+                                <flux:badge color="green">{{ $usuario->rol_nombre ?? 'N/A' }}</flux:badge>
+                            </flux:table.cell>
                             <flux:table.cell>
-                            {{$usuario->direccion->calle->nombre ?? ''}}
-                            #{{$usuario->direccion->numero_exterior ?? ''}}, 
-                            {{$usuario->direccion->calle->colonia->nombre ?? ''}}, 
-                            {{$usuario->direccion->calle->colonia->codigoPostal->numero ?? ''}}, 
-                            {{$usuario->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
-                            {{$usuario->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
-                        </flux:table.cell>
+                                {{$usuario->direccion->calle->nombre ?? ''}}
+                                #{{$usuario->direccion->numero_exterior ?? ''}}, 
+                                {{$usuario->direccion->calle->colonia->nombre ?? ''}}, 
+                                {{$usuario->direccion->calle->colonia->codigoPostal->numero ?? ''}}, 
+                                {{$usuario->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
+                                {{$usuario->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
+                            </flux:table.cell>
                             <flux:table.cell class="flex gap-2">
                                 <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
                                     wire:click="$dispatch('preparar-edicion-usuario', { id: {{ $usuario->id_usuario }} })">
@@ -107,9 +144,7 @@ new class extends Component
                                         <span class="hidden xl:inline ml-1">Eliminar</span>
                                     </flux:button>
                                 @endif
-                                
                             </flux:table.cell>
-
                         </flux:table.row>
                     @empty
                         <flux:table.row>
@@ -118,7 +153,6 @@ new class extends Component
                             </flux:table.cell>
                         </flux:table.row>    
                     @endforelse
-
                 </flux:table.rows>
             </flux:table>
         </flux:card>

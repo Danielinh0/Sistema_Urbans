@@ -113,6 +113,16 @@ new class extends Component
         return Calle::where('id_colonia', $this->colonia)->orderby('nombre')->get();
     }
 
+    #[Computed]
+    public function sucursales(){
+        return Sucursal::orderBy('nombre')->get();
+    }
+
+    #[Computed]
+    public function all_roles(){
+        return \Spatie\Permission\Models\Role::orderBy('name')->get();
+    }
+
     #[On('preparar-edicion-usuario')]
     public function prepararEdicion($id){
         $this->usuario = User::find($id);
@@ -192,61 +202,124 @@ new class extends Component
 ?>
 
 <div>
-    <flux:modal name="modal-editar-usuario" class="w-[100%] p-10">
+    <flux:modal name="modal-editar-usuario" class="w-[60%] p-10">
         @if ($this->usuario)
             <flux:heading size="lg">Editar Usuario: {{ $this->usuario->name }} {{ $this->usuario->apellido_paterno }} {{ $this->usuario->apellido_materno }}</flux:heading>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-6">
-                <flux:input wire:model.live.blur="name" label="Nombre" />
-                <flux:input wire:model.live.blur="apellido_paterno" label="Apellido Paterno" />
-                <flux:input wire:model.live.blur="apellido_materno" label="Apellido Materno" />
-                <flux:input wire:model.live.blur="email" label="Email" type="email" />
-                <flux:select wire:model.live.blur="pais" label="País">
-                    <flux:select.option value="">Seleccione un país</flux:select.option>
-                    @foreach($this->paises as $pais2)
-                        <flux:select.option value="{{ $pais2->id_pais }}">{{ $pais2->nombre }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-                <flux:select wire:model.live.blur="estado" label="Estado" searchable :disabled="!$this->pais">
-                    <flux:select.option value="">Seleccione un estado</flux:select.option>
-                    @foreach($this->estados as $estado)
-                        <flux:select.option value="{{ $estado->id_estado }}">{{ $estado->nombre }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-                <flux:select wire:model.live.blur="codigoPostal" label="Código Postal" searchable :disabled="!$this->estado">
-                    <flux:select.option value="">Seleccione un código postal</flux:select.option>
-                    @foreach($this->codigos as $codigo)
-                        <flux:select.option value="{{ $codigo->id_cp }}">{{ $codigo->numero }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-                <flux:select wire:model.live.blur="colonia" label="Colonia" searchable :disabled="!$this->codigoPostal">
-                    <flux:select.option value="">Seleccione una colonia</flux:select.option>
-                    @foreach($this->colonias as $colonia)
-                        <flux:select.option value="{{ $colonia->id_colonia }}">{{ $colonia->nombre }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-                <flux:select wire:model.live.blur="calle" label="Calle" searchable :disabled="!$this->colonia">
-                    <flux:select.option value="">Seleccione una calle</flux:select.option>
-                    @foreach($this->calles as $calle)
-                        <flux:select.option value="{{ $calle->id_calle }}">{{ $calle->nombre }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-                <flux:input wire:model.live.blur="numero_exterior" label="Número Exterior" />
-                <flux:input wire:model.live.blur="numero_interior" label="Número Interior" />
-                
-
+                <flux:field>
+                    <flux:label badge="Obligatorio">Nombre</flux:label>
+                    <flux:input wire:model.live.blur="name" icon:trailing="a-large-small" type="text" />
+                    <flux:error name="name" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Apellido Paterno</flux:label>
+                    <flux:input wire:model.live.blur="apellido_paterno" icon:trailing="a-large-small" type="text" />
+                    <flux:error name="apellido_paterno" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Opcional">Apellido Materno</flux:label>
+                    <flux:input wire:model.live.blur="apellido_materno" icon:trailing="a-large-small" type="text" />
+                    <flux:error name="apellido_materno" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Email</flux:label>
+                    <flux:input wire:model.live.blur="email" icon:trailing="mail" type="email" />
+                    <flux:error name="email" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">País</flux:label>
+                    <flux:select wire:model.live.blur="pais">
+                        <flux:select.option value="">Seleccione un país</flux:select.option>
+                        @foreach($this->paises as $pais2)
+                            <flux:select.option value="{{ $pais2->id_pais }}">{{ $pais2->nombre }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Estado</flux:label>
+                    <flux:select wire:model.live.blur="estado" searchable :disabled="!$this->pais">
+                        <flux:select.option value="">Seleccione un estado</flux:select.option>
+                        @foreach($this->estados as $estado)
+                            <flux:select.option value="{{ $estado->id_estado }}">{{ $estado->nombre }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Código Postal</flux:label>
+                    <flux:select wire:model.live.blur="codigoPostal" searchable :disabled="!$this->estado">
+                        <flux:select.option value="">Seleccione un código postal</flux:select.option>
+                        @foreach($this->codigos as $codigo)
+                            <flux:select.option value="{{ $codigo->id_cp }}">{{ $codigo->numero }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Colonia</flux:label>
+                    <flux:select wire:model.live.blur="colonia" searchable :disabled="!$this->codigoPostal">
+                        <flux:select.option value="">Seleccione una colonia</flux:select.option>
+                        @foreach($this->colonias as $colonia)
+                            <flux:select.option value="{{ $colonia->id_colonia }}">{{ $colonia->nombre }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Calle</flux:label>
+                    <flux:select wire:model.live.blur="calle" label="Calle" searchable :disabled="!$this->colonia">
+                        <flux:select.option value="">Seleccione una calle</flux:select.option>
+                        @foreach($this->calles as $calle)
+                            <flux:select.option value="{{ $calle->id_calle }}">{{ $calle->nombre }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Número Exterior</flux:label>
+                    <flux:input wire:model.live.blur="numero_exterior" icon:trailing="hashtag" type="text" />
+                    <flux:error name="numero_exterior" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Opcional">Número Interior</flux:label>
+                    <flux:input wire:model.live.blur="numero_interior" icon:trailing="hashtag" type="text" />
+                    <flux:error name="numero_interior" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Sucursal</flux:label>
+                    <flux:select wire:model.live.blur="id_sucursal" >
+                        <flux:select.option value="">Seleccione una sucursal</flux:select.option>
+                        @foreach($this->sucursales as $sucursal)
+                            <flux:select.option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Obligatorio">Rol</flux:label>
+                    <flux:select wire:model.live.blur="roles" label="Roles" searchable>
+                        <flux:select.option value="">Seleccione un rol</flux:select.option>
+                        @foreach($this->all_roles as $rol)
+                            <flux:select.option value="{{ $rol->name }}">{{ $rol->name }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </flux:field>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-6">
-                <flux:input wire:model.live.blur="password" type="password" label="Contraseña" description:trailing="Ingrese la contraseña nueva (en caso de no querer cambiar la contraseña actual, deje los campos vacios)" viewable/>
-                <flux:input wire:model.live.blur="password_confirmation" type="password" label="Confirmar Contraseña" description:trailing="Confirme la contraseña" viewable/>
+                <flux:field>
+                    <flux:label badge="Opcional">Nueva Contraseña</flux:label>
+                    <flux:input wire:model.live.blur="password" type="password" description:trailing="Ingrese la contraseña nueva (en caso de no querer cambiar la contraseña actual, deje los campos vacios)" viewable/>
+                    <flux:error name="password" />
+                </flux:field>
+                <flux:field>
+                    <flux:label badge="Opcional">Confirmar Contraseña</flux:label>
+                    <flux:input wire:model.live.blur="password_confirmation" type="password" description:trailing="Confirme la contraseña" viewable/>
+                    <flux:error name="password_confirmation" />
+                </flux:field>
             </div>
             <div class="mt-8">
                 <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
             </div>
         @endif
     </flux:modal>
-    <flux:modal class="space-y-6" name="modal-eliminar-usuario" class="min-w-[22rem]">
+    <flux:modal name="modal-eliminar-usuario" class="min-w-[22rem]">
         @if($this->usuario)
-            <div>
+            <div class="space-y-6">
                 <flux:heading size="lg">Eliminar Usuario</flux:heading>
                 <flux:text>
                     ¿Estás seguro de que deseas eliminar el usuario <b>{{ $this->usuario->name }}</b>?
