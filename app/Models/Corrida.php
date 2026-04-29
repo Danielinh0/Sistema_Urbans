@@ -21,10 +21,30 @@ class Corrida extends Model
         'id_ruta',
         'id_usuario',
         'datetime_salida',
-        'datetime_llegada', 
+        'datetime_llegada',
         'estado',
         'id_urban',
     ];
+
+    protected $casts = [
+        'datetime_salida' => 'datetime',
+        'datetime_llegada' => 'datetime',
+    ];
+
+    public function getFechaAttribute()
+    {
+        return $this->datetime_salida?->toDateString();
+    }
+
+    public function getHoraSalidaAttribute()
+    {
+        return $this->datetime_salida;
+    }
+
+    public function getHoraLlegadaAttribute()
+    {
+        return $this->datetime_llegada;
+    }
     
     public function ruta(): BelongsTo
     {

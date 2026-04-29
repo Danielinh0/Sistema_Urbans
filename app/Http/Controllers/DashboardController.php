@@ -10,8 +10,8 @@ class DashboardController extends Controller
     public function index()
     {
         $corridas = Corrida::with(['ruta', 'urban', 'boletos'])
-            ->whereDate('fecha', today())
-            ->orderBy('hora_salida', 'asc')
+            ->whereDate('datetime_salida', today())
+            ->orderBy('datetime_salida', 'asc')
             ->get()
             ->map(function ($corrida) {
                 $totalAsientos    = $corrida->urban?->numero_asientos ?? 0;

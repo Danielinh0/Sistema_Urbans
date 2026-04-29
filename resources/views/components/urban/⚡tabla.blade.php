@@ -62,7 +62,7 @@ new class extends Component {
             })
             ->when($this->filtroEstado === 'libre', function ($query) {
                 $query->whereDoesntHave('corrida', function ($q) {
-                    $q->where('hora_llegada', '>=', now());
+                    $q->where('datetime_llegada', '>=', now());
                 });
             })
             ->when($this->filtroAsientos === '10', function ($query) {

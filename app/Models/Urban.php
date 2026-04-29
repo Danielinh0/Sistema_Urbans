@@ -41,7 +41,7 @@ class Urban extends Model
     public function scopeConViajesPendientes($query)
     {
         return $query->whereHas('corrida', function ($q) {
-            $q->where('hora_llegada', '>=', now());
+            $q->where('datetime_llegada', '>=', now());
         });
     }
 }

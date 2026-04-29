@@ -494,7 +494,7 @@ class VentaBoleto extends Component
     public function render()
     {
         $corridas = Corrida::with(['ruta', 'urban', 'boletos', 'user'])
-            ->whereDate('fecha', $this->filtroFecha ?: today())
+            ->whereDate('datetime_salida', $this->filtroFecha ?: today())
             ->when(
                 $this->filtroRuta,
                 fn($q) =>
@@ -504,7 +504,7 @@ class VentaBoleto extends Component
                     $r->where('nombre', 'like', "%{$this->filtroRuta}%")
                 )
             )
-            ->orderBy('hora_salida', 'asc')
+            ->orderBy('datetime_salida', 'asc')
             ->get()
             ->map(fn($c) => $this->mapearCorrida($c))
             ->toArray();
