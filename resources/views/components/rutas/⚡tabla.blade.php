@@ -55,77 +55,75 @@ new class extends Component {
 
     <livewire:barra-busqueda placeholder="Buscar por nombre de ruta" />
 
-    <flux:card>
-        <flux:table :paginate="$this->rutas">
+    <flux:card class="!p-2 overflow-x-auto">
+        <flux:table :paginate="$this->rutas" class="w-full text-sm compact-table" dense>
             <flux:table.columns>
 
-                <x-header-table sortable="id_ruta" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID
-                </x-header-table>
+                <x-header-table sortable="id_ruta" class="w-[3.25rem] col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
 
-                <x-header-table icon="map-pinned"> Ruta </x-header-table>
+                <x-header-table icon="map-pinned" class="w-[11rem]">Ruta</x-header-table>
 
-                <x-header-table icon="land-plot"> Distancia (km) </x-header-table>
+                <x-header-table icon="land-plot" class="w-[5rem] col-hide-md">Dist. (km)</x-header-table>
 
-                <x-header-table icon="alarm-clock" sortable="tiempo_estimado" :sortBy="$sortBy"
-                    :sortDirection="$sortDirection"> Tiempo Est. </x-header-table>
+                <x-header-table icon="alarm-clock" sortable="tiempo_estimado" class="w-[5rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">Tiempo</x-header-table>
 
-                <x-header-table icon="tickets" sortable="tarifa_clientes" :sortBy="$sortBy"
-                    :sortDirection="$sortDirection"> Tarifa Personas </x-header-table>
+                <x-header-table icon="tickets" sortable="tarifa_clientes" class="w-[6rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection">Tarifa</x-header-table>
 
-                <x-header-table icon="package" sortable="tarifa_paquete" :sortBy="$sortBy"
-                    :sortDirection="$sortDirection"> Tarifa Paquetes </x-header-table>
+                <x-header-table icon="package" sortable="tarifa_paquete" class="w-[6rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection">Paquetes</x-header-table>
 
-                <x-header-table icon="layout-grid"> Acciones </x-header-table>
+                <x-header-table icon="wrench" class="w-[10rem]" align="center">Acciones</x-header-table>
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->rutas as $ruta)
                     <flux:table.row :key="$ruta->id_ruta">
-                        <flux:table.cell>
+                        <flux:table.cell class="!px-1 w-[3.25rem] text-center tabular-nums col-hide-sm">
                             {{ $ruta->id_ruta }}
                         </flux:table.cell>
 
-                        <flux:table.cell>
-                            {{ Str::limit($ruta->nombre, 30, '...') }}
-                        </flux:table.cell>
-                        <flux:table.cell class="text-center!">
-                            {{ $ruta->distancia }} km
+                        <flux:table.cell class="!px-2 w-[11rem]">
+                            <div class="truncate" title="{{ $ruta->nombre }}">
+                                {{ Str::limit($ruta->nombre, 25, '...') }}
+                            </div>
                         </flux:table.cell>
 
-                        <flux:table.cell class="pl-15">
+                        <flux:table.cell class="!px-2 w-[5rem] text-center col-hide-md">
+                            {{ $ruta->distancia }}
+                        </flux:table.cell>
+
+                        <flux:table.cell class="!px-2 w-[5rem]">
                             {{ $ruta->tiempo_estimado }}
                         </flux:table.cell>
 
-                        <flux:table.cell class="pl-15" variant="strong">
-                            <flux:badge color="green">
-                                ${{ number_format($ruta->tarifa_clientes, 2) }}
-                            </flux:badge>
+                        <flux:table.cell class="!px-2 w-[6rem] col-hide-md">
+                            <flux:badge color="green" size="sm">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
                         </flux:table.cell>
 
-                        <flux:table.cell class="pl-15" variant="strong">
-                            <flux:badge color="green">
-                                ${{ number_format($ruta->tarifa_paquete, 2) }}
-                            </flux:badge>
+                        <flux:table.cell class="!px-2 w-[6rem] col-hide-md">
+                            <flux:badge color="green" size="sm">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
                         </flux:table.cell>
 
-                        <flux:table.cell class="flex gap-3">
+                        <flux:table.cell class="!px-2 w-[10rem]">
+                            <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                @can('update', $ruta)
+                                    <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
+                                        wire:click="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })">
+                                        Editar
+                                    </flux:button>
+                                @endcan
 
-                            @can('update', $ruta)
-                                <x-boton-estilo bg="bg-azul_menu" c_text="text-white" icon="map-pin-pen" text="Editar"
-                                    evento="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })" />
-                            @endcan
-
-                            {{-- Solo el Gerente verá y podrá activar el botón de Eliminar --}}
-                            @can('delete', $ruta)
-                                <x-boton-estilo bg="bg-rojo_boton" c_text="text-rojo_texto" icon="map-pin-x" text="Eliminar"
-                                    evento="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })" />
-                            @endcan
-
+                                @can('delete', $ruta)
+                                    <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+                                        wire:click="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })">
+                                        Eliminar
+                                    </flux:button>
+                                @endcan
+                            </div>
                         </flux:table.cell>
 
                     </flux:table.row>
                 @empty
                     <flux:table.row>
-                        <flux:table.cell colspan="7" class="text-center py-4 ">
+                        <flux:table.cell colspan="7" class="text-center py-4">
                             No se encontraron rutas.
                         </flux:table.cell>
                     </flux:table.row>

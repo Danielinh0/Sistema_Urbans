@@ -1,6 +1,6 @@
 <x-layouts::app :title="__('ruta')">
 
-    <section class="flex flex-col gap-6 px-9 pt-2">
+    <section class="flex flex-col gap-3 px-4 pt-2">
 
 
         <div class="flex flex-col justify-between items-center

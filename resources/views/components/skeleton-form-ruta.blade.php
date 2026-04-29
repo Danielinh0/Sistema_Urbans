@@ -10,7 +10,8 @@
                 && !['Backspace','Delete','Tab','ArrowLeft','ArrowRight'].includes($event.key)
                 && $event.preventDefault()"
                 icon:trailing="a-large-small"
-                type="text" />
+                type="text"
+                placeholder="Ej: Tepic - San Blas" />
             <flux:error name="nombre" />
         </flux:field>
 
@@ -23,7 +24,8 @@
                     x-on:blur="$wire.touchField('distancia')"
                     type="number"
                     min="0"
-                    icon:trailing="land-plot" />
+                    icon:trailing="land-plot"
+                    placeholder="Ej: 45.5" />
                 <flux:error name="distancia" />
             </flux:field>
             <div>
@@ -37,7 +39,8 @@
                     x-on:blur="$wire.touchField('tarifa_clientes')"
                     type="number"
                     min="0"
-                    icon:trailing="book-user" />
+                    icon:trailing="book-user"
+                    placeholder="Ej: 150.00" />
                 <flux:error name="tarifa_clientes" />
             </flux:field>
             <flux:field>
@@ -48,7 +51,8 @@
                     x-on:blur="$wire.touchField('tarifa_paquete')"
                     type="number"
                     min="0"
-                    icon:trailing="package" />
+                    icon:trailing="package"
+                    placeholder="Ej: 80.00" />
                 <flux:error name="tarifa_paquete" />
             </flux:field>
         </div>

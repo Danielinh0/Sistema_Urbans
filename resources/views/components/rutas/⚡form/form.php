@@ -10,24 +10,26 @@ new class extends Component {
 
     #[Validate('required', message: 'El nombre de la ruta es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
+    #[Validate('unique:ruta,nombre', message: 'Ya existe una ruta con este nombre.')]
     public $nombre;
 
     #[Validate('required', message: 'La distancia es requerida.')]
     #[Validate('numeric', message: 'La distancia debe ser un valor numérico.')]
-    #[Validate('min:0', message: 'La distancia no puede ser negativa.')]
+    #[Validate('min:0.1', message: 'La distancia debe ser mayor a 0.')]
     public $distancia;
 
     #[Validate('required', message: 'El tiempo estimado es requerido.')]
+    #[Validate('date_format:H:i', message: 'El tiempo estimado debe estar en formato HH:MM.')]
     public $tiempo_estimado;
 
     #[Validate('required', message: 'La tarifa para personas es requerida.')]
     #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
-    #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
+    #[Validate('min:1', message: 'La tarifa debe ser mayor a 0.')]
     public $tarifa_clientes;
 
     #[Validate('required', message: 'La tarifa para paquetes es requerida.')]
     #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
-    #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
+    #[Validate('min:1', message: 'La tarifa debe ser mayor a 0.')]
     public $tarifa_paquete;
 
 

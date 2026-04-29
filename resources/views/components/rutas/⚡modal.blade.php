@@ -17,7 +17,7 @@ new class extends Component
 
     #[Validate('required', message: 'La distancia es requerida.')]
     #[Validate('numeric', message: 'La distancia debe ser un valor numérico.')]
-    #[Validate('min:0', message: 'La distancia no puede ser negativa.')]
+    #[Validate('min:0.1', message: 'La distancia debe ser mayor a 0.')]
     public $distancia;
 
     #[Validate('required', message: 'El tiempo estimado es requerido.')]
@@ -26,12 +26,12 @@ new class extends Component
 
     #[Validate('required', message: 'La tarifa para personas es requerida.')]
     #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
-    #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
+    #[Validate('min:1', message: 'La tarifa debe ser mayor a 0.')]
     public $tarifa_clientes;
 
     #[Validate('required', message: 'La tarifa para paquetes es requerida.')]
     #[Validate('numeric', message: 'La tarifa debe ser un valor numérico.')]
-    #[Validate('min:0', message: 'La tarifa no puede ser negativa.')]
+    #[Validate('min:1', message: 'La tarifa debe ser mayor a 0.')]
     public $tarifa_paquete;
 
     #[On('edicion-ruta')]
@@ -72,7 +72,28 @@ new class extends Component
     {
         $this->authorize('update', $this->ruta);
 
-        $this->validate();
+        $this->validate([
+            'nombre' => 'required|min:3|unique:ruta,nombre,' . $this->ruta->id_ruta . ',id_ruta',
+            'distancia' => 'required|numeric|min:0.1',
+            'tiempo_estimado' => 'required|date_format:H:i',
+            'tarifa_clientes' => 'required|numeric|min:1',
+            'tarifa_paquete' => 'required|numeric|min:1',
+        ], [
+            'nombre.required' => 'El nombre de la ruta es requerido.',
+            'nombre.min' => 'El nombre debe tener al menos 3 caracteres.',
+            'nombre.unique' => 'Ya existe una ruta con este nombre.',
+            'distancia.required' => 'La distancia es requerida.',
+            'distancia.numeric' => 'La distancia debe ser un valor numérico.',
+            'distancia.min' => 'La distancia debe ser mayor a 0.',
+            'tiempo_estimado.required' => 'El tiempo estimado es requerido.',
+            'tiempo_estimado.date_format' => 'El tiempo estimado debe estar en formato HH:MM.',
+            'tarifa_clientes.required' => 'La tarifa para personas es requerida.',
+            'tarifa_clientes.numeric' => 'La tarifa debe ser un valor numérico.',
+            'tarifa_clientes.min' => 'La tarifa debe ser mayor a 0.',
+            'tarifa_paquete.required' => 'La tarifa para paquetes es requerida.',
+            'tarifa_paquete.numeric' => 'La tarifa debe ser un valor numérico.',
+            'tarifa_paquete.min' => 'La tarifa debe ser mayor a 0.',
+        ]);
 
         $this->ruta->update([
             'nombre' => $this->nombre,
