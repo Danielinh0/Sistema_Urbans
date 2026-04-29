@@ -58,63 +58,50 @@ new class extends Component {
 <div>
     <div>
         <livewire:barra-busqueda placeholder="Buscar por nombre de sucursal" />
-        <flux:card>
-            <flux:table :paginate="$this->sucursales">
+        <flux:card class="!p-2 overflow-x-auto">
+            <flux:table :paginate="$this->sucursales" class="w-full text-sm compact-table" dense>
                 <flux:table.columns>
-                    <x-header-table sortable="id_sucursal" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID
-                        </x-componentes.header_table>
-                        {{-- nombre --}}
-                    <x-header-table icon="book-a" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection"> Nombre de la sucursal </x-header-table>    
+                    <x-header-table sortable="id_sucursal" class="w-[3.25rem] col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
 
-                    <x-header-table icon="map-pin-house"> Ruta </x-header-table>
-                    
-                    <x-header-table icon="layout-grid"> Acciones </x-header-table>
-                
+                    <x-header-table icon="book-a" sortable="nombre" class="w-[11rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
+
+                    <x-header-table icon="map-pin-house">Dirección</x-header-table>
+
+                    <x-header-table icon="wrench" class="w-[10rem]" align="center">Acciones</x-header-table>
                 </flux:table.columns>
 
                 <flux:table.rows>
                 @forelse ($this->sucursales as $sucursal)
                     <flux:table.row :key="$sucursal->id_sucursal">
-                        <flux:table.cell >
+                        <flux:table.cell class="!px-2 w-[3.25rem] text-center tabular-nums col-hide-sm">
                             {{ $sucursal->id_sucursal }}
                         </flux:table.cell>
-                        <flux:table.cell >
+                        <flux:table.cell class="!px-2">
                             {{ $sucursal->nombre }}
                         </flux:table.cell>
-                        <flux:table.cell>
-                            {{$sucursal->direccion->calle->nombre ?? ''}}
-                            #{{$sucursal->direccion->numero_exterior ?? ''}}, 
-                            {{$sucursal->direccion->calle->colonia->nombre ?? ''}}, 
-                            {{$sucursal->direccion->calle->colonia->codigoPostal->numero ?? ''}}, 
-                            {{$sucursal->direccion->calle->colonia->codigoPostal->estado->nombre ?? ''}},
-                            {{$sucursal->direccion->calle->colonia->codigoPostal->estado->pais->nombre ?? ''}}
+                        <flux:table.cell class="!px-2">
+                            {{ ($sucursal->direccion->calle->nombre ?? '') . ' #' . ($sucursal->direccion->numero_exterior ?? '') . ', ' . ($sucursal->direccion->calle->colonia->nombre ?? '') }}
                         </flux:table.cell>
-                        <flux:table.cell class="flex gap-2">
-                            <flux:button variant="ghost" icon="pencil" class="!text-azul_menu"
+                        <flux:table.cell class="flex gap-1 justify-end !px-2 whitespace-nowrap">
+                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                <span class="hidden xl:inline ml-1">Editar</span>
+                                Editar
                             </flux:button>
-                            @if (!$sucursal->users->count()>0)
-                                <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
+                            @if (!$sucursal->users->count() > 0)
+                                <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
                                     wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                    <span class="hidden xl:inline ml-1">Eliminar</span>
+                                    Eliminar
                                 </flux:button>
-                                @if (!$sucursal->users->count() > 0)
-                                    <flux:button variant="ghost" icon="trash" class="!text-rojo_texto"
-                                        wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                        Eliminar
-                                    </flux:button>
-                                @endif
-
-                            </flux:table.cell>
-                        </flux:table.row>
-                    @empty
-                        <flux:table.row>
-                            <flux:table.cell colspan="7" class="text-center py-4 ">
-                                No se encontraron sucursales.
-                            </flux:table.cell>
-                        </flux:table.row>
-                    @endforelse
+                            @endif
+                        </flux:table.cell>
+                    </flux:table.row>
+                @empty
+                    <flux:table.row>
+                        <flux:table.cell colspan="4" class="text-center py-4">
+                            No se encontraron sucursales.
+                        </flux:table.cell>
+                    </flux:table.row>
+                @endforelse
                 </flux:table.rows>
             </flux:table>
 

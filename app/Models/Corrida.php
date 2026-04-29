@@ -33,7 +33,7 @@ class Corrida extends Model
 
     public function getFechaAttribute()
     {
-        return $this->datetime_salida?->toDateString();
+        return $this->datetime_salida;
     }
 
     public function getHoraSalidaAttribute()
