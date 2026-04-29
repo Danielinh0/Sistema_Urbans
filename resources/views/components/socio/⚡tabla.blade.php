@@ -90,81 +90,70 @@ new class extends Component {
                     :direction="$sortDirection"
                     wire:click="sort('fecha_de_incorporacion')" class="w-20 text-center!">Incorp.</x-header-table>
                 <x-header-table icon="smartphone" sortable :sorted="$sortBy === 'numero_telefonico'"
-                    :direction="$sortDirection" wire:click="sort('numero_telefonico')" class="w-28">Contacto</x-header-table>
-                <x-header-table icon="bus" class="w-16 text-center!">Urbans</x-header-table>
+                    :direction="$sortDirection" wire:click="sort('numero_telefonico')">Contacto</x-header-table>
+                <x-header-table icon="bus">Urbans</x-header-table>
                 @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
-                    <x-header-table align="center" class="w-20">Acciones</x-header-table>
+                    <x-header-table align="center">Acciones</x-header-table>
                 @endif
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
                     <flux:table.row :key="$socio->id_socio">
-                        <flux:table.cell class="text-center! p-1">
-                            <span class="text-xs">{{ $socio->id_socio }}</span>
+                        <flux:table.cell>
+                            {{ $socio->id_socio }}
                         </flux:table.cell>
-                        <flux:table.cell class="font-medium p-1">
-                            <span class="text-sm truncate">{{ $socio->nombre }}</span>
+                        <flux:table.cell>
+                            {{ $socio->nombre }}
                         </flux:table.cell>
-                        <flux:table.cell class="font-medium p-1">
-                            <span class="text-sm truncate">{{ $socio->apellido_paterno }}</span>
+                        <flux:table.cell>
+                            {{ $socio->apellido_paterno }}
                         </flux:table.cell>
-                        <flux:table.cell class="font-medium p-1">
-                            <span class="text-sm truncate">{{ $socio->apellido_materno }}</span>
+                        <flux:table.cell>
+                            {{ $socio->apellido_materno }}
                         </flux:table.cell>
-                        <flux:table.cell class="text-center! p-1">
+                        <flux:table.cell class="text-center!">
                             @if ($socio->estado == 'Activo')
-                                <flux:badge color="green" class="text-xs! px-1">Activo</flux:badge>
+                                <flux:badge color="green">Activo</flux:badge>
                             @else
-                                <flux:badge color="red" class="text-xs! px-1">Inactivo</flux:badge>
+                                <flux:badge color="red">Inactivo</flux:badge>
                             @endif
                         </flux:table.cell>
-                        <flux:table.cell class="text-center! p-1">
-                            <span class="text-xs">{{ \Carbon\Carbon::parse($socio->fecha_de_incorporacion)->format('d/m/Y') }}</span>
+                        <flux:table.cell class="text-center!">
+                            {{ $socio->fecha_de_incorporacion }}
                         </flux:table.cell>
-                        <flux:table.cell class="p-1">
-                            <div class="flex flex-col gap-0.5">
-                                @if($socio->numero_telefonico)
-                                    <div class="flex items-center gap-1 text-xs">
-                                        <flux:icon name="phone" class="w-3 h-3" />
-                                        <span class="truncate">{{ $socio->numero_telefonico }}</span>
-                                    </div>
-                                @endif
-                                @if($socio->correo)
-                                    <div class="flex items-center gap-1 text-xs">
-                                        <flux:icon name="mail" class="w-3 h-3" />
-                                        <span class="truncate">{{ $socio->correo }}</span>
-                                    </div>
-                                @endif
-                            </div>
+                        <flux:table.cell>
+                            <flux:dropdown>
+                                <flux:button variant="ghost" icon="smartphone" size="sm">Contactos</flux:button>
+                                <flux:menu>
+                                    <flux:menu.item icon="phone">{{ $socio->numero_telefonico }}</flux:menu.item>
+                                    <flux:menu.item icon="mail">{{ $socio->correo }}</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
                         </flux:table.cell>
 
-                        <flux:table.cell class="text-center! p-1">
-                            @if($socio->urbans->count() > 0)
-                                <flux:dropdown>
-                                    <flux:button variant="ghost" icon="bus" size="sm" class="p-1">
-                                        <span class="text-xs">{{ $socio->urbans->count() }}</span>
-                                    </flux:button>
-                                    <flux:menu>
-                                        @foreach ($socio->urbans as $urban)
-                                            <flux:menu.item icon="bus" class="text-xs">{{ $urban->codigo_urban }}</flux:menu.item>
-                                        @endforeach
-                                    </flux:menu>
-                                </flux:dropdown>
-                            @else
-                                <span class="text-gray-400 text-xs">-</span>
-                            @endif
+
+                        <flux:table.cell>
+                            <flux:dropdown>
+                                <flux:button variant="ghost" icon="bus" size="sm">Urbans</flux:button>
+                                <flux:menu>
+                                    @foreach ($socio->urbans as $urban)
+                                        <flux:menu.item icon="bus">{{ $urban->codigo_urban }}</flux:menu.item>
+                                    @endforeach
+                                </flux:menu>
+                            </flux:dropdown>
                         </flux:table.cell>
-                        <flux:table.cell class="flex gap-1 justify-center p-1">
+                        <flux:table.cell class="flex gap-2">
                             @can('update', $socio)
-                                <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu p-1"
-                                    wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })"
-                                    title="Editar">
+                                <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
+                                    wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
+                                    <span class="hidden md:inline ml-1">Editar</span>
+
                                 </flux:button>
                             @endcan
                             @can('delete', $socio)
-                                <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto p-1"
-                                    wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })"
-                                    title="Eliminar">
+                                <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
+                                    wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
+                                    <span class="hidden md:inline ml-1">Eliminar</span>
                                 </flux:button>
                             @endcan
                         </flux:table.cell>
