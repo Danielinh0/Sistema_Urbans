@@ -50,8 +50,6 @@ new class extends Component {
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
     }
-
-
 };
 ?>
 
@@ -67,11 +65,13 @@ new class extends Component {
 
                     <x-header-table icon="map-pin-house">Dirección</x-header-table>
 
+                    @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
                     <x-header-table icon="wrench" class="w-[10rem]" align="center">Acciones</x-header-table>
+                    @endif
                 </flux:table.columns>
 
                 <flux:table.rows>
-                @forelse ($this->sucursales as $sucursal)
+                    @forelse ($this->sucursales as $sucursal)
                     <flux:table.row :key="$sucursal->id_sucursal">
                         <flux:table.cell class="!px-2 w-[3.25rem] text-center tabular-nums col-hide-sm">
                             {{ $sucursal->id_sucursal }}
@@ -82,26 +82,28 @@ new class extends Component {
                         <flux:table.cell class="!px-2">
                             {{ ($sucursal->direccion->calle->nombre ?? '') . ' #' . ($sucursal->direccion->numero_exterior ?? '') . ', ' . ($sucursal->direccion->calle->colonia->nombre ?? '') }}
                         </flux:table.cell>
+                        @can('update', $sucursal)
                         <flux:table.cell class="flex gap-1 justify-end !px-2 whitespace-nowrap">
                             <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
                                 Editar
                             </flux:button>
                             @if (!$sucursal->users->count() > 0)
-                                <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
-                                    wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
-                                    Eliminar
-                                </flux:button>
+                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+                                wire:click="$dispatch('preparar-eliminacion-sucursal', { id: {{ $sucursal->id_sucursal }} })">
+                                Eliminar
+                            </flux:button>
                             @endif
                         </flux:table.cell>
+                        @endcan
                     </flux:table.row>
-                @empty
+                    @empty
                     <flux:table.row>
                         <flux:table.cell colspan="4" class="text-center py-4">
                             No se encontraron sucursales.
                         </flux:table.cell>
                     </flux:table.row>
-                @endforelse
+                    @endforelse
                 </flux:table.rows>
             </flux:table>
 

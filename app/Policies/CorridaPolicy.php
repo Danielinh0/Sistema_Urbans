@@ -13,7 +13,7 @@ class CorridaPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente', 'cajero']);
     }
 
     /**
@@ -21,7 +21,7 @@ class CorridaPolicy
      */
     public function view(User $user, Corrida $corrida): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente', 'cajero']);
     }
 
     /**
@@ -29,7 +29,7 @@ class CorridaPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -37,7 +37,7 @@ class CorridaPolicy
      */
     public function update(User $user, Corrida $corrida): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -45,7 +45,7 @@ class CorridaPolicy
      */
     public function delete(User $user, Corrida $corrida): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -53,7 +53,7 @@ class CorridaPolicy
      */
     public function restore(User $user, Corrida $corrida): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -61,6 +61,6 @@ class CorridaPolicy
      */
     public function forceDelete(User $user, Corrida $corrida): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 }

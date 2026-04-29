@@ -20,8 +20,9 @@
                 <x-header-table icon="alarm-clock" sortable="hora_salida" class="w-[4.5rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Salida </x-header-table>
 
                 <x-header-table icon="alarm-clock" sortable="hora_llegada" class="w-[4.5rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Llegada </x-header-table>
-
+                @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
                 <x-header-table icon="wrench" class="w-[10rem]" align="center"> Acciones </x-header-table>
+                @endif
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->corridas as $corrida)
@@ -70,7 +71,9 @@
                         @endif
                     </flux:table.cell>
 
+                    @can('update', $corrida)
                     <flux:table.cell class="!px-2 w-[10rem]">
+
                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
                             <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu !px-1.5"
                                 wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
@@ -82,8 +85,9 @@
                                 Eliminar
                             </flux:button>
                         </div>
-                    </flux:table.cell>
 
+                    </flux:table.cell>
+                    @endcan
                 </flux:table.row>
                 @empty
                 <flux:table.row>

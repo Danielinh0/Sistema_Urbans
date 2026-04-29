@@ -6,12 +6,14 @@
             </div>
 
             <div>
+                @can('create', App\Models\Cliente::class)
                 <flux:modal.trigger name="add-cliente">
                     <flux:button icon="user-plus" class="bg-azul_rebajado! cursor-pointer text-azul_menu! hover:bg-azul_menu! hover:text-white!
                     transition delay-150 duration-300 ease-in-out hover:-translate-y-1/4 hover:scale-110">
                         Crea un nuevo cliente
                     </flux:button>
                 </flux:modal.trigger>
+                @endcan
             </div>
         </div>
 

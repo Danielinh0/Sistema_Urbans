@@ -13,7 +13,7 @@ class ClientePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente', 'cajero']);
     }
 
     /**
@@ -21,7 +21,7 @@ class ClientePolicy
      */
     public function view(User $user, Cliente $cliente): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente', 'cajero']);
     }
 
     /**
@@ -29,7 +29,7 @@ class ClientePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -37,7 +37,7 @@ class ClientePolicy
      */
     public function update(User $user, Cliente $cliente): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -45,7 +45,7 @@ class ClientePolicy
      */
     public function delete(User $user, Cliente $cliente): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -53,7 +53,7 @@ class ClientePolicy
      */
     public function restore(User $user, Cliente $cliente): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 
     /**
@@ -61,6 +61,6 @@ class ClientePolicy
      */
     public function forceDelete(User $user, Cliente $cliente): bool
     {
-        return false;
+        return $user->hasAnyRole(['admin', 'gerente']);
     }
 }
