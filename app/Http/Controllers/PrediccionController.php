@@ -53,7 +53,8 @@ class PrediccionController extends Controller
         try {
             //llamamos a nuestra api por medio de localhost de mientras en lo que subo el proyecto a heroku, ya que en la maquina solo tengo el servidor local
 
-            $response = Http::timeout(30)->post('http://localhost:5000/predecir', $payload);
+            // $response = Http::timeout(30)->post('http://localhost:5000/predecir', $payload);
+            $response = Http::timeout(30)->post(env('PREDICCION_API_URL', 'http://localhost:5000') . '/predecir', $payload);
 
             if (! $response->successful()) {
                 return response()->json([
@@ -96,7 +97,8 @@ class PrediccionController extends Controller
     public function estado()
     {
         try {
-            $response = Http::timeout(10)->get('http://localhost:5000/estado');
+            // $response = Http::timeout(10)->get('http://localhost:5000/estado');
+            $response = Http::timeout(10)->get(env('PREDICCION_API_URL', 'http://localhost:5000') . '/estado');
 
             if ($response->successful()) {
                 return response()->json([
