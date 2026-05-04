@@ -61,4 +61,9 @@ class VentaController extends Controller
     {
         return view('venta.index');
     }
+
+    public function ventaPaquetes()
+    {
+        return view('venta.paquetes');
+    }
 }

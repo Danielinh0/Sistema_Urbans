@@ -63,14 +63,15 @@
         </form>
 
         {{-- Registro --}}
+        {{--
         @if (Route::has('register'))
         <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-500">
             <span>{{ __('¿No tienes cuenta?') }}</span>
-            <flux:link :href="route('register')" wire:navigate class="text-blue-800 hover:text-blue-900">
-                {{ __('Regístrate') }}
-            </flux:link>
-        </div>
-        @endif
+        <flux:link :href="route('register')" wire:navigate class="text-blue-800 hover:text-blue-900">
+            {{ __('Regístrate') }}
+        </flux:link>
+    </div>
+    @endif--}}
 
     </div>
 </x-layouts::auth>
