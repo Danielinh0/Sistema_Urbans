@@ -68,7 +68,7 @@
 
             {{-- Botón 2: Encargo de Paquetería --}}
             @if(auth()->user()->hasRole('cajero'))
-            <a href="#" {{-- route futura --}}
+            <a href="{{ route('venta.paquetes') }}" {{-- route futura --}}
                 class="group relative overflow-hidden rounded-2xl aspect-[4/2.2] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                 <img src="{{ asset('images/btnr2.webp') }}"
                     alt="Encargo de Paquetería"
