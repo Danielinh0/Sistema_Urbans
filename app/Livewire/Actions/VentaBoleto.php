@@ -299,7 +299,7 @@ class VentaBoleto extends Component
                 ]);
             });
 
-            $this->flashMsg  = "⏳ Asiento apartado — Folio: {$this->folio}";
+            $this->flashMsg  = "✓ Asiento apartado — Folio: {$this->folio}";
             $this->flashType = 'success';
             $this->resetFormulario();
             $this->recargarAsientos();

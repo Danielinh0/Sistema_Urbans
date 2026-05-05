@@ -47,6 +47,18 @@ new class extends Component
             empaque: $this->empaque,
         );
     }
+
+    // En el componente paqueteria.form-paquete
+
+    #[On('limpiar-formulario-paquete')]
+    public function limpiar()
+    {
+        // Reseteamos los campos del paquete
+        $this->reset(['destinatario', 'descripcion', 'peso', 'empaque']);
+
+        // Generamos una nueva guía para la siguiente venta
+        $this->generarGuia();
+    }
 };
 ?>
 
