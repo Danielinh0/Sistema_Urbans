@@ -59,7 +59,7 @@ new class extends Component
     'filtroFecha' => $fechaEnvio
     ], key($fechaEnvio))
 
-    {{-- ✅ Solo aparecen cuando hay corrida seleccionada --}}
+
     @if($corridaId)
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2">
@@ -68,7 +68,10 @@ new class extends Component
             ], key('form-' . $corridaId))
         </div>
         <div class="lg:col-span-1">
-            @livewire('paqueteria.resumen-pago', key('resumen-' . $corridaId))
+            {{-- PASAMOS EL ID AQUÍ --}}
+            @livewire('paqueteria.resumen-pago', [
+            'corridaId' => $corridaId
+            ], key('resumen-' . $corridaId))
         </div>
     </div>
     @endif
