@@ -84,7 +84,9 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
-        ]
+        ],
+        "heroku-postbuild": "npm run build"
+
     },
     "extra": {
         "laravel": {

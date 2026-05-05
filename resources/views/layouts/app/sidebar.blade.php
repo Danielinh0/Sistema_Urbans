@@ -30,6 +30,10 @@
                 <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" :disabled="!$hayTurnoActivo" />
                 <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" :disabled="!$hayTurnoActivo" />
 
+                @if(auth()->user()->hasRole('admin'))
+                <x-item-sidebar icon="activity" ruta="prediccion.index" texto="Predicción" />
+                @endif
+
 
 
 
@@ -84,6 +88,31 @@
                         {{ __('Settings') }}
                     </flux:menu.item>
                 </flux:menu.radio.group>
+
+                @if(auth()->user()->hasRole('cajero'))
+                <flux:menu.separator />
+                <flux:menu.radio.group>
+                    @if($hayTurnoActivo)
+                    <form method="POST" action="{{ route('turno.close') }}" class="w-full">
+                        @csrf
+                        <flux:menu.item
+                            as="button"
+                            type="submit"
+                            icon="alarm-clock"
+                            class="w-full cursor-pointer text-red-500 dark:text-red-400">
+                            {{ __('Cerrar turno') }}
+                        </flux:menu.item>
+                    </form>
+                    @else
+                    <flux:menu.item
+                        icon="alarm-clock"
+                        disabled
+                        class="w-full opacity-50 cursor-not-allowed text-zinc-400">
+                        {{ __('Cerrar turno') }}
+                    </flux:menu.item>
+                    @endif
+                </flux:menu.radio.group>
+                @endif
 
                 <flux:menu.separator />
 

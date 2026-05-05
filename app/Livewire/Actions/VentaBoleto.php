@@ -10,22 +10,21 @@ use App\Models\Corrida;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 
 class VentaBoleto extends Component
 {
-    // ── Filtros ───────────────────────────────────────────────
     public string $filtroFecha = '';
-    public string $filtroRuta  = '';
 
     // ── Corrida seleccionada ──────────────────────────────────
     public ?int   $corridaId   = null;
     public ?array $corridaData = null;
 
     // ── Asientos ─────────────────────────────────────────────
-    public array  $asientos      = [];
-    public ?int   $asientoId     = null;
-    public string $asientoNombre = '';
-    public array $asientosOrganizados = [];
+    public array  $asientos           = [];
+    public ?int   $asientoId          = null;
+    public string $asientoNombre      = '';
+    public array  $asientosOrganizados = [];
 
     // ── Búsqueda cliente ─────────────────────────────────────
     public string $busquedaCliente    = '';
@@ -51,20 +50,17 @@ class VentaBoleto extends Component
 
     public function mount(): void
     {
+        $this->folio = $this->generarFolio();
         $this->filtroFecha = today()->format('Y-m-d');
-        $this->folio       = $this->generarFolio();
     }
 
     // ── Hooks de ciclo de vida ────────────────────────────────
 
-    public function updatedFiltroFecha(): void
-    {
-        $this->resetCorrida();
-    }
+    // ELIMINADO: updatedFiltroFecha() — filtroFecha ya no vive aquí,
+    // lo maneja TablaCorridasDia internamente.
 
     public function updatedBusquedaCliente(): void
     {
-        // Si el usuario edita el campo después de haber elegido un cliente, lo limpiamos
         if ($this->clienteId) {
             $this->clienteId      = null;
             $this->nombreCompleto = '';
@@ -104,8 +100,9 @@ class VentaBoleto extends Component
         };
     }
 
-    // ── Acciones ─────────────────────────────────────────────
+    // ── Listeners del componente hijo TablaCorridasDia ────────
 
+    #[On('corrida-seleccionada')]
     public function seleccionarCorrida(int $id): void
     {
         if ($this->corridaId === $id) {
@@ -116,13 +113,22 @@ class VentaBoleto extends Component
         $corrida = Corrida::with(['ruta', 'urban', 'boletos', 'user'])->find($id);
         if (!$corrida) return;
 
-        $this->corridaId   = $id;
-        $this->corridaData = $this->mapearCorrida($corrida);
-        $this->asientoId   = null;
+        $this->corridaId     = $id;
+        $this->corridaData   = $this->mapearCorrida($corrida);
+        $this->asientoId     = null;
         $this->asientoNombre = '';
 
         $this->cargarAsientos($corrida);
+        $this->dispatch('scroll-to-asientos');
     }
+
+    #[On('corrida-deseleccionada')]
+    public function manejarDeseleccion(): void
+    {
+        $this->resetCorrida();
+    }
+
+    // ── Acciones ─────────────────────────────────────────────
 
     public function seleccionarAsiento(int $id): void
     {
@@ -191,27 +197,23 @@ class VentaBoleto extends Component
                 throw new \Exception("No se encontró un turno abierto.");
             }
 
-            \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
+            \Illuminate\Support\Facades\DB::transaction(function () {
                 $clienteId = $this->resolverCliente();
                 $tarifa    = (float) ($this->corridaData['tarifa_raw'] ?? 0);
-                $subtotal  = $tarifa;
                 $total     = max(0, $tarifa - $this->descuento);
 
-                // 1. Venta
                 $venta = \App\Models\Venta::create([
                     'id_cliente' => $clienteId,
-                    'subtotal'   => (int) round($subtotal),
+                    'subtotal'   => (int) round($tarifa),
                     'descuento'  => (int) round($this->descuento),
                     'total'      => (int) round($total),
                     'fecha'      => today(),
                 ]);
 
-                // 2. DetalleVenta
                 $detalle = \App\Models\DetalleVenta::create([
                     'id_venta' => $venta->id_venta,
                 ]);
 
-                // 3. Boleto
                 $boleto = \App\Models\Boleto::create([
                     'id_corrida'       => $this->corridaId,
                     'id_cliente'       => $clienteId,
@@ -222,7 +224,6 @@ class VentaBoleto extends Component
                     'descuento'        => $this->descuento,
                 ]);
 
-                // 4. BoletoCliente
                 \App\Models\BoletoCliente::create([
                     'id_boleto'     => $boleto->id_boleto,
                     'id_asiento'    => $this->asientoId,
@@ -269,7 +270,6 @@ class VentaBoleto extends Component
                 $clienteId = $this->resolverCliente();
                 $tarifa    = (float) ($this->corridaData['tarifa_raw'] ?? 0);
 
-                // Venta con total 0 — pago pendiente al confirmar
                 $venta = \App\Models\Venta::create([
                     'id_cliente' => $clienteId,
                     'subtotal'   => (int) round($tarifa),
@@ -309,10 +309,6 @@ class VentaBoleto extends Component
         }
     }
 
-
-
-
-
     public function cancelar(): void
     {
         $this->resetFormulario();
@@ -325,7 +321,7 @@ class VentaBoleto extends Component
     {
         if (!$corrida->urban) {
             $this->asientosOrganizados = [];
-            $this->asientos = [];
+            $this->asientos            = [];
             return;
         }
 
@@ -341,28 +337,25 @@ class VentaBoleto extends Component
             ->orderBy('nombre')
             ->get();
 
-        $organizados = [];
+        $organizados   = [];
         $asientosPlano = [];
 
         foreach ($todosAsientos as $a) {
-            // Extraer solo el número del nombre (ej: "A01" -> 1)
             $numero = (int) filter_var($a->nombre, FILTER_SANITIZE_NUMBER_INT);
 
-            // --- Lógica de Posicionamiento Especial ---
             if ($numero == 3) {
                 $fila = 0;
                 $lado = 'right';
             } elseif ($numero <= 15) {
-                $fila = (int) ceil($numero / 3);
+                $fila           = (int) ceil($numero / 3);
                 $posicionEnFila = ($numero - 1) % 3;
-
-                $lado = ($posicionEnFila < 2) ? 'left' : 'right';
+                $lado           = ($posicionEnFila < 2) ? 'left' : 'right';
             } else {
-                $fila = 6;
+                $fila               = 6;
                 $posicionUltimaFila = $numero - 16;
-                $lado = ($posicionUltimaFila < 2) ? 'left' : 'right';
+                $lado               = ($posicionUltimaFila < 2) ? 'left' : 'right';
             }
-            // 2. Estado del asiento
+
             $estadoFinal = 'libre';
             if ($asientosOcupadosMap->has($a->id_asiento)) {
                 $estadoFinal = match (strtolower($asientosOcupadosMap->get($a->id_asiento)->boleto->estado)) {
@@ -378,18 +371,17 @@ class VentaBoleto extends Component
                 'estado' => $estadoFinal,
             ];
 
-            // 3. Organizar en el array (Aseguramos que las llaves existan)
             if (!isset($organizados[$fila])) {
                 $organizados[$fila] = ['left' => [], 'right' => []];
             }
 
             $organizados[$fila][$lado][] = $datosAsiento;
-            $asientosPlano[] = $datosAsiento;
+            $asientosPlano[]             = $datosAsiento;
         }
 
         ksort($organizados);
         $this->asientosOrganizados = $organizados;
-        $this->asientos = $asientosPlano;
+        $this->asientos            = $asientosPlano;
     }
 
     private function recargarAsientos(): void
@@ -419,31 +411,24 @@ class VentaBoleto extends Component
         $vendidos = $corrida->boletos->count();
         $libres   = max(0, $total - $vendidos);
 
+        // Usar datetime_salida / datetime_llegada (columnas reales de la BD)
+        $salida  = $corrida->datetime_salida
+            ? Carbon::parse($corrida->datetime_salida)
+            : null;
+
+        $llegada = $corrida->datetime_llegada
+            ? Carbon::parse($corrida->datetime_llegada)
+            : null;
+
         $estado = 'Pendiente';
-        if ($corrida->hora_salida) {
-            try {
-                $salida = Carbon::parse($corrida->fecha)->setTimeFromTimeString($corrida->hora_salida);
-
-                $llegada = $corrida->hora_llegada
-                    ? Carbon::parse($corrida->fecha)->setTimeFromTimeString($corrida->hora_llegada)
-                    : null;
-
-                if ($salida->isPast()) {
-                    $estado = ($llegada && $llegada->isPast()) ? 'Finalizado' : 'En Camino';
-                }
-            } catch (\Exception $e) {
-                $estado = 'Error de Formato';
-            }
+        if ($salida && $salida->isPast()) {
+            $estado = ($llegada && $llegada->isPast()) ? 'Finalizado' : 'En Camino';
         }
 
         return [
             'id'           => $corrida->id_corrida,
-            'hora_salida'  => $corrida->hora_salida
-                ? Carbon::parse($corrida->hora_salida)->format('g:i A')
-                : 'N/A',
-            'hora_llegada' => $corrida->hora_llegada
-                ? Carbon::parse($corrida->hora_llegada)->format('g:i A')
-                : 'N/A',
+            'hora_salida'  => $salida  ? $salida->format('g:i A')  : 'N/A',
+            'hora_llegada' => $llegada ? $llegada->format('g:i A') : 'N/A',
             'ruta'         => $corrida->ruta?->nombre ?? 'Sin ruta',
             'tarifa'       => number_format($corrida->ruta?->tarifa_clientes ?? 0, 2),
             'tarifa_raw'   => (float) ($corrida->ruta?->tarifa_clientes ?? 0),
@@ -458,11 +443,12 @@ class VentaBoleto extends Component
 
     private function resetCorrida(): void
     {
-        $this->corridaId     = null;
-        $this->corridaData   = null;
-        $this->asientos      = [];
-        $this->asientoId     = null;
-        $this->asientoNombre = '';
+        $this->corridaId          = null;
+        $this->corridaData        = null;
+        $this->asientos           = [];
+        $this->asientoId          = null;
+        $this->asientoNombre      = '';
+        $this->asientosOrganizados = [];
     }
 
     private function resetFormulario(): void
@@ -493,27 +479,11 @@ class VentaBoleto extends Component
 
     public function render()
     {
-        $corridas = Corrida::with(['ruta', 'urban', 'boletos', 'user'])
-            ->whereDate('datetime_salida', $this->filtroFecha ?: today())
-            ->when(
-                $this->filtroRuta,
-                fn($q) =>
-                $q->whereHas(
-                    'ruta',
-                    fn($r) =>
-                    $r->where('nombre', 'like', "%{$this->filtroRuta}%")
-                )
-            )
-            ->orderBy('datetime_salida', 'asc')
-            ->get()
-            ->map(fn($c) => $this->mapearCorrida($c))
-            ->toArray();
-
-        $totalAPagar = max(0, ($this->corridaData['tarifa_raw'] ?? 0) - $this->descuento);
+        $totalAPagar = $this->corridaData
+            ? max(0, ($this->corridaData['tarifa_raw'] ?? 0) - $this->descuento)
+            : 0;
 
         return view('livewire.venta-boleto', [
-            'corridas' => $corridas,
-            'asientosOrganizados' => $this->asientosOrganizados, // Pasamos la propiedad directamente
             'totalAPagar' => $totalAPagar,
         ]);
     }

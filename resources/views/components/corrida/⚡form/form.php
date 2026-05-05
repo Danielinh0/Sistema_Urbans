@@ -9,7 +9,7 @@ use App\Models\Urban;
 use Illuminate\Support\Facades\DB;
 
 new class extends Component
-{   
+{
     public $id_ruta = '';
     public $hora_llegada;
     public $hora_salida;
@@ -49,12 +49,14 @@ new class extends Component
     }
 
     #[Computed]
-    public function rutas(){
+    public function rutas()
+    {
         return Ruta::orderBy('id_ruta')->get();
     }
 
     #[Computed]
-    public function conductores(){
+    public function conductores()
+    {
         return User::role('chofer')->orderBy('id_usuario')->get();
     }
 
@@ -63,20 +65,21 @@ new class extends Component
     {
         $choferesUsados = collect($this->asignaciones)
             ->pluck('id_usuario')
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->all();
 
         return User::role('chofer')
             ->when(
                 !empty($choferesUsados),
-                fn ($query) => $query->whereNotIn('id_usuario', $choferesUsados)
+                fn($query) => $query->whereNotIn('id_usuario', $choferesUsados)
             )
             ->orderBy('id_usuario')
             ->get();
     }
 
     #[Computed]
-    public function urbans(){
+    public function urbans()
+    {
         return Urban::orderBy('id_urban')->get();
     }
 
@@ -85,13 +88,13 @@ new class extends Component
     {
         $urbansUsadas = collect($this->asignaciones)
             ->pluck('id_urban')
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->all();
 
         return Urban::query()
             ->when(
                 !empty($urbansUsadas),
-                fn ($query) => $query->whereNotIn('id_urban', $urbansUsadas)
+                fn($query) => $query->whereNotIn('id_urban', $urbansUsadas)
             )
             ->orderBy('id_urban')
             ->get();
@@ -110,11 +113,11 @@ new class extends Component
         $idUsuario = (int) $this->id_chofer_actual;
 
         $urbanRepetida = collect($this->asignaciones)->contains(
-            fn ($asignacion) => (int) $asignacion['id_urban'] === $idUrban
+            fn($asignacion) => (int) $asignacion['id_urban'] === $idUrban
         );
 
         $choferRepetido = collect($this->asignaciones)->contains(
-            fn ($asignacion) => (int) $asignacion['id_usuario'] === $idUsuario
+            fn($asignacion) => (int) $asignacion['id_usuario'] === $idUsuario
         );
 
         if ($urbanRepetida || $choferRepetido) {
