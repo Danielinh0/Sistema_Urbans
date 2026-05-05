@@ -27,7 +27,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-
+    // Sin middleware role, verificando manualmente
+    Route::get('/taquillas', function () {
+        if (!auth()->user()->hasAnyRole(['admin', 'gerente'])) {
+            abort(403);
+        }
+        return view('taquillas.index');
+    })->name('taquilla.index')->middleware(['auth', 'verified']);
 
     Route::prefix('asiento')->group(function () {
         Route::controller(AsientoController::class)->group(function () {
