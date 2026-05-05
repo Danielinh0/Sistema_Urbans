@@ -113,6 +113,9 @@ class RolSeeder extends Seeder
             'ver reportes',
             'exportar reportes',
 
+            // Predicciones
+            'ver predicciones',
+
             // Sistema
             'ver auditoria',
             'gestionar configuracion',

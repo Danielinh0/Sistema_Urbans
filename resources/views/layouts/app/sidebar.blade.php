@@ -30,6 +30,10 @@
                 <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" :disabled="!$hayTurnoActivo" />
                 <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" :disabled="!$hayTurnoActivo" />
 
+                @if(auth()->user()->hasRole('admin'))
+                <x-item-sidebar icon="activity" ruta="prediccion.index" texto="Predicción" />
+                @endif
+
 
 
 

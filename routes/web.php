@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     BoletoController,
     ClienteController,
     CorridaController,
+    PrediccionController,
     RutaController,
     SocioController,
     UrbanController,
@@ -189,6 +190,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             );
         }
     );
+
+    Route::prefix('prediccion')->name('prediccion.')->group(function () {
+        Route::get('/', [PrediccionController::class, 'index'])->name('index');
+        Route::post('/predecir', [PrediccionController::class, 'predecir'])->name('predecir');
+        Route::get('/estado', [PrediccionController::class, 'estado'])->name('estado');
+    });
 });
 
 require __DIR__ . '/settings.php';
