@@ -35,10 +35,11 @@
     --color-accent-foreground: var(--color-white);
 
     --color-azul_menu: #244396;
-    --color-rojo_boton:#F9B2B2;
-    --color-rojo_texto:#B73131;
-    --color-azul_rebajado:#B2D4F9
-    
+    --color-rojo_boton: #F9B2B2;
+    --color-rojo_texto: #B73131;
+    --color-azul_rebajado: #B2D4F9;
+    --color-verde_texto: #019031;
+
 }
 
 @layer theme {
@@ -65,7 +66,7 @@
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],
@@ -103,5 +104,3 @@ select:focus[data-flux-control] {
         display: none !important;
     }
 }
-
-

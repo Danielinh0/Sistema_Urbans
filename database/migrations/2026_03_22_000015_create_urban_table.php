@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->string('placa')->unique();
             $table->string('codigo_urban')->unique();
             $table->integer('numero_asientos');
-            $table->string('estado')->default('Activa');
+            $table->string('estado')->default('Libre');
         });
     }
 
