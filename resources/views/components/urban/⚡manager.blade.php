@@ -182,7 +182,7 @@ new class extends Component {
     public function delete()
     {
         if ($this->urban->estado == 'En viaje' || $this->urban->estado == 'Viaje programado') {
-            session()->flash('error', 'No puedes eliminar este vehículo porque tiene corridas pendientes o en curso.');
+            session()->flash('error', 'No puedes desactivar este vehículo porque tiene corridas pendientes o en curso.');
             return;
         }
 
@@ -292,21 +292,21 @@ new class extends Component {
     <flux:modal name="modal-eliminar-urban" class="min-w-[22rem]">
         @if($urban)
             <div class="space-y-6">
-                <flux:heading size="lg">Eliminar Urban</flux:heading>
+                <flux:heading size="lg">Desactivar Urban</flux:heading>
                 @if (session()->has('error'))
                     <div class="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
                         {{ session('error') }}
                     </div>
                 @endif
                 <flux:text>
-                    ¿Estás seguro de que deseas eliminar la urban <b>{{ $urban->codigo_urban }}</b>?
+                    ¿Estás seguro de que deseas desactivar la urban <b>{{ $urban->codigo_urban }}</b>?
                 </flux:text>
                 <div class="flex gap-2">
                     <flux:spacer />
                     <flux:modal.close>
                         <flux:button variant="ghost">Cancelar</flux:button>
                     </flux:modal.close>
-                    <flux:button wire:click="delete" variant="danger">Eliminar</flux:button>
+                    <flux:button wire:click="delete" variant="danger">Desactivar</flux:button>
                 </div>
             </div>
         @endif

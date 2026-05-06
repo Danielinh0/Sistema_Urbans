@@ -168,12 +168,12 @@ new class extends Component {
 
                             @can('delete', $urban)
                             @if ($urban->estado !== 'Inactiva')
-                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+                            <flux:button size="sm" variant="ghost" icon="chevron-double-down" class="!text-rojo_texto"
                                 wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
-                                Eliminar
+                                Desactivar
                             </flux:button>
                             @else
-                            <flux:button size="sm" variant="ghost" icon="check" class="!text-verde_texto"
+                            <flux:button size="sm" variant="ghost" icon="chevron-double-up" class="!text-verde_texto"
                             wire:click="$dispatch('preparar-activacion-urban', { id: {{ $urban->id_urban }} })">
                                 Activar
                             </flux:button>
