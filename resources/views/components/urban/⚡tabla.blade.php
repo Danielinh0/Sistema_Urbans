@@ -57,14 +57,14 @@ new class extends Component {
             ->when($this->search !== '', function ($query) {
                 $query->whereRaw('LOWER(codigo_urban) like ?', ['%' . strtolower($this->search) . '%']);
             })
-            ->when($this->filtroEstado === 'Activa', function ($query) {
-                $query->where('estado', 'Activa');
+            ->when($this->filtroEstado === 'Libre', function ($query) {
+                $query->where('estado', 'Libre');
             })
-            ->when($this->filtroEstado === 'En Viaje', function ($query) {
-                $query->where('estado', 'En Viaje');
+            ->when($this->filtroEstado === 'En viaje', function ($query) {
+                $query->where('estado', 'En viaje');
             })
-            ->when($this->filtroEstado === 'Viaje Programado', function ($query) {
-                $query->where('estado', 'Viaje Programado');
+            ->when($this->filtroEstado === 'Viaje programado', function ($query) {
+                $query->where('estado', 'Viaje programado');
             })
             ->when($this->filtroEstado === 'Inactiva', function ($query) {
                 $query->where('estado', 'Inactiva');
@@ -72,8 +72,8 @@ new class extends Component {
             ->when($this->filtroEstado === 'Fuera de servicio', function ($query) {
                 $query->where('estado', 'Fuera de servicio');
             })
-            ->when($this->filtroEstado === 'En reparación', function ($query) {
-                $query->where('estado', 'En reparación');
+            ->when($this->filtroEstado === 'Mantenimiento', function ($query) {
+                $query->where('estado', 'Mantenimiento');
             })
             ->when($this->filtroAsientos === '10', function ($query) {
                 $query->where('numero_asientos', 10);
@@ -84,6 +84,7 @@ new class extends Component {
             ->when($this->filtroAsientos === '20', function ($query) {
                 $query->where('numero_asientos', 20);
             })
+            ->withTrashed()
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
     }
@@ -103,12 +104,12 @@ new class extends Component {
         'estado' => [
             'label' => 'Estado',
             'options' => [
-                'Activa' => 'Libre',
-                'En Viaje' => 'Viajando',
-                'Viaje Programado' => 'Viaje próximo',
-                'Inactiva' => 'Desactivada',
+                'Libre' => 'Libre',
+                'En viaje' => 'En viaje',
+                'Viaje programado' => 'Viaje programado',
+                'Inactiva' => 'Inactiva',
                 'Fuera de servicio' => 'Fuera de servicio',
-                'En reparación' => 'En reparación'
+                'Mantenimiento' => 'Mantenimiento'
             ]
         ]
     ]" />
@@ -139,18 +140,18 @@ new class extends Component {
                         <flux:table.cell class="!px-2 col-hide-sm">{{ $urban->numero_asientos }}</flux:table.cell>
                         <flux:table.cell class="!px-2">{{ $urban->placa }}</flux:table.cell>
                         <flux:table.cell class="!px-2">
-                            @if ($urban->estado == 'Activa')
+                            @if ($urban->estado == 'Libre')
                                 <flux:badge color="green" size="sm">Libre</flux:badge>
                             @elseif ($urban->estado == 'Inactiva')
-                                <flux:badge color="gray" size="sm">Desactivada</flux:badge>
+                                <flux:badge color="gray" size="sm">Inactiva</flux:badge>
                             @elseif ($urban->estado == 'En viaje')
-                                <flux:badge color="red" size="sm">Viajando</flux:badge>
+                                <flux:badge color="red" size="sm">En viaje</flux:badge>
                             @elseif ($urban->estado == 'Viaje programado')
-                                <flux:badge color="yellow" size="sm">Viaje próximo</flux:badge>
+                                <flux:badge color="yellow" size="sm">Viaje programado</flux:badge>
                             @elseif ($urban->estado == 'Fuera de servicio')
                                 <flux:badge color="orange" size="sm">Fuera de servicio</flux:badge>
-                            @elseif ($urban->estado == 'En reparación')
-                                <flux:badge color="blue" size="sm">En reparación</flux:badge>
+                            @elseif ($urban->estado == 'Mantenimiento')
+                                <flux:badge color="blue" size="sm">Mantenimiento</flux:badge>
                             @endif
                         </flux:table.cell>
                         <flux:table.cell class="!px-2">
@@ -166,10 +167,17 @@ new class extends Component {
                             @endcan
 
                             @can('delete', $urban)
+                            @if ($urban->estado !== 'Inactiva')
                             <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
                                 wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
                                 Eliminar
                             </flux:button>
+                            @else
+                            <flux:button size="sm" variant="ghost" icon="check" class="!text-verde_texto"
+                            wire:click="$dispatch('preparar-activacion-urban', { id: {{ $urban->id_urban }} })">
+                                Activar
+                            </flux:button>
+                            @endif
                             @endcan
                         </flux:table.cell>
                     </flux:table.row>
