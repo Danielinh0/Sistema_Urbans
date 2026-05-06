@@ -14,10 +14,8 @@ class CorridaFactory extends Factory
 
     public function definition(): array
     {
-        
         $salida = $this->faker->dateTimeBetween('now', '+20 days');
         $llegada = (clone $salida)->modify('+'.rand(2, 8).' hours');
-
 
         return [
             'id_ruta' => Ruta::all()->random()->id_ruta,

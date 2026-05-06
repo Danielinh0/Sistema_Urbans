@@ -6,7 +6,7 @@
             <flux:button
                 type="submit"
                 variant="primary"
-                class="w-full"
+                class="w-full border-none!"
                 :disabled="!$this->formularioListo">
                 Crear Ruta
             </flux:button>
