@@ -160,10 +160,12 @@ new class extends Component {
 
                         <flux:table.cell class="flex gap-1 justify-end !px-2 whitespace-nowrap">
                             @can('update', $urban)
+                            @if ($urban->estado !== 'Inactiva')
                             <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
                                 Editar
                             </flux:button>
+                            @endif
                             @endcan
 
                             @can('delete', $urban)
