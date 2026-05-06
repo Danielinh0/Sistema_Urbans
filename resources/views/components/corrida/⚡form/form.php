@@ -8,8 +8,7 @@ use App\Models\Corrida;
 use App\Models\Urban;
 use Illuminate\Support\Facades\DB;
 
-new class extends Component
-{
+new class extends Component {
     public $id_ruta = '';
     public $hora_llegada;
     public $hora_salida;
@@ -80,25 +79,9 @@ new class extends Component
     #[Computed]
     public function urbans()
     {
-        return Urban::orderBy('id_urban')->get();
+        return Urban::where('estado', 'Activa')->orderBy('id_urban')->get();
     }
 
-    #[Computed]
-    public function urbansDisponibles()
-    {
-        $urbansUsadas = collect($this->asignaciones)
-            ->pluck('id_urban')
-            ->map(fn($id) => (int) $id)
-            ->all();
-
-        return Urban::query()
-            ->when(
-                !empty($urbansUsadas),
-                fn($query) => $query->whereNotIn('id_urban', $urbansUsadas)
-            )
-            ->orderBy('id_urban')
-            ->get();
-    }
 
     public function agregarAsignacion()
     {
