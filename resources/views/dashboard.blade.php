@@ -127,7 +127,7 @@
             @endif
 
             {{-- Botón 3: Reporte de Ventas --}}
-            <a href="#" {{-- route futura --}}
+            <a href="{{ route('reportes.index') }}"
                 class="group relative overflow-hidden rounded-2xl aspect-[4/2.2] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                 <img src="{{ asset('images/btnr3.webp') }}"
                     alt="Reporte de Ventas"
