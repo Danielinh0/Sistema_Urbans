@@ -32,7 +32,7 @@ new class extends Component {
             'urban',
             'user',
             'boletos.boletoCliente.asiento',
-            'boletos.boletoCliente.cliente',
+            'boletos.cliente',
         ])->find($this->corridaId);
 
         if (!$corrida) {

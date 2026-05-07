@@ -35,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('taquillas.index');
     })->name('taquilla.index')->middleware(['auth', 'verified']);
 
+    Route::get('/reportes', function () {
+        return view('reportes.index');
+    })->name('reportes.index');
+
     Route::prefix('asiento')->group(function () {
         Route::controller(AsientoController::class)->group(function () {
             Route::get('/', 'index')->name('index');
