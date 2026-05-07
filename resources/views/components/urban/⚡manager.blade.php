@@ -6,34 +6,37 @@ use Livewire\Attributes\Validate;
 use App\Models\Urban;
 use App\Models\Socio;
 use App\Models\Asiento;
-use App\Models\Corrida;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
     public ?Urban $urban = null;
 
     // Reglas de validación idénticas al formulario de creación
-    #[Validate('required',  message: 'El código de la urban es requerido.')]
-    #[Validate('min:3',     message: 'El código debe tener al menos 3 caracteres.')]
-    #[Validate('max:10',    message: 'El código no puede tener más de 10 caracteres.')]
+    #[Validate('required', message: 'El código de la urban es requerido.')]
+    #[Validate('min:3', message: 'El código debe tener al menos 3 caracteres.')]
+    #[Validate('max:10', message: 'El código no puede tener más de 10 caracteres.')]
     #[Validate('regex:/^[A-Za-z0-9\-]+$/', message: 'El código solo puede contener letras, números y guiones.')]
     public $codigo_urban;
 
     #[Validate('required', message: 'El número de asientos es requerido.')]
-    #[Validate('integer',  message: 'El número de asientos debe ser un número entero.')]
-    #[Validate('min:5',    message: 'Debe tener al menos 5 asientos.')]
-    #[Validate('max:60',   message: 'No puede tener más de 60 asientos.')]
+    #[Validate('integer', message: 'El número de asientos debe ser un número entero.')]
+    #[Validate('min:5', message: 'Debe tener al menos 5 asientos.')]
+    #[Validate('max:60', message: 'No puede tener más de 60 asientos.')]
     public $numero_asientos;
 
-    #[Validate('required',              message: 'El socio es requerido.')]
+    #[Validate('required', message: 'El socio es requerido.')]
     #[Validate('exists:socio,id_socio', message: 'El socio seleccionado no existe.')]
     public $id_socio = '';
 
     #[Validate('required', message: 'La placa es requerida.')]
-    #[Validate('min:6',    message: 'La placa debe tener al menos 6 caracteres.')]
-    #[Validate('max:10',   message: 'La placa no puede tener más de 10 caracteres.')]
+    #[Validate('min:6', message: 'La placa debe tener al menos 6 caracteres.')]
+    #[Validate('max:10', message: 'La placa no puede tener más de 10 caracteres.')]
     #[Validate('regex:/^([A-Z]{3}-\d{2}-\d{2}|[A-Z]{3}-\d{3}-[A-Z]|\d{2}-[A-Z]{3}-\d{2})$/', message: 'Formato inválido. Ejemplos válidos: THA-12-34, THB-423-C, 01-MNA-01')]
     public $placa;
+
+    #[Validate('required', message: 'El estado es requerido.')]
+    #[Validate('in:Libre,Inactiva,Fuera de servicio,Mantenimiento,En viaje,Viaje programado', message: 'Seleccione un estado válido.')]
+    public $estado = '';
 
     #[On('preparar-edicion-urban')]
     public function prepararEdicion($id)
@@ -46,6 +49,7 @@ new class extends Component {
         $this->numero_asientos = $this->urban->numero_asientos;
         $this->id_socio = $this->urban->id_socio;
         $this->placa = $this->urban->placa;
+        $this->estado = $this->urban->estado;
 
         $this->js("Flux.modal('modal-editar-urban').show()");
     }
@@ -58,6 +62,16 @@ new class extends Component {
 
         $this->urban = Urban::findOrFail($id);
         $this->js("Flux.modal('modal-eliminar-urban').show()");
+    }
+
+    #[On('preparar-activacion-urban')]
+    public function prepararActivacion($id)
+    {
+        $this->resetErrorBag();
+        session()->forget('error');
+
+        $this->urban = Urban::withTrashed()->findOrFail($id);
+        $this->js("Flux.modal('modal-activar-urban').show()");
     }
 
     public function updated($property)
@@ -111,7 +125,7 @@ new class extends Component {
 
         $this->validate();
 
-        if ($this->tieneViajesPendientes()) {
+        if ($this->urban->estado == 'En viaje' || $this->urban->estado == 'Viaje programado') {
             session()->flash('error', 'No puedes editar este vehículo porque tiene corridas pendientes o  en curso.');
             return;
         }
@@ -121,6 +135,7 @@ new class extends Component {
             'numero_asientos' => $this->numero_asientos,
             'id_socio' => $this->id_socio,
             'placa' => $this->placa,
+            'estado' => $this->estado,
         ]);
 
         // 1. Buscamos TODOS los asientos (incluyendo los "borrados" anteriormente)
@@ -166,8 +181,8 @@ new class extends Component {
 
     public function delete()
     {
-        if ($this->tieneViajesPendientes()) {
-            session()->flash('error', 'No puedes eliminar este vehículo porque tiene corridas pendientes o en curso.');
+        if ($this->urban->estado == 'En viaje' || $this->urban->estado == 'Viaje programado') {
+            session()->flash('error', 'No puedes desactivar este vehículo porque tiene corridas pendientes o en curso.');
             return;
         }
 
@@ -176,24 +191,27 @@ new class extends Component {
         // Opcional: Solo borra asientos si realmente ya no los necesitas para historial
         Asiento::where('id_urban', $this->urban->id_urban)->delete();
 
+        $this->urban->update([
+            'estado' => 'Inactiva',
+        ]);
+
         $this->js("Flux.modal('modal-eliminar-urban').close()");
         $this->dispatch('urban-eliminada');
+    }
+
+    public function activate()
+    {
+        $this->urban->restore();
+        $this->urban->estado = 'Libre';
+        $this->urban->save();
+        $this->js("Flux.modal('modal-activar-urban').close()");
+        $this->dispatch('urban-creada');
     }
 
     #[Computed]
     public function socios()
     {
         return Socio::orderBy('nombre')->get();
-    }
-
-    public function tieneViajesPendientes()
-    {
-        if (!$this->urban)
-            return false;
-
-        return Urban::where('id_urban', $this->urban->id_urban)
-            ->conViajesPendientes()
-            ->exists();
     }
 };
 ?>
@@ -211,9 +229,7 @@ new class extends Component {
                 {{-- Código de la Urban --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Código de la Urban</flux:label>
-                    <flux:input wire:model.live.blur="codigo_urban"
-                        type="text"
-                        placeholder="Ej: URB001"
+                    <flux:input wire:model.live.blur="codigo_urban" type="text" placeholder="Ej: URB001"
                         icon-trailing="a-large-small" />
                     <flux:description>Alfanumérico, de 3 a 10 caracteres</flux:description>
                     <flux:error name="codigo_urban" />
@@ -234,8 +250,7 @@ new class extends Component {
                 {{-- Socio --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Socio</flux:label>
-                    <flux:select wire:model="id_socio" placeholder="Seleccione el socio responsable"
-                        searchable>
+                    <flux:select wire:model="id_socio" placeholder="Seleccione el socio responsable" searchable>
                         @foreach ($this->socios as $socio)
                             <flux:select.option value="{{ $socio->id_socio }}">
                                 {{ $socio->nombre }} {{ $socio->apellido_paterno }} {{ $socio->apellido_materno }}
@@ -249,12 +264,25 @@ new class extends Component {
                 {{-- Placa --}}
                 <flux:field>
                     <flux:label badge="Obligatorio">Placa</flux:label>
-                    <flux:input wire:model.live.blur="placa"
-                        type="text"
-                        placeholder="Ej: ABC-1234"
+                    <flux:input wire:model.live.blur="placa" type="text" placeholder="Ej: ABC-1234"
                         icon-trailing="a-large-small" />
                     <flux:description>Solo mayúsculas, números y guiones (6-10 caracteres)</flux:description>
                     <flux:error name="placa" />
+                </flux:field>
+
+                {{-- Estado --}}
+                <flux:field>
+                    <flux:label badge="Obligatorio">Estado</flux:label>
+                    <flux:select wire:model.live="estado" placeholder="Seleccione el estado de la urban">
+                        <flux:select.option value="{{ $urban->estado }}">{{ $urban->estado }}</flux:select.option>
+                        @if($urban->estado !== 'Libre' && $urban->estado !== 'Inactiva')
+                            <flux:select.option value="Libre">Libre</flux:select.option>
+                        @endif
+                        <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                        <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
+                    </flux:select>
+                    <flux:description>Estado: Libre / Fuera de servicio / Mantenimiento</flux:description>
+                    <flux:error name="estado" />
                 </flux:field>
             </div>
 
@@ -267,21 +295,49 @@ new class extends Component {
     <flux:modal name="modal-eliminar-urban" class="min-w-[22rem]">
         @if($urban)
             <div class="space-y-6">
-                <flux:heading size="lg">Eliminar Urban</flux:heading>
+                <flux:heading size="lg">Desactivar Urban</flux:heading>
                 @if (session()->has('error'))
                     <div class="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
                         {{ session('error') }}
                     </div>
                 @endif
                 <flux:text>
-                    ¿Estás seguro de que deseas eliminar la urban <b>{{ $urban->codigo_urban }}</b>?
+                    ¿Estás seguro de que deseas desactivar la urban <b>{{ $urban->codigo_urban }}</b>?
                 </flux:text>
                 <div class="flex gap-2">
                     <flux:spacer />
                     <flux:modal.close>
                         <flux:button variant="ghost">Cancelar</flux:button>
                     </flux:modal.close>
-                    <flux:button wire:click="delete" variant="danger">Eliminar</flux:button>
+                    <flux:button wire:click="delete" variant="danger">Desactivar</flux:button>
+                </div>
+            </div>
+        @endif
+    </flux:modal>
+
+    <flux:modal name="modal-activar-urban" class="min-w-[22rem]">
+        @if($urban)
+            <div class=" space-y-6">
+                <flux:heading size="lg">Activar Urban</flux:heading>
+
+                @if (session()->has('error'))
+                    <div class="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <flux:text>
+                    ¿Estás seguro de que deseas activar la urban <b>{{ $urban->codigo_urban }}</b>?
+                </flux:text>
+
+                <div class="flex gap-2">
+                    <flux:spacer />
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Cancelar</flux:button>
+                    </flux:modal.close>
+                    <flux:button wire:click="activate" variant="primary" color="green">
+                        Activar
+                    </flux:button>
                 </div>
             </div>
         @endif
