@@ -411,7 +411,6 @@ class VentaBoleto extends Component
         $vendidos = $corrida->boletos->count();
         $libres   = max(0, $total - $vendidos);
 
-        // Usar datetime_salida / datetime_llegada (columnas reales de la BD)
         $salida  = $corrida->datetime_salida
             ? Carbon::parse($corrida->datetime_salida)
             : null;

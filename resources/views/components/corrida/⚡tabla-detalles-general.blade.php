@@ -28,6 +28,18 @@ new class extends Component
     {
         if ($this->modo !== 'seleccion') return;
 
+        // ✅ Consulta solo lo necesario para validar
+        $corrida = Corrida::select('id_corrida', 'estado', 'datetime_salida')
+            ->find($id);
+
+        if (!$corrida) return;
+
+        // ✅ Solo Programada es seleccionable
+        // (también verificamos que no haya salido ya)
+        $estadoReal = $corrida->estado;
+        if ($estadoReal !== 'programada') return;
+
+        // Toggle: si ya estaba seleccionada, deseleccionar
         if ($this->corridaSeleccionadaId === $id) {
             $this->corridaSeleccionadaId = null;
             $this->dispatch('corrida-deseleccionada');
@@ -51,8 +63,10 @@ new class extends Component
         // Lógica de estado basada en la columna 'estado' de la BD y tiempos
         $estadoActual = $corrida->estado; // 'Activa', 'Finalizada', etc.
 
-        if ($salida->isPast() && $estadoActual !== 'Finalizada') {
-            $estadoActual = 'En Camino';
+        if ($estadoActual !== 'Cancelada' && $estadoActual !== 'Reservada') {
+            if ($salida->isPast() && $estadoActual !== 'Finalizada') {
+                $estadoActual = 'En Camino';
+            }
         }
 
         return [
@@ -68,6 +82,7 @@ new class extends Component
             'libres'         => $libres,
             'lleno'          => $total > 0 && $libres === 0,
             'estado'         => $estadoActual,
+            'seleccionable' => $estadoActual === 'programada',
         ];
     }
 
@@ -142,11 +157,15 @@ new class extends Component
                 <tbody class="divide-y divide-gray-100 dark:divide-neutral-800">
                     @foreach($corridas as $corrida)
                     <tr wire:key="corrida-{{ $corrida['id'] }}"
-                        @if($modo==='seleccion' ) wire:click="seleccionar({{ $corrida['id'] }})" @endif
-                        class="transition-colors duration-150 cursor-pointer
-                                {{ $corridaSeleccionadaId === $corrida['id'] 
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 ring-1 ring-inset ring-blue-300 dark:ring-blue-700' 
-                                    : 'hover:bg-gray-50 dark:hover:bg-neutral-800/50' }}">
+                        @if($modo==='seleccion' && $corrida['seleccionable'])
+                        wire:click="seleccionar({{ $corrida['id'] }})"
+                        @endif
+                        class="transition-colors duration-150 {{ !$corrida['seleccionable'] && $modo === 'seleccion'
+            ? 'opacity-60 cursor-not-allowed'
+            : 'cursor-pointer' }}
+        {{ $corridaSeleccionadaId === $corrida['id']
+            ? 'bg-blue-50 dark:bg-blue-900/20 ring-1 ring-inset ring-blue-300 dark:ring-blue-700'
+            : ($corrida['seleccionable'] ? 'hover:bg-gray-50 dark:hover:bg-neutral-800/50' : '') }}">
 
                         <td class="px-4 py-3 font-bold text-gray-800 dark:text-white">
                             {{ $corrida['hora_salida'] }}
@@ -182,30 +201,51 @@ new class extends Component
                             ${{ $corrida['tarifa'] }}
                         </td>
 
-                        {{-- Estado badge --}}
+                        {{-- Columna Estado ✅ --}}
                         <td class="px-4 py-3 text-center">
                             @php
-                            $estadoColor = match($corrida['estado']) {
-                            'En Camino' => 'amber',
-                            'Finalizado' => 'zinc',
-                            default => 'blue',
+                            $estadoConfig = match($corrida['estado']) {
+                            'Programada' => ['color' => 'green', 'texto' => 'Programada'],
+                            'Cancelada' => ['color' => 'red', 'texto' => 'Cancelada'],
+                            'Reservada' => ['color' => 'amber', 'texto' => 'Reservada'],
+                            'En Camino' => ['color' => 'blue', 'texto' => 'En Camino'],
+                            'Finalizada' => ['color' => 'zinc', 'texto' => 'Finalizada'],
+                            default => ['color' => 'zinc', 'texto' => $corrida['estado']],
                             };
                             @endphp
-                            <flux:badge :color="$estadoColor" size="sm">{{ $corrida['estado'] }}</flux:badge>
+
+                            @if($corrida['estado'] === 'Cancelada')
+                            {{-- ✅ Cancelada: texto rojo en píldora roja --}}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                Cancelada
+                            </span>
+                            @else
+                            <flux:badge :color="$estadoConfig['color']" size="sm">
+                                {{ $estadoConfig['texto'] }}
+                            </flux:badge>
+                            @endif
                         </td>
 
-                        {{-- Botón acción --}}
+                        {{-- Columna Acción ✅ --}}
                         <td class="px-4 py-3 text-right">
                             @if($modo === 'vista')
-                            <flux:button href="{{ route('corrida.show', $corrida['id']) }}" size="sm" variant="outline" icon-trailing="chevron-right">
+                            <flux:button href="{{ route('corrida.show', $corrida['id']) }}"
+                                size="sm" variant="outline" icon-trailing="chevron-right">
                                 Detalles
                             </flux:button>
-                            @else
+                            @elseif($corrida['seleccionable'])
                             @if($corridaSeleccionadaId === $corrida['id'])
                             <flux:button size="sm" variant="primary">✓ Elegida</flux:button>
                             @else
                             <flux:button size="sm" variant="outline">Seleccionar</flux:button>
                             @endif
+                            @else
+                            {{-- ✅ No seleccionable: botón deshabilitado visualmente --}}
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium
+            text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-neutral-800
+            border border-gray-200 dark:border-neutral-700 cursor-not-allowed select-none">
+                                No disponible
+                            </span>
                             @endif
                         </td>
                     </tr>
