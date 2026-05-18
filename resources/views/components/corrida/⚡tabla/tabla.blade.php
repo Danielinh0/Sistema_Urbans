@@ -7,7 +7,7 @@
         <flux:table :paginate="$this->corridas" class="w-full text-sm compact-table" dense>
             <flux:table.columns>
 
-                <x-header-table sortable="id_corrida" class="w-[3.25rem] text-center col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-header-table>
+                
 
                 <x-header-table icon="map-pinned" sortable="id_ruta" class="w-[11rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Ruta </x-header-table>
 
@@ -27,9 +27,7 @@
             <flux:table.rows>
                 @forelse ($this->corridas as $corrida)
                 <flux:table.row :key="$corrida->id_corrida">
-                    <flux:table.cell class="!px-1 w-[3.25rem] text-center tabular-nums col-hide-sm">
-                        {{ $corrida->id_corrida }}
-                    </flux:table.cell>
+                    
 
                     <flux:table.cell class="!px-2 w-[11rem]">
                         <div class="truncate" title="{{ $corrida->ruta->nombre ?? 'Sin ruta' }}">
