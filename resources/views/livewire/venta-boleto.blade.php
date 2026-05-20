@@ -35,9 +35,78 @@
         :filtro-fecha="$filtroFecha"
         wire:key="tabla-corridas-{{ $filtroFecha }}" />
 
-    {{-- ── 3. Selector asiento + Formulario (solo si hay corrida) ── --}}
+    {{-- ── 3. Cantidad de boletos + comprador (solo si hay corrida) ── --}}
     @if($corridaId)
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" wire:key="form-section">
+    <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 space-y-5" wire:key="venta-header">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <flux:icon.ticket class="size-4 text-blue-600" />
+                    Configurar Compra
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Selecciona cuántos boletos vas a vender y captura el nombre del cliente que realizará la compra.
+                </p>
+            </div>
+
+            @if($corridaData)
+            <div class="grid grid-cols-2 gap-3 text-sm min-w-65">
+                <div class="rounded-xl bg-gray-50 dark:bg-neutral-800/60 border border-gray-200 dark:border-neutral-700 px-4 py-3">
+                    <p class="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 font-semibold">Corrida</p>
+                    <p class="font-semibold text-gray-800 dark:text-white mt-1">{{ $corridaData['hora_salida'] }}</p>
+                </div>
+                <div class="rounded-xl bg-gray-50 dark:bg-neutral-800/60 border border-gray-200 dark:border-neutral-700 px-4 py-3">
+                    <p class="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 font-semibold">Asientos libres</p>
+                    <p class="font-semibold text-gray-800 dark:text-white mt-1">{{ $corridaData['libres'] }}</p>
+                </div>
+            </div>
+            @endif
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+                <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    Cantidad de boletos
+                </flux:label>
+                <flux:select wire:model.live="cantidadBoletos">
+                    <option value="">Selecciona una cantidad</option>
+                    @for($i = 1; $i <= (int) ($corridaData['libres'] ?? 0); $i++)
+                    <option value="{{ $i }}">{{ $i }} boleto{{ $i === 1 ? '' : 's' }}</option>
+                    @endfor
+                </flux:select>
+            </div>
+            <div>
+                <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    Nombre completo del cliente comprador <span class="text-red-500">*</span>
+                </flux:label>
+                <flux:input wire:model.live.debounce.300ms="nombreCompleto" placeholder="Ej: María López Hernández" />
+                @error('nombreCompleto')
+                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
+        @if($corridaData)
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+            <div class="rounded-xl bg-gray-50 dark:bg-neutral-800/60 border border-gray-200 dark:border-neutral-700 px-4 py-3">
+                <p class="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 font-semibold">Ruta</p>
+                <p class="font-semibold text-gray-800 dark:text-white mt-1 truncate">{{ $corridaData['ruta'] }}</p>
+            </div>
+            <div class="rounded-xl bg-gray-50 dark:bg-neutral-800/60 border border-gray-200 dark:border-neutral-700 px-4 py-3">
+                <p class="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 font-semibold">Unidad</p>
+                <p class="font-semibold text-gray-800 dark:text-white mt-1">{{ $corridaData['codigo_urban'] }}</p>
+            </div>
+            <div class="rounded-xl bg-gray-50 dark:bg-neutral-800/60 border border-gray-200 dark:border-neutral-700 px-4 py-3">
+                <p class="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 font-semibold">Tarifa por boleto</p>
+                <p class="font-semibold text-gray-800 dark:text-white mt-1">${{ number_format($tarifaBase, 2) }}</p>
+            </div>
+        </div>
+        @endif
+    </div>
+
+    {{-- ── 4. Selector de asientos + datos por boleto ─────────── --}}
+    @if($corridaId && $cantidadBoletos)
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6" wire:key="form-section">
 
         {{-- 3a. Mapa de asientos ────────────────────────────────── --}}
         <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6">
@@ -46,11 +115,9 @@
                     <flux:icon.layout-grid class="size-4 text-blue-600" />
                     Seleccionar Asiento
                 </h3>
-                @if($corridaData)
                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
-                    {{ $corridaData['codigo_urban'] }}
+                    {{ count($asientosSeleccionados) }} / {{ $cantidadBoletos }} seleccionados
                 </span>
-                @endif
             </div>
 
             {{-- Leyenda --}}
@@ -79,7 +146,7 @@
 
                     {{-- Cuerpo de la van --}}
                     <div class="relative rounded-[2.5rem] border-[3px] border-gray-300 dark:border-neutral-600
-                                bg-gradient-to-b from-slate-100 to-gray-50 dark:from-neutral-800 dark:to-neutral-900
+                                bg-linear-to-b from-slate-100 to-gray-50 dark:from-neutral-800 dark:to-neutral-900
                                 px-5 pt-7 pb-10 shadow-lg">
 
                         {{-- Parabrisas --}}
@@ -101,13 +168,13 @@
                             {{-- Lado Conductor --}}
                             <div class="flex items-center gap-3">
                                 <div class="flex flex-col items-center gap-1">
-                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700
+                                    <div class="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-blue-700
                         flex items-center justify-center shadow-md">
                                         <flux:icon.bus class="size-6 text-white" />
                                     </div>
                                     <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Conductor</span>
                                 </div>
-                                @if($corridaData && $corridaData['chofer'])
+                                @if(!empty($corridaData['chofer']))
                                 <div>
                                     <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-tight">
                                         {{ $corridaData['chofer'] }}
@@ -121,16 +188,21 @@
                                 @if(isset($asientosOrganizados[0]['right'][0]))
                                 @php
                                 $seat = $asientosOrganizados[0]['right'][0];
-                                $sc = match(true) {
-                                $asientoId === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10',
-                                $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed',
-                                $seat['estado'] === 'apartado'=> 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed',
-                                default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer',
-                                };
+                                $seleccionado = in_array($seat['id'], $asientosSeleccionados, true);
+                                $disabledAttr = in_array($seat['estado'], ['ocupado', 'apartado']) ? 'disabled' : '';
+                                if ($seleccionado) {
+                                $sc = 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10';
+                                } elseif ($seat['estado'] === 'ocupado') {
+                                $sc = 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed';
+                                } elseif ($seat['estado'] === 'apartado') {
+                                $sc = 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed';
+                                } else {
+                                $sc = 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer';
+                                }
                                 @endphp
                                 <button wire:click="seleccionarAsiento({{ $seat['id'] }})"
                                     class="relative w-11 h-11 rounded-xl text-[11px] font-bold border-2 transition-all duration-150 flex items-center justify-center {{ $sc }}"
-                                    @if(in_array($seat['estado'], ['ocupado','apartado'])) disabled @endif>
+                                    {!! $disabledAttr !!}>
                                     {{ $seat['nombre'] }}
                                 </button>
                                 @endif
@@ -153,19 +225,24 @@
                             <div class="flex items-center justify-center {{ $esFilaTrasera ? 'gap-1.5' : 'gap-4' }}">
 
                                 {{-- Lado izquierdo (Doble asiento en la Crafter) --}}
-                                <div class="flex gap-1.5 justify-end {{ $esFilaTrasera ? '' : 'min-w-[86px]' }}">
+                                <div class="flex gap-1.5 justify-end {{ $esFilaTrasera ? '' : 'min-w-21.5' }}">
                                     @foreach($lados['left'] as $seat)
                                     @php
-                                    $sc = match(true) {
-                                    $asientoId === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10',
-                                    $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed',
-                                    $seat['estado'] === 'apartado'=> 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed',
-                                    default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer',
-                                    };
+                                    $seleccionado = in_array($seat['id'], $asientosSeleccionados, true);
+                                    $disabledAttr = in_array($seat['estado'], ['ocupado', 'apartado']) ? 'disabled' : '';
+                                    if ($seleccionado) {
+                                    $sc = 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10';
+                                    } elseif ($seat['estado'] === 'ocupado') {
+                                    $sc = 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed';
+                                    } elseif ($seat['estado'] === 'apartado') {
+                                    $sc = 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed';
+                                    } else {
+                                    $sc = 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer';
+                                    }
                                     @endphp
                                     <button wire:click="seleccionarAsiento({{ $seat['id'] }})"
                                         class="relative w-10 h-10 rounded-xl text-[11px] font-bold border-2 transition-all duration-150 flex items-center justify-center {{ $sc }}"
-                                        @if(in_array($seat['estado'], ['ocupado','apartado'])) disabled @endif
+                                        {!! $disabledAttr !!}
                                         title="{{ $seat['nombre'] }} — {{ ucfirst($seat['estado']) }}">
                                         {{ $seat['nombre'] }}
                                     </button>
@@ -180,19 +257,24 @@
                                 @endif
 
                                 {{-- Lado derecho (Un asiento individual en la Crafter) --}}
-                                <div class="flex gap-1.5 justify-start {{ $esFilaTrasera ? '' : 'min-w-[40px]' }}">
+                                <div class="flex gap-1.5 justify-start {{ $esFilaTrasera ? '' : 'min-w-10' }}">
                                     @foreach($lados['right'] as $seat)
                                     @php
-                                    $sc = match(true) {
-                                    $asientoId === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10',
-                                    $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed',
-                                    $seat['estado'] === 'apartado'=> 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed',
-                                    default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer',
-                                    };
+                                    $seleccionado = in_array($seat['id'], $asientosSeleccionados, true);
+                                    $disabledAttr = in_array($seat['estado'], ['ocupado', 'apartado']) ? 'disabled' : '';
+                                    if ($seleccionado) {
+                                    $sc = 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110 z-10';
+                                    } elseif ($seat['estado'] === 'ocupado') {
+                                    $sc = 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed';
+                                    } elseif ($seat['estado'] === 'apartado') {
+                                    $sc = 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-400 cursor-not-allowed';
+                                    } else {
+                                    $sc = 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/60 hover:scale-105 cursor-pointer';
+                                    }
                                     @endphp
                                     <button wire:click="seleccionarAsiento({{ $seat['id'] }})"
                                         class="relative w-10 h-10 rounded-xl text-[11px] font-bold border-2 transition-all duration-150 flex items-center justify-center {{ $sc }}"
-                                        @if(in_array($seat['estado'], ['ocupado','apartado'])) disabled @endif
+                                        {!! $disabledAttr !!}
                                         title="{{ $seat['nombre'] }} — {{ ucfirst($seat['estado']) }}">
                                         {{ $seat['nombre'] }}
                                     </button>
@@ -211,147 +293,110 @@
             </div>
 
             {{-- Asiento seleccionado --}}
-            @if($asientoId)
+            @if(count($asientosSeleccionados) > 0)
             <div class="mt-4 flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-2.5 text-sm text-blue-700 dark:text-blue-300 font-semibold">
                 <flux:icon.square-plus class="size-4 shrink-0" />
-                Asiento seleccionado: {{ $asientoNombre }}
+                Asientos seleccionados: {{ collect($boletosSeleccionadosOrdenados)->pluck('nombre_asiento')->implode(', ') }}
             </div>
             @else
             <p class="mt-4 text-center text-xs text-gray-400 dark:text-gray-500 italic">
-                Toca un asiento libre para seleccionarlo
+                Toca un asiento libre para seleccionarlo. Debes completar {{ $cantidadBoletos }} asiento{{ $cantidadBoletos === 1 ? '' : 's' }}.
             </p>
             @endif
         </div>
 
-        {{-- 3b. Datos del pasajero + Resumen ───────────────────── --}}
+        {{-- 3b. Datos por pasajero + Resumen ───────────────────── --}}
         <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 space-y-5">
 
             <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <flux:icon.user-round-pen class="size-4 text-blue-600" />
-                Datos del Pasajero
+                Datos por boleto
             </h3>
 
-            {{-- Buscador de cliente --}}
-            <div class="relative" x-data="{ showResults: @entangle('mostrarResultados') }">
-                <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    Buscar cliente registrado
-                </flux:label>
-                <div class="relative flex items-center">
-                    <flux:input
-                        wire:model.live.debounce.300ms="busquedaCliente"
-                        placeholder="Nombre o apellido…"
-                        autocomplete="off" />
-                    @if($clienteId)
-                    <button wire:click="limpiarCliente"
-                        class="absolute right-2.5 text-gray-400 hover:text-red-500 transition-colors"
-                        title="Limpiar cliente">
-                        <flux:icon.circle-minus class="size-4" />
-                    </button>
-                    @endif
+            @if(count($boletosSeleccionadosOrdenados) > 0)
+            <div class="space-y-4">
+                @foreach($boletosSeleccionadosOrdenados as $ticket)
+                @php
+                $seatId = $ticket['id_asiento'];
+                $descuentoTicket = min($tarifaBase, max(0, (float) ($ticket['descuento'] ?? 0)));
+                $netoTicket = max(0, $tarifaBase - $descuentoTicket);
+                @endphp
+                <div wire:key="ticket-form-{{ $seatId }}" class="rounded-2xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800/60 p-4 space-y-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h4 class="font-bold text-gray-800 dark:text-white text-sm">Asiento {{ $ticket['nombre_asiento'] }}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Completa los datos del pasajero para este boleto.</p>
+                        </div>
+                        <flux:button wire:click="seleccionarAsiento({{ $seatId }})" variant="ghost" class="shrink-0 text-xs">
+                            Quitar
+                        </flux:button>
+                    </div>
+
+                    <div>
+                        <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                            Nombre completo del pasajero <span class="text-red-500">*</span>
+                        </flux:label>
+                        <flux:input wire:model.live.debounce.300ms="boletosSeleccionados.{{ $seatId }}.nombreCompleto" placeholder="Ej: Juan Pérez García" />
+                        @error("boletosSeleccionados.$seatId.nombreCompleto")
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                                Peso equipaje (kg)
+                            </flux:label>
+                            <flux:input type="number" step="0.1" min="0" wire:model.live="boletosSeleccionados.{{ $seatId }}.pesoEquipaje" placeholder="Ej: 15.5" />
+                            @error("boletosSeleccionados.$seatId.pesoEquipaje")
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                                Descuento aplicado
+                            </flux:label>
+                            <flux:input type="number" step="0.01" min="0" wire:model.live="boletosSeleccionados.{{ $seatId }}.descuento" placeholder="Ej: 25.00" />
+                            @error("boletosSeleccionados.$seatId.descuento")
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-neutral-700 pt-3">
+                        <span>Tarifa base: ${{ number_format($tarifaBase, 2) }}</span>
+                        <span>Descuento: -${{ number_format($descuentoTicket, 2) }}</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-300">Total boleto: ${{ number_format($netoTicket, 2) }}</span>
+                    </div>
                 </div>
-
-                {{-- Dropdown resultados --}}
-                @if($mostrarResultados && count($clientesResultados) > 0)
-                <div class="absolute z-50 w-full mt-1 bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 shadow-xl overflow-hidden"
-                    @click.outside="$wire.cerrarResultados()">
-                    @foreach($clientesResultados as $c)
-                    <button wire:click="seleccionarCliente({{ $c['id'] }})"
-                        class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left
-                                   hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors
-                                   border-b border-gray-100 dark:border-neutral-700 last:border-0">
-                        <flux:icon.user-round class="size-4 text-gray-400 shrink-0" />
-                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ $c['nombre'] }}</span>
-                    </button>
-                    @endforeach
-                </div>
-                @endif
+                @endforeach
             </div>
-
-            {{-- Nombre completo --}}
-            <div>
-                <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    Nombre Completo <span class="text-red-500">*</span>
-                </flux:label>
-                <flux:input wire:model="nombreCompleto" placeholder="Ej: María López Hernández" />
-                @error('nombreCompleto')
-                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+            @else
+            <div class="rounded-2xl border border-dashed border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800/40 px-5 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                Selecciona los asientos libres para mostrar aquí el formulario de cada pasajero.
             </div>
+            @endif
 
-            {{-- Peso equipaje + Tipo de pago --}}
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Peso Equipaje (kg)
-                    </flux:label>
-                    <flux:input type="number" step="0.1" min="0" wire:model="pesoEquipaje" placeholder="Ej: 15.5" />
-                </div>
-                <div>
-                    <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Tipo de Pago
-                    </flux:label>
-                    <flux:select wire:model.live="tipoPago">
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Tarjeta">Tarjeta</option>
-                        <option value="Transferencia">Transferencia</option>
-                    </flux:select>
-                </div>
-            </div>
-
-            {{-- Categoría / Descuento --}}
-            <div>
-                <flux:label class="mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    Categoría / Descuento
-                </flux:label>
-                <flux:select wire:model.live="categoriaDescuento">
-                    <option value="">Normal (sin descuento)</option>
-                    <option value="estudiante">Estudiante (10%)</option>
-                    <option value="adulto_mayor">Adulto Mayor (20%)</option>
-                    <option value="nino">Niño (15%)</option>
-                </flux:select>
-            </div>
-
-            {{-- ── Resumen del boleto ──────────────────────────── --}}
             <div class="rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800/60 overflow-hidden">
                 <div class="px-4 py-3 border-b border-gray-200 dark:border-neutral-700">
-                    <h4 class="font-bold text-gray-800 dark:text-white text-sm">Resumen del Boleto</h4>
+                    <h4 class="font-bold text-gray-800 dark:text-white text-sm">Resumen de la compra</h4>
                 </div>
                 <div class="px-4 py-3 space-y-2 text-sm">
                     <div class="flex justify-between text-gray-500 dark:text-gray-400">
-                        <span>Folio</span>
-                        <span class="font-semibold text-blue-600 dark:text-blue-400">{{ $folio }}</span>
+                        <span>Cliente comprador</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300 text-right max-w-56 truncate">{{ $nombreCompleto ?: '—' }}</span>
                     </div>
                     <div class="flex justify-between text-gray-500 dark:text-gray-400">
-                        <span>Corrida</span>
-                        <span class="font-medium text-gray-700 dark:text-gray-300">
-                            @if($corridaData)
-                            {{ $corridaData['hora_salida'] }} — {{ $corridaData['codigo_urban'] }}
-                            @else
-                            —
-                            @endif
-                        </span>
+                        <span>Boletos seleccionados</span>
+                        <span class="font-semibold text-blue-600 dark:text-blue-400">{{ count($asientosSeleccionados) }} / {{ $cantidadBoletos }}</span>
                     </div>
                     <div class="flex justify-between text-gray-500 dark:text-gray-400">
-                        <span>Asiento</span>
-                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ $asientoNombre ?: '—' }}</span>
+                        <span>Subtotal</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">${{ number_format($subtotalVenta, 2) }}</span>
                     </div>
-                    <div class="flex justify-between text-gray-500 dark:text-gray-400">
-                        <span>Segmento</span>
-                        <span class="font-medium text-gray-700 dark:text-gray-300 text-right max-w-40 truncate">
-                            {{ ($abordarEn && $bajarEn) ? "$abordarEn → $bajarEn" : '—' }}
-                        </span>
-                    </div>
-                    <div class="border-t border-gray-200 dark:border-neutral-700 pt-2 mt-2">
-                        <div class="flex justify-between text-gray-500 dark:text-gray-400">
-                            <span>Tarifa base</span>
-                            <span class="font-medium">${{ $corridaData ? $corridaData['tarifa'] : '0.00' }}</span>
-                        </div>
-                        @if($descuento > 0)
-                        <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
-                            <span>Descuento aplicado</span>
-                            <span class="font-medium">— ${{ number_format($descuento, 2) }}</span>
-                        </div>
-                        @endif
+                    <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
+                        <span>Descuento total</span>
+                        <span class="font-medium">-${{ number_format($descuentoTotal, 2) }}</span>
                     </div>
                     <div class="border-t border-gray-200 dark:border-neutral-700 pt-2 flex justify-between items-center">
                         <span class="font-bold text-gray-800 dark:text-white text-base">Total a Pagar</span>
@@ -379,6 +424,7 @@
 
         </div>{{-- /form card --}}
     </div>{{-- /grid --}}
+    @endif
     @endif
 
     {{-- ── Toast notification ──────────────────────────────────── --}}
