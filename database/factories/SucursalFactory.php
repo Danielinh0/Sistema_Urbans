@@ -13,7 +13,7 @@ class SucursalFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => 'Sucursal ' . $this->faker->city(),
+            'nombre' =>  $this->faker->city(),
             'id_direccion' => Direccion::factory(),
         ];
     }

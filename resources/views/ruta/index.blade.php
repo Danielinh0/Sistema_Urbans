@@ -24,7 +24,6 @@
             <livewire:rutas.tabla />
         </div>
 
-
     </section>
 
     <flux:modal name="edit-profile" class="w-8/10 xl:w-[60%] xl:p-6" x-on:close="Livewire.dispatch('reset-form')">
