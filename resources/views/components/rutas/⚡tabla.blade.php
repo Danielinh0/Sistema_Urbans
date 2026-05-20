@@ -55,7 +55,7 @@ new class extends Component {
 
     <livewire:barra-busqueda placeholder="Buscar por nombre de ruta" />
 
-    <flux:card>  {{-- quitado overflow-x-auto --}}
+    <flux:card> 
         <flux:table :paginate="$this->rutas" dense>  {{-- quitado class="w-full text-sm compact-table" --}}
             <flux:table.columns>
 

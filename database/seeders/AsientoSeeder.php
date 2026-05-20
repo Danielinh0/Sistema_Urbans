@@ -20,7 +20,7 @@ class AsientoSeeder extends Seeder
             for ($i = 1; $i <= $urban->numero_asientos; $i++) {
                 Asiento::create([
                     'id_urban' => $urban->id_urban,
-                    'nombre' => $letra . str_pad($i, 2, '0', STR_PAD_LEFT),
+                    'nombre' => $letra.str_pad($i, 2, '0', STR_PAD_LEFT),
                     'estado' => 'Libre',
                 ]);
             }

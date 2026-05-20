@@ -2,6 +2,7 @@
 
 namespace App\Http\Responses;
 
+use App\Models\Turno;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class LoginResponse implements LoginResponseContract
@@ -12,11 +13,11 @@ class LoginResponse implements LoginResponseContract
         $home = '/dashboard';
 
         if ($user->hasRole('cajero')) {
-            $turnoAbierto = \App\Models\Turno::where('id_usuario', $user->id_usuario)
+            $turnoAbierto = Turno::where('id_usuario', $user->id_usuario)
                 ->whereNull('hora_fin')
                 ->exists();
 
-            if (!$turnoAbierto) {
+            if (! $turnoAbierto) {
                 $home = route('turno.create');
             }
         }

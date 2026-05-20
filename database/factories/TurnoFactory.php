@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Taquilla;
 use App\Models\Turno;
 use App\Models\User;
-use App\Models\Taquilla;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TurnoFactory extends Factory

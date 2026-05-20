@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Asiento extends Model
@@ -14,13 +14,15 @@ class Asiento extends Model
     use SoftDeletes;
 
     protected $table = 'asiento';
+
     protected $primaryKey = 'id_asiento';
+
     public $timestamps = false;
 
     protected $fillable = [
         'id_urban',
         'nombre',
-        'estado', //Libre, Ocupado, Apartado
+        'estado', // Libre, Ocupado, Apartado
     ];
 
     public function urban(): BelongsTo

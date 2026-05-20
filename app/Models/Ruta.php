@@ -1,17 +1,20 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ruta extends Model
 {
     use HasFactory;
 
     protected $table = 'ruta';
+
     protected $primaryKey = 'id_ruta';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,13 +26,13 @@ class Ruta extends Model
         'id_sucursal_salida',
         'id_sucursal_llegada',
     ];
-    
+
     protected function tiempoEstimado(): Attribute
     {
-    return Attribute::make(
-        get: fn ($value) => $value ? substr($value, 0, 5) : null, // "08:30:00" → "08:30"
-        set: fn ($value) => $value . ':00', // "08:30" → "08:30:00"
-    );
+        return Attribute::make(
+            get: fn ($value) => $value ? substr($value, 0, 5) : null, // "08:30:00" → "08:30"
+            set: fn ($value) => $value.':00', // "08:30" → "08:30:00"
+        );
     }
 
     public function corridas(): HasMany
@@ -46,5 +49,4 @@ class Ruta extends Model
     {
         return $this->belongsTo(Sucursal::class, 'id_sucursal_llegada', 'id_sucursal');
     }
-
 }

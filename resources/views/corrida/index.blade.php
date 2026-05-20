@@ -21,6 +21,10 @@
             <livewire:corrida.tabla />
         </div>
     </section>
+    
+    <flux:button wire:click="prueba">
+        Save changes
+    </flux:button>
 
     <flux:modal name="crear-corrida" class="w-[50%] p-10">
         <div>

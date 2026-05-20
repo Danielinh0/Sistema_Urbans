@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Socio;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SocioPolicy
 {
@@ -45,7 +44,7 @@ class SocioPolicy
      */
     public function delete(User $user, Socio $socio): bool
     {
-        return  $user->hasAnyRole(['gerente', 'admin']);
+        return $user->hasAnyRole(['gerente', 'admin']);
     }
 
     /**

@@ -1,15 +1,15 @@
 <?php
 
-use Livewire\Attributes\Validate;
 use App\Models\Ruta;
 use App\Models\Sucursal;
+use Flux\Flux;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Flux\Flux; 
 
-new class extends Component {
-
+new class extends Component
+{
     #[Validate('required', message: 'El nombre de la ruta es requerido.')]
     #[Validate('min:3', message: 'El nombre debe tener al menos 3 caracteres.')]
     #[Validate('unique:ruta,nombre', message: 'Ya existe una ruta con este nombre.')]
@@ -40,7 +40,6 @@ new class extends Component {
     #[Validate('required', message: 'La sucursal de llegada es requerida.')]
     public $sucursal_llegada = '';
 
-
     public function updatedSucursalSalida($value)
     {
         $this->generarNombreRuta();
@@ -55,7 +54,7 @@ new class extends Component {
     {
         // Solo si ambas sucursales han sido seleccionadas
         if ($this->sucursal_salida && $this->sucursal_llegada) {
-            
+
             $nombreSalida = Sucursal::find($this->sucursal_salida)?->nombre;
             $nombreLlegada = Sucursal::find($this->sucursal_llegada)?->nombre;
 
@@ -116,12 +115,12 @@ new class extends Component {
         ]);
 
         $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete', 'sucursal_salida', 'sucursal_llegada']);
-        $this->dispatch('ruta-creada'); 
+        $this->dispatch('ruta-creada');
 
         Flux::toast(
-        heading: 'Changes saved.',
-        text: 'You can always update this in your settings.',
-        variant: 'success',
-    );
+            heading: 'Changes saved.',
+            text: 'You can always update this in your settings.',
+            variant: 'success',
+        );
     }
 };

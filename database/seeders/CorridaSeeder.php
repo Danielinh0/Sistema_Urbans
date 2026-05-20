@@ -9,7 +9,6 @@ class CorridaSeeder extends Seeder
 {
     public function run(): void
     {
-         Corrida::factory()->times(10)->create();
+        Corrida::factory()->times(10)->create();
     }
 }
-

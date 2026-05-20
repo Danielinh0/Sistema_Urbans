@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Colonia;
 use App\Models\CodigoPostal;
+use App\Models\Colonia;
 use Illuminate\Database\Seeder;
 
 class ColoniaSeeder extends Seeder

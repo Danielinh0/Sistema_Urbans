@@ -1,18 +1,22 @@
 <?php
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
 use App\Models\Corrida;
 use App\Models\Urban;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 new class extends Component
 {
     use WithPagination;
+
     public $sortBy = 'id_corrida';
+
     public $sortDirection = 'desc';
+
     public $search = '';
+
     public $perPage = 7;
 
     public function sort($column)
@@ -44,9 +48,9 @@ new class extends Component
         return Corrida::query()
             ->when($this->search !== '', function ($query) {
                 $query->whereHas('ruta', function ($q) {
-                    $q->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
+                    $q->whereRaw('LOWER(nombre) like ?', ['%'.strtolower($this->search).'%']);
                 })->orWhereHas('user', function ($q) {
-                    $q->whereRaw('LOWER(name) like ?', ['%' . strtolower($this->search) . '%']);
+                    $q->whereRaw('LOWER(name) like ?', ['%'.strtolower($this->search).'%']);
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
@@ -54,8 +58,8 @@ new class extends Component
     }
 
     #[Computed]
-    public function urbans(){
+    public function urbans()
+    {
         return Urban::orderBy('id_urban')->get();
     }
-
 };

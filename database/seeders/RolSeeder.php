@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-
+use Spatie\Permission\Models\Role;
 
 class RolSeeder extends Seeder
 {
@@ -17,9 +15,9 @@ class RolSeeder extends Seeder
     public function run(): void
     {
         $chofer_role = Role::create(['name' => 'chofer']);
-        $cajero_role = Role::create(['name'=> 'cajero']);
-        $gerente_role = Role::create(['name'=> 'gerente']);
-        $admin_role = Role::create(['name'=> 'admin']);
+        $cajero_role = Role::create(['name' => 'cajero']);
+        $gerente_role = Role::create(['name' => 'gerente']);
+        $admin_role = Role::create(['name' => 'admin']);
 
         $permissions = [
             // Urbans

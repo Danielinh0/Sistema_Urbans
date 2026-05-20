@@ -15,7 +15,7 @@ return new class extends Migration
 
             $table->dateTime('datetime_salida');
             $table->dateTime('datetime_llegada')->nullable();
-            
+
             $table->string('estado');
 
             $table->foreignId('id_urban')->constrained('urban', 'id_urban')->onDelete('cascade');

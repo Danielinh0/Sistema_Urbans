@@ -20,8 +20,7 @@ return new class extends Migration
 
             $table->foreignId('id_sucursal')->nullable();
             $table->foreignId('id_direccion')->nullable();
-            
-        
+
             $table->rememberToken();
             $table->timestamps();
         });

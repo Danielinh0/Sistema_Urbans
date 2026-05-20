@@ -13,9 +13,10 @@ class CalleFactory extends Factory
     public function definition(): array
     {
         $tipos = ['Calle', 'Avenida', 'Boulevard', 'Cerrada'];
+
         return [
             'id_colonia' => Colonia::all()->random()->id_colonia,
-            'nombre' => $this->faker->randomElement($tipos) . ' ' . $this->faker->lastName(),
+            'nombre' => $this->faker->randomElement($tipos).' '.$this->faker->lastName(),
         ];
     }
 }

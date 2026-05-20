@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\BoletoPaquete;
 use App\Models\Boleto;
+use App\Models\BoletoPaquete;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BoletoPaqueteFactory extends Factory
@@ -16,7 +16,7 @@ class BoletoPaqueteFactory extends Factory
 
         return [
             'id_boleto' => Boleto::factory(),
-            'guia' => 'GUIA-' . $this->faker->unique()->numerify('########'),
+            'guia' => 'GUIA-'.$this->faker->unique()->numerify('########'),
             'descripcion' => $this->faker->randomElement($tiposPaquete),
             'peso' => $this->faker->randomFloat(2, 0.5, 25),
             'destinatario' => $this->faker->name(),

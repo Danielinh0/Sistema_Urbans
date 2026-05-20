@@ -1,20 +1,28 @@
 <?php
 
+use App\Models\Corrida;
+use App\Models\Ruta;
+use App\Models\Urban;
+use App\Models\User;
+use Flux\Flux;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use App\Models\Ruta;
-use App\Models\User;
-use App\Models\Corrida;
-use App\Models\Urban;
-use Illuminate\Support\Facades\DB;
 
-new class extends Component {
+new class extends Component
+{
     public $id_ruta = '';
+
     public $hora_llegada;
+
     public $hora_salida;
+
     public $fecha;
+
     public $id_urban_actual = '';
+
     public $id_chofer_actual = '';
+
     public array $asignaciones = [];
 
     public function rules()
@@ -64,13 +72,13 @@ new class extends Component {
     {
         $choferesUsados = collect($this->asignaciones)
             ->pluck('id_usuario')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->all();
 
         return User::role('chofer')
             ->when(
-                !empty($choferesUsados),
-                fn($query) => $query->whereNotIn('id_usuario', $choferesUsados)
+                ! empty($choferesUsados),
+                fn ($query) => $query->whereNotIn('id_usuario', $choferesUsados)
             )
             ->orderBy('id_usuario')
             ->get();
@@ -79,16 +87,16 @@ new class extends Component {
     #[Computed]
     public function urbans()
     {
-        return Urban::where('estado', 'Activa')->orderBy('id_urban')->get();
+        return Urban::where('estado', 'Libre')->orderBy('id_urban')->get();
     }
-
 
     public function agregarAsignacion()
     {
         $this->resetErrorBag('asignaciones');
 
-        if (!$this->id_urban_actual || !$this->id_chofer_actual) {
+        if (! $this->id_urban_actual || ! $this->id_chofer_actual) {
             $this->addError('asignaciones', 'Debes seleccionar una urban y un chofer antes de agregar.');
+
             return;
         }
 
@@ -96,11 +104,11 @@ new class extends Component {
         $idUsuario = (int) $this->id_chofer_actual;
 
         $urbanRepetida = collect($this->asignaciones)->contains(
-            fn($asignacion) => (int) $asignacion['id_urban'] === $idUrban
+            fn ($asignacion) => (int) $asignacion['id_urban'] === $idUrban
         );
 
         $choferRepetido = collect($this->asignaciones)->contains(
-            fn($asignacion) => (int) $asignacion['id_usuario'] === $idUsuario
+            fn ($asignacion) => (int) $asignacion['id_usuario'] === $idUsuario
         );
 
         if ($urbanRepetida || $choferRepetido) {
@@ -108,6 +116,7 @@ new class extends Component {
                 'asignaciones',
                 $urbanRepetida ? 'Esa urban ya fue agregada.' : 'Ese chofer ya fue agregado.'
             );
+
             return;
         }
 
@@ -143,7 +152,6 @@ new class extends Component {
             }
         });
 
-
         $this->dispatch('corrida-creada');
 
         $this->reset([
@@ -155,5 +163,17 @@ new class extends Component {
             'hora_llegada',
             'hora_salida',
         ]);
+
+        Flux::toast('Your changes have been saved.');
+    }
+
+    public function prueba()
+    {
+        Flux::toast(
+            heading: 'Changes saved',
+            text: 'Your changes have been saved.',
+            variant: 'success',
+        );
+
     }
 };

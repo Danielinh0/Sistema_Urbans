@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Socio; // Asegúrate de importar el modelo
-use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Importante para usar $this->authorize
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request; // Importante para usar $this->authorize
 
 class SocioController extends Controller
 {

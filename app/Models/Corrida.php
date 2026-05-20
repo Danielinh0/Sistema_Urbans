@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Carbon\Carbon;
 
 class Corrida extends Model
 {
     use HasFactory;
+
     protected $table = 'corrida';
+
     protected $primaryKey = 'id_corrida';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -45,7 +45,7 @@ class Corrida extends Model
     {
         return $this->datetime_llegada;
     }
-    
+
     public function ruta(): BelongsTo
     {
         return $this->belongsTo(Ruta::class, 'id_ruta', 'id_ruta');

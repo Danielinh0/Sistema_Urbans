@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\BoletoCliente;
-use App\Models\Boleto;
 use App\Models\Asiento;
+use App\Models\Boleto;
+use App\Models\BoletoCliente;
 use Illuminate\Database\Seeder;
 
 class BoletoClienteSeeder extends Seeder

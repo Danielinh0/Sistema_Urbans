@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class BoletoCliente extends Model
 {
     use HasFactory;
+
     protected $table = 'boleto_cliente';
+
     protected $primaryKey = 'id_boleto';
+
     public $timestamps = false;
 
     protected $fillable = [
