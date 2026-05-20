@@ -135,19 +135,19 @@ new class extends Component {
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        {{ $ruta->distancia }}
+                        <flux:badge color="zinc"> {{ $ruta->distancia }} km</flux:badge> 
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap">
-                        {{ $ruta->tiempo_estimado }}
+                       <flux:badge color="zinc">{{ $ruta->tiempo_estimado }}</flux:badge> 
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        <flux:badge color="green" size="sm">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
+                        <flux:badge color="green">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        <flux:badge color="green" size="sm">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
+                        <flux:badge color="green">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
                     </flux:table.cell>
 
                     @can('update', $ruta)
