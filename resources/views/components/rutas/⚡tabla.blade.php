@@ -139,7 +139,7 @@ new class extends Component {
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap">
-                       <flux:badge color="zinc">{{ $ruta->tiempo_estimado }}</flux:badge> 
+                       <flux:badge color="zinc">{{ $ruta->tiempo_estimado }} hrs</flux:badge> 
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">

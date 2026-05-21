@@ -2,6 +2,10 @@
 
     <livewire:barra-busqueda placeholder="Buscar por ruta o conductor" />
 
+    <flux:button wire:click="prueba">
+        Save changes
+    </flux:button>
+
     <flux:card>
         <flux:table :paginate="$this->corridas" dense>
             <flux:table.columns>

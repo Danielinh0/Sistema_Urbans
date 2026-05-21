@@ -8,6 +8,7 @@ use Flux\Flux;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\Attributes\On;
 
 new class extends Component
 {
@@ -53,6 +54,13 @@ new class extends Component
             'asignaciones.*.id_urban.distinct' => 'No puedes repetir una urban.',
             'asignaciones.*.id_usuario.distinct' => 'No puedes repetir un chofer.',
         ];
+    }
+
+    #[On('ruta-eliminada')]
+    #[On('ruta-creada')]
+    public function refreshRutas()
+    {
+        $this->dispatch('$refresh');
     }
 
     #[Computed]
@@ -167,13 +175,5 @@ new class extends Component
         Flux::toast('Your changes have been saved.');
     }
 
-    public function prueba()
-    {
-        Flux::toast(
-            heading: 'Changes saved',
-            text: 'Your changes have been saved.',
-            variant: 'success',
-        );
-
-    }
+    
 };

@@ -1,4 +1,6 @@
-<form wire:submit="save" class="px-4 py-4">
+<form wire:submit="save" class="px-4 py-4"
+    x-on:ruta-creada.window="new BroadcastChannel('sistema-urbans').postMessage('rutas-actualizadas');"
+>
     <flux:card>
         <x-skeleton-form-ruta />
 

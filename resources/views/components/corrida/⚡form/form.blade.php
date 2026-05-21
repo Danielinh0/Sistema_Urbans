@@ -1,4 +1,12 @@
-<form wire:submit="save">
+<form wire:submit="save"
+    x-init="
+        new BroadcastChannel('sistema-urbans').onmessage = (event) => {
+            if (event.data === 'rutas-actualizadas') {
+                $wire.$refresh();
+            }
+        };
+    "
+>
     <flux:card class="space-y-6">
 
         <div class="inline-flex gap-3 items-center">
@@ -10,9 +18,9 @@
             <flux:field>
                 <flux:label class="mt-3! mb-2!" badge="Obligatorio">Para la ruta</flux:label>
 
-                <flux:select wire:model.live="id_ruta" placeholder="Selecciona una ruta">
+                <flux:select wire:model.live="id_ruta" placeholder="Selecciona una ruta" wire:key="select-ruta-{{ count($this->rutas) }}">
                     @foreach ($this->rutas as $ruta)
-                        <flux:select.option value="{{ $ruta->id_ruta }}">
+                        <flux:select.option value="{{ $ruta->id_ruta }}" wire:key="opt-ruta-{{ $ruta->id_ruta }}">
                             {{ $ruta->nombre }}
                         </flux:select.option>
                     @endforeach
@@ -20,7 +28,14 @@
 
             </flux:field>
 
+            <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha"
+                badge="Obligatorio" />
 
+            <div class="grid grid-cols-2 gap-6">
+
+                <x-input-time wire="hora_salida" texto="Hora de salida" />
+                <x-input-time wire="hora_llegada" texto="Hora de llegada" />
+            </div>
 
             <flux:field>
 
@@ -86,19 +101,16 @@
                 </div>
             @endif
 
-            <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha"
-                badge="Obligatorio" />
-
-            <div class="grid grid-cols-2 gap-6">
-
-                <x-input-time wire="hora_salida" texto="Hora de salida" />
-                <x-input-time wire="hora_llegada" texto="Hora de llegada" />
-            </div>
-
         </div>
+
+
         <div class="space-y-2">
-            <flux:button type="submit" variant="primary" class="w-full bg-azul_menu! border-none! cursor-pointer">
-                Programar</flux:button>
+            <flux:button type="submit" variant="primary" icon="calendar-clock" 
+                        class="w-full bg-azul_rebajado! text-azul_menu!
+                        hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4
+                        transition delay-130 duration-300 ease-in-out cursor-pointer border-none!">
+                Programar
+            </flux:button>
         </div>
     </flux:card>
 </form>

@@ -9,7 +9,7 @@
             @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
             <div>
                 <flux:modal.trigger name="crear-corrida">
-                    <flux:button icon="square-plus"
+                    <flux:button icon="map-plus"
                         class="bg-azul_rebajado! cursor-pointer text-azul_menu! hover:bg-azul_menu!
                     hover:text-white! transition delay-150 duration-300 ease-in-out hover:-translate-y-1/4 hover:scale-110">Crear
                         una nueva corrida</flux:button>
@@ -22,9 +22,7 @@
         </div>
     </section>
     
-    <flux:button wire:click="prueba">
-        Save changes
-    </flux:button>
+    
 
     <flux:modal name="crear-corrida" class="w-[50%] p-10">
         <div>

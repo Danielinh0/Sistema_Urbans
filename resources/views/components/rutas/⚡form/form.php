@@ -118,8 +118,8 @@ new class extends Component
         $this->dispatch('ruta-creada');
 
         Flux::toast(
-            heading: 'Changes saved.',
-            text: 'You can always update this in your settings.',
+            heading: 'Ruta creada',
+            text: 'La nueva ruta ha sido creada exitosamente.',
             variant: 'success',
         );
     }
