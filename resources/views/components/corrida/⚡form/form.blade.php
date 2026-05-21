@@ -28,13 +28,17 @@
 
             </flux:field>
 
-            <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha"
+             <div class="grid grid-cols-2 gap-6">
+                <flux:input wire:model.live="fecha" type="date" label="Fecha de salida" placeholder="Seleccione una fecha"
                 badge="Obligatorio" />
+                 <x-input-time wire="datetime_salida" texto="Hora de salida" />
+               
+            </div>    
 
             <div class="grid grid-cols-2 gap-6">
 
-                <x-input-time wire="hora_salida" texto="Hora de salida" />
-                <x-input-time wire="hora_llegada" texto="Hora de llegada" />
+                <flux:input wire:model="fecha_llegada" disabled type="date" label="Fecha de llegada" placeholder="Seleccione una fecha" />
+                <x-input-time :requerido="false" :disabled="true" wire="datetime_llegada" texto="Hora de llegada" />
             </div>
 
             <flux:field>

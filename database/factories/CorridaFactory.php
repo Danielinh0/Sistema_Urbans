@@ -23,7 +23,7 @@ class CorridaFactory extends Factory
             'id_urban' => Urban::all()->random()->id_urban,
             'datetime_salida' => $salida,
             'datetime_llegada' => $llegada,
-            'estado' => $this->faker->randomElement(['programada', 'reservada', 'finalizada', 'cancelada', 'en viaje']),
+            'estado' => $this->faker->randomElement(['Programada', 'Finalizada', 'Cancelada', 'En viaje']),
         ];
     }
 }

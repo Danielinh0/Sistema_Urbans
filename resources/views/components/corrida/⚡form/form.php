@@ -9,16 +9,17 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Carbon\Carbon;
 
 new class extends Component
 {
     public $id_ruta = '';
 
-    public $hora_llegada;
+    public $fecha = '';
+    public $datetime_salida = '';
 
-    public $hora_salida;
-
-    public $fecha;
+    public $fecha_llegada = '';
+    public $datetime_llegada = '';
 
     public $id_urban_actual = '';
 
@@ -30,10 +31,9 @@ new class extends Component
     {
         return [
             'id_ruta' => ['required', 'exists:ruta,id_ruta'],
-            'fecha' => ['required', 'date'],
-            'hora_llegada' => ['required', 'date_format:H:i'],
-            'hora_salida' => ['required', 'date_format:H:i'],
-
+            'fecha' => ['required','date','date_format:Y-m-d'],
+            'datetime_salida' => ['required','date_format:H:i'],
+            
             'asignaciones' => ['required', 'array', 'min:1'],
             'asignaciones.*.id_urban' => ['required', 'integer', 'exists:urban,id_urban', 'distinct'],
             'asignaciones.*.id_usuario' => ['required', 'integer', 'exists:users,id_usuario', 'distinct'],
@@ -44,9 +44,8 @@ new class extends Component
     {
         return [
             'id_ruta.required' => 'Selecciona una ruta',
-            'fecha.required' => 'Por favor ingresa una fecha',
-            'hora_llegada.required' => 'Por favor ingresa una hora de llegada',
-            'hora_salida.required' => 'Por favor ingresa una hora de salida',
+            
+            'datetime_salida.required' => 'Por favor ingresa una fecha y hora de salida',
             'asignaciones.required' => 'Agrega al menos una urban con su chofer.',
             'asignaciones.min' => 'Agrega al menos una urban con su chofer.',
             'asignaciones.*.id_urban.required' => 'Selecciona una urban valida.',
@@ -143,19 +142,81 @@ new class extends Component
         $this->asignaciones = array_values($this->asignaciones);
     }
 
+    public function updatedIdRuta($value)
+    {
+        $this->generarLlegada();
+    }
+
+    public function updatedFecha($value)
+    {
+        $this->generarLlegada();
+    }
+
+    public function updatedDatetimeSalida($value)
+    {
+        $this->generarLlegada();
+    }
+
+    public function generarLlegada()
+    {
+        if ($this->fecha && $this->datetime_salida && $this->id_ruta) {
+            try {
+                $llegada = $this->calcular__llegada($this->fecha, $this->datetime_salida, (int) $this->id_ruta);
+                
+                $this->fecha_llegada = $llegada->format('Y-m-d');
+                $this->datetime_llegada = $llegada->format('H:i');
+            } catch (\Exception $e) {
+                $this->fecha_llegada = '';
+                $this->datetime_llegada = '';
+            }
+        } else {
+            $this->fecha_llegada = '';
+            $this->datetime_llegada = '';
+        }
+    }
+
+    protected function calcular__llegada(string $fecha, string $horaSalida, ?int $idRuta = null)
+    {
+        $salida = Carbon::createFromFormat('Y-m-d H:i', "{$fecha} {$horaSalida}");
+
+        $tiempo = 0;
+        $ruta = Ruta::find($idRuta);
+        $tiempo = $ruta->tiempo_estimado ?? 0;
+
+        if (is_numeric($tiempo)) {
+            $llegada = $salida->copy()->addMinutes((int) $tiempo);
+        } 
+
+        elseif (is_string($tiempo) && preg_match('/^(\d+):(\d+)(?::(\d+))?$/', $tiempo, $m)) {
+            $llegada = $salida->copy()
+                ->addHours((int) $m[1])
+                ->addMinutes((int) $m[2])
+                ->addSeconds(isset($m[3]) ? (int) $m[3] : 0);
+        } 
+        
+        else {
+            $llegada = $salida->copy()->addMinutes((int) $tiempo);
+        }
+
+        return $llegada;
+    }
+
     public function save()
     {
         $this->validate();
 
         DB::transaction(function () {
             foreach ($this->asignaciones as $asignacion) {
+                $salida = Carbon::createFromFormat('Y-m-d H:i', "{$this->fecha} {$this->datetime_salida}");
+                $llegada = $this->calcular__llegada($this->fecha, $this->datetime_salida, (int) $this->id_ruta);
+
                 Corrida::create([
                     'id_ruta' => (int) $this->id_ruta,
                     'id_usuario' => (int) $asignacion['id_usuario'],
                     'id_urban' => (int) $asignacion['id_urban'],
-                    'fecha' => $this->fecha,
-                    'hora_llegada' => $this->hora_llegada,
-                    'hora_salida' => $this->hora_salida,
+                    'datetime_salida' => $salida,
+                    'datetime_llegada' => $llegada,
+                    'estado' => 'Programada',
                 ]);
             }
         });
@@ -167,9 +228,9 @@ new class extends Component
             'id_urban_actual',
             'id_chofer_actual',
             'asignaciones',
-            'fecha',
-            'hora_llegada',
-            'hora_salida',
+            'datetime_salida',
+            'datetime_llegada',
+            'fecha_llegada',
         ]);
 
         Flux::toast('Your changes have been saved.');
