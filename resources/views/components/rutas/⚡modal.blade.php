@@ -4,6 +4,7 @@ use Livewire\Component;
 use Livewire\Attributes\Validate;
 use App\Models\Ruta;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 new class extends Component
@@ -34,6 +35,21 @@ new class extends Component
     #[Validate('min:1', message: 'La tarifa debe ser mayor a 0.')]
     public $tarifa_paquete;
 
+    #[Validate('required', message: 'La sucursal de salida es requerida.')]
+    #[Validate('exists:sucursal,id_sucursal', message: 'La sucursal seleccionada no es válida.')]
+    public $id_sucursal_salida;
+
+    #[Validate('required', message: 'La sucursal de llegada es requerida.')]
+    #[Validate('exists:sucursal,id_sucursal', message: 'La sucursal seleccionada no es válida.')]
+    #[Validate('different:id_sucursal_salida', message: 'La sucursal de llegada debe ser diferente a la de salida.')]
+    public $id_sucursal_llegada;
+
+    #[Computed]
+    public function sucursales()
+    {
+        return \App\Models\Sucursal::orderBy('nombre')->get();
+    }
+
     #[On('edicion-ruta')]
     public function prepararEdicion($id)
     {
@@ -44,6 +60,8 @@ new class extends Component
         $this->tiempo_estimado = $this->ruta->tiempo_estimado;
         $this->tarifa_clientes = $this->ruta->tarifa_clientes;
         $this->tarifa_paquete = $this->ruta->tarifa_paquete;
+        $this->id_sucursal_salida = $this->ruta->id_sucursal_salida;
+        $this->id_sucursal_llegada = $this->ruta->id_sucursal_llegada;
 
         $this->js("Flux.modal('modal-editar-ruta').show()");
     }
@@ -59,7 +77,7 @@ new class extends Component
     #[On('reset-form')]
     public function resetForm()
     {
-        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete']);
+        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete', 'id_sucursal_salida', 'id_sucursal_llegada']);
         $this->resetErrorBag();
     }
 
@@ -78,6 +96,8 @@ new class extends Component
             'tiempo_estimado' => 'required|date_format:H:i',
             'tarifa_clientes' => 'required|numeric|min:1',
             'tarifa_paquete' => 'required|numeric|min:1',
+            'id_sucursal_salida' => 'required|exists:sucursal,id_sucursal',
+            'id_sucursal_llegada' => 'required|exists:sucursal,id_sucursal|different:id_sucursal_salida',
         ], [
             'nombre.required' => 'El nombre de la ruta es requerido.',
             'nombre.min' => 'El nombre debe tener al menos 3 caracteres.',
@@ -93,6 +113,11 @@ new class extends Component
             'tarifa_paquete.required' => 'La tarifa para paquetes es requerida.',
             'tarifa_paquete.numeric' => 'La tarifa debe ser un valor numérico.',
             'tarifa_paquete.min' => 'La tarifa debe ser mayor a 0.',
+            'id_sucursal_salida.required' => 'La sucursal de salida es requerida.',
+            'id_sucursal_salida.exists' => 'La sucursal seleccionada no es válida.',
+            'id_sucursal_llegada.required' => 'La sucursal de llegada es requerida.',
+            'id_sucursal_llegada.exists' => 'La sucursal seleccionada no es válida.',
+            'id_sucursal_llegada.different' => 'La sucursal de llegada debe ser diferente a la de salida.',
         ]);
 
         $this->ruta->update([
@@ -101,6 +126,8 @@ new class extends Component
             'tiempo_estimado' => $this->tiempo_estimado,
             'tarifa_clientes' => $this->tarifa_clientes,
             'tarifa_paquete' => $this->tarifa_paquete,
+            'id_sucursal_salida' => $this->id_sucursal_salida,
+            'id_sucursal_llegada' => $this->id_sucursal_llegada,
         ]);
 
         $this->js("Flux.modal('modal-editar-ruta').close()");
