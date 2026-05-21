@@ -1,18 +1,21 @@
 <?php
 
-use App\Http\Controllers\AsientoController;
-use App\Http\Controllers\BoletoController;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\CorridaController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PrediccionController;
-use App\Http\Controllers\RutaController;
-use App\Http\Controllers\SocioController;
-use App\Http\Controllers\SucursalController;
-use App\Http\Controllers\TurnoController;
-use App\Http\Controllers\UrbanController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\VentaController;
+use App\Http\Controllers\{
+    AsientoController,
+    BoletoController,
+    ClienteController,
+    CorridaController,
+    PrediccionController,
+    RutaController,
+    SocioController,
+    UrbanController,
+    UserController,
+    VentaController,
+    SucursalController,
+    DashboardController,
+    TurnoController,
+    BoletoYBitacoraController
+};
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AsientoController,
@@ -29,6 +32,7 @@ use App\Http\Controllers\{
     DashboardController,
     TurnoController
 };
+
 
 Route::view('/', 'welcome')->name('home');
 
@@ -216,6 +220,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [PrediccionController::class, 'index'])->name('index');
         Route::post('/predecir', [PrediccionController::class, 'predecir'])->name('predecir');
         Route::get('/estado', [PrediccionController::class, 'estado'])->name('estado');
+    });
+
+    Route::prefix('servicios')->name('servicios.')->group(function () {
+        Route::post('/boleto-cliente', [BoletoYBitacoraController::class, 'generarBoletoCliente'])->name('boleto.cliente');
+        Route::post('/boleto-paquete', [BoletoYBitacoraController::class, 'generarBoletoPaquete'])->name('boleto.paquete');
+        Route::get('/bitacora/{id_corrida}', [BoletoYBitacoraController::class, 'obtenerBitacora'])->name('bitacora');
+        Route::get('/bitacora/{id_corrida}/pdf', [BoletoYBitacoraController::class, 'descargarBitacoraPDF'])->name('bitacora.pdf');
+        Route::get('/boleto-cliente/{id_boleto}/pdf', [BoletoYBitacoraController::class, 'descargarBoletoClientePDF'])->name('boleto.cliente.pdf');
+        Route::get('/boleto-paquete/{id_boleto}/pdf', [BoletoYBitacoraController::class, 'descargarBoletoPaquetePDF'])->name('boleto.paquete.pdf');
     });
 });
 

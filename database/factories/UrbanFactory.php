@@ -17,7 +17,7 @@ class UrbanFactory extends Factory
             'placa' => $this->faker->unique()->regexify('[A-Z]{3}[0-9]{3}'),
             'codigo_urban' => 'URB-'.$this->faker->unique()->numberBetween(100, 999),
             'numero_asientos' => 19,
-            'estado' => $this->faker->randomElement(['Libre', 'Fuera de servicio', 'Mantenimiento', 'En viaje', 'Viaje programado']),
+            'estado' => $this->faker->randomElement(['Activa', 'Fuera de servicio', 'Mantenimiento', 'Inactiva']),
         ];
     }
 }
