@@ -31,12 +31,6 @@ new class extends Component
         $corrida = Corrida::with(['ruta', 'urban', 'boletos.boletoCliente', 'boletos.cliente'])
             ->where('id_usuario', $user->id_usuario)
             ->whereNotIn('estado', ['Finalizada', 'Cancelada'])
-            ->where(function ($q) use ($ahora) {
-                // Corridas que aún no han terminado (llegada futura)
-                // O que terminaron hace menos de 30 minutos (margen extra)
-                $q->where('datetime_llegada', '>=', $ahora)
-                    ->orWhere('datetime_llegada', '>=', $ahora->copy()->subMinutes(30));
-            })
             ->orderBy('datetime_salida')
             ->first();
 

@@ -57,14 +57,8 @@ new class extends Component {
             ->when($this->search !== '', function ($query) {
                 $query->whereRaw('LOWER(codigo_urban) like ?', ['%' . strtolower($this->search) . '%']);
             })
-            ->when($this->filtroEstado === 'Libre', function ($query) {
-                $query->where('estado', 'Libre');
-            })
-            ->when($this->filtroEstado === 'En viaje', function ($query) {
-                $query->where('estado', 'En viaje');
-            })
-            ->when($this->filtroEstado === 'Viaje programado', function ($query) {
-                $query->where('estado', 'Viaje programado');
+            ->when($this->filtroEstado === 'Activa', function ($query) {
+                $query->where('estado', 'Activa');
             })
             ->when($this->filtroEstado === 'Inactiva', function ($query) {
                 $query->where('estado', 'Inactiva');
@@ -103,14 +97,7 @@ new class extends Component {
         ],
         'estado' => [
             'label' => 'Estado',
-            'options' => [
-                'Libre' => 'Libre',
-                'En viaje' => 'En viaje',
-                'Viaje programado' => 'Viaje programado',
-                'Inactiva' => 'Inactiva',
-                'Fuera de servicio' => 'Fuera de servicio',
-                'Mantenimiento' => 'Mantenimiento'
-            ]
+            'options' => ['Activa', 'Fuera de servicio', 'Mantenimiento', 'Inactiva']
         ]
     ]" />
     <flux:card class="!p-2 overflow-x-auto">
@@ -140,8 +127,8 @@ new class extends Component {
                         <flux:table.cell class="!px-2 col-hide-sm">{{ $urban->numero_asientos }}</flux:table.cell>
                         <flux:table.cell class="!px-2">{{ $urban->placa }}</flux:table.cell>
                         <flux:table.cell class="!px-2">
-                            @if ($urban->estado == 'Libre')
-                                <flux:badge color="green" size="sm">Libre</flux:badge>
+                            @if ($urban->estado == 'Activa')
+                                <flux:badge color="green" size="sm">Activa</flux:badge>
                             @elseif ($urban->estado == 'Inactiva')
                                 <flux:badge color="gray" size="sm">Inactiva</flux:badge>
                             @elseif ($urban->estado == 'En viaje')

@@ -9,6 +9,6 @@ class RutaSeeder extends Seeder
 {
     public function run(): void
     {
-        Ruta::factory()->times(10)->create();
+        Ruta::factory()->times(3)->create();
     }
 }
