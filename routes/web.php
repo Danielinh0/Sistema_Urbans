@@ -27,6 +27,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/mi-corrida', function () {
+        return view('chofer.detalle-prox-corrida');
+    })->name('chofer.mi-corrida')->middleware(['auth', 'verified', 'role:chofer']);
+
     // Sin middleware role, verificando manualmente
     Route::get('/taquillas', function () {
         if (!auth()->user()->hasAnyRole(['admin', 'gerente'])) {
