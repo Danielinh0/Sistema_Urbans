@@ -10,9 +10,6 @@
         <flux:table :paginate="$this->corridas" dense>
             <flux:table.columns>
 
-<<<<<<< HEAD
-
-=======
                 <flux:table.column
                     sortable
                     :sorted="$sortBy === 'id_ruta'"
@@ -23,7 +20,6 @@
                         <flux:icon name="map-pinned" class="text-azul_menu!" /> Ruta
                     </span>
                 </flux:table.column>
->>>>>>> origin/main
 
                 <flux:table.column class="col-hide-md">
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
@@ -88,10 +84,6 @@
             <flux:table.rows>
                 @forelse ($this->corridas as $corrida)
                 <flux:table.row :key="$corrida->id_corrida">
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 
                     <flux:table.cell>
                         <div class="truncate" title="{{ $corrida->ruta->nombre ?? 'Sin ruta' }}">
@@ -132,39 +124,19 @@
                         </flux:badge>
                     </flux:table.cell>
 
-<<<<<<< HEAD
-
-
-                    <flux:table.cell class="!px-2 w-[10rem]">
-
-                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                            @can('update', $corrida)
-                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu !px-1.5"
-=======
                     @can('update', $corrida)
                     <flux:table.cell>
                         <div class="flex items-center gap-1">
                             <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
->>>>>>> origin/main
                                 wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
                             </flux:button>
-<<<<<<< HEAD
-                            @endcan
-
-                            @can('delete', $corrida)
-                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto !px-1.5"
-=======
                             <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
->>>>>>> origin/main
                                 wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
                             </flux:button>
                             @endcan
                         </div>
                     </flux:table.cell>
-<<<<<<< HEAD
-=======
                     @endcan
->>>>>>> origin/main
 
                 </flux:table.row>
                 @empty
