@@ -24,14 +24,16 @@
                 @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
                 <x-item-sidebar icon="user-round" ruta="socio.index" texto="Socios" />
                 <x-item-sidebar icon="bus" ruta="urban.index" texto="Urbans" />
-                <x-item-sidebar icon="users" ruta="usuario.index" texto="Usuarios" />
                 @endif
                 <x-item-sidebar icon="map" ruta="corrida.index" texto="Corridas" :disabled="!$hayTurnoActivo" />
                 <x-item-sidebar icon="building-2" ruta="sucursal.index" texto="Sucursales" :disabled="!$hayTurnoActivo" />
                 <x-item-sidebar icon="users" ruta="cliente.index" texto="Clientes" :disabled="!$hayTurnoActivo" />
+                @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
+                <x-item-sidebar icon="activity" ruta="prediccion.index" texto="Predicción" />
+                @endif
 
                 @if(auth()->user()->hasRole('admin'))
-                <x-item-sidebar icon="activity" ruta="prediccion.index" texto="Predicción" />
+                <x-item-sidebar icon="users" ruta="usuario.index" texto="Usuarios" />
                 @endif
 
 
@@ -43,17 +45,7 @@
 
         <flux:spacer />
 
-        <flux:sidebar.nav>
-            <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                target="_blank">
-                {{ __('Repository') }}
-            </flux:sidebar.item>
-
-            <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
-                {{ __('Documentation') }}
-            </flux:sidebar.item>
-        </flux:sidebar.nav>
+        
 
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
     </flux:sidebar>

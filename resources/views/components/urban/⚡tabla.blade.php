@@ -116,7 +116,7 @@ new class extends Component {
     <flux:card class="!p-2 overflow-x-auto">
         <flux:table :paginate="$this->urbans" class="w-full text-sm compact-table" dense>
             <flux:table.columns>
-                <x-header-table sortable="id_urban" class="col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                
 
                 <x-header-table sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
 
@@ -133,7 +133,7 @@ new class extends Component {
             <flux:table.rows>
                 @forelse ($this->urbans as $urban)
                     <flux:table.row :key="$urban->id_urban">
-                        <flux:table.cell class="!px-2 col-hide-sm">{{ $urban->id_urban }}</flux:table.cell>
+                        
                         <flux:table.cell variant="strong" class="!px-2">
                             <flux:badge color="cyan" size="sm">{{ $urban->codigo_urban }}</flux:badge>
                         </flux:table.cell>

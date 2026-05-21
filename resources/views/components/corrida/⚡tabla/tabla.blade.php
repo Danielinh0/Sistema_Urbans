@@ -7,7 +7,7 @@
         <flux:table :paginate="$this->corridas" class="w-full text-sm compact-table" dense>
             <flux:table.columns>
 
-                <x-header-table sortable="id_corrida" class="w-[3.25rem] text-center col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection"> ID </x-header-table>
+
 
                 <x-header-table icon="map-pinned" sortable="id_ruta" class="w-[11rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Ruta </x-header-table>
 
@@ -27,9 +27,7 @@
             <flux:table.rows>
                 @forelse ($this->corridas as $corrida)
                 <flux:table.row :key="$corrida->id_corrida">
-                    <flux:table.cell class="!px-1 w-[3.25rem] text-center tabular-nums col-hide-sm">
-                        {{ $corrida->id_corrida }}
-                    </flux:table.cell>
+
 
                     <flux:table.cell class="!px-2 w-[11rem]">
                         <div class="truncate" title="{{ $corrida->ruta->nombre ?? 'Sin ruta' }}">
@@ -71,23 +69,28 @@
                         @endif
                     </flux:table.cell>
 
-                    @can('update', $corrida)
+
+
                     <flux:table.cell class="!px-2 w-[10rem]">
 
                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                            @can('update', $corrida)
                             <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu !px-1.5"
                                 wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
                                 Editar
                             </flux:button>
+                            @endcan
 
+                            @can('delete', $corrida)
                             <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto !px-1.5"
                                 wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
                                 Eliminar
                             </flux:button>
+                            @endcan
                         </div>
 
                     </flux:table.cell>
-                    @endcan
+
                 </flux:table.row>
                 @empty
                 <flux:table.row>

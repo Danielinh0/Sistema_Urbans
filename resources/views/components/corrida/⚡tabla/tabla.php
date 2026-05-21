@@ -54,8 +54,8 @@ new class extends Component
     }
 
     #[Computed]
-    public function urbans(){
+    public function urbans()
+    {
         return Urban::orderBy('id_urban')->get();
     }
-
 };
