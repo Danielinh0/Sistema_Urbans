@@ -183,6 +183,29 @@ class RolSeeder extends Seeder
             $gerente->assignRole($gerente_role);
         }
 
+        $chofer = User::factory()->create([
+            'name' => 'Chofer User',
+            'apellido_paterno' => 'Chofer',
+            'apellido_materno' => 'Principal',
+            'email' => 'chofer@example.com',
+        ]);
+        $chofer->assignRole($chofer_role);
+
+        $cajero = User::factory()->create([
+            'name' => 'Cajero User',
+            'apellido_paterno' => 'Cajero',
+            'email' => 'cajero@example.com',
+        ]);
+        $cajero->assignRole($cajero_role);
+
+        $gerente = User::factory()->create([
+            'name' => 'Gerente User',
+            'apellido_paterno' => 'Gerente',
+            'email' => 'gerente@example.com',
+        ]);
+        $gerente->assignRole($gerente_role);
+
+
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'apellido_paterno' => 'Administrador',
