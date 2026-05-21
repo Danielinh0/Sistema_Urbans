@@ -13,6 +13,7 @@ use App\Models\DetalleVenta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BoletoYBitacoraController extends Controller
 {
@@ -389,5 +390,167 @@ class BoletoYBitacoraController extends Controller
         }
 
         return view('bitacora.show', compact('bitacora'));
+    }
+
+    /**
+     * Descargar el PDF de un boleto de cliente
+     */
+    public function descargarBoletoClientePDF($id_boleto)
+    {
+        $boleto = Boleto::with([
+            'cliente',
+            'boletoCliente.asiento',
+            'corrida.ruta.sucursalSalida',
+            'corrida.ruta.sucursalLlegada',
+            'corrida.urban',
+            'corrida.user'
+        ])->find($id_boleto);
+
+        if (!$boleto || !$boleto->boletoCliente) {
+            abort(404, 'Boleto de cliente no encontrado');
+        }
+
+        $pdf = Pdf::loadView('pdf.boleto_cliente_pdf', compact('boleto'));
+        
+        return $pdf->stream('boleto_cliente_' . $boleto->folio . '.pdf');
+    }
+
+    /**
+     * Descargar el PDF de un boleto de paquete
+     */
+    public function descargarBoletoPaquetePDF($id_boleto)
+    {
+        $boleto = Boleto::with([
+            'cliente',
+            'boletoPaquete',
+            'corrida.ruta.sucursalSalida',
+            'corrida.ruta.sucursalLlegada',
+            'corrida.urban'
+        ])->find($id_boleto);
+
+        if (!$boleto || !$boleto->boletoPaquete) {
+            abort(404, 'Boleto de paquete no encontrado');
+        }
+
+        $pdf = Pdf::loadView('pdf.boleto_paquete_pdf', compact('boleto'));
+
+        return $pdf->stream('boleto_paquete_' . $boleto->boletoPaquete->guia . '.pdf');
+    }
+
+    /**
+     * Descargar el PDF de la bitácora de viaje de la corrida
+     */
+    public function descargarBitacoraPDF($id_corrida)
+    {
+        $corrida = Corrida::with([
+            'ruta.sucursalSalida',
+            'ruta.sucursalLlegada',
+            'urban',
+            'user',
+            'boletos' => function ($query) {
+                $query->whereIn('estado', ['activo', 'apartado', 'Pagado']);
+            },
+            'boletos.cliente',
+            'boletos.boletoCliente.asiento',
+            'boletos.boletoPaquete',
+            'boletos.detalleVenta.venta'
+        ])->find($id_corrida);
+
+        if (!$corrida) {
+            abort(404, 'Corrida no encontrada');
+        }
+
+        $pasajeros = [];
+        $paqueteria = [];
+        $totalEfectivoBoletos = 0;
+        $totalEfectivoPaquetes = 0;
+
+        foreach ($corrida->boletos as $boleto) {
+            $ventaTotal = 0;
+            if ($boleto->detalleVenta && $boleto->detalleVenta->venta) {
+                $ventaTotal = (float)$boleto->detalleVenta->venta->total;
+            } else {
+                $tarifa = (float)($corrida->ruta->tarifa_clientes ?? 0);
+                $ventaTotal = max(0, $tarifa - (float)$boleto->descuento);
+            }
+
+            $esEfectivo = strtolower(trim($boleto->tipo_de_pago)) === 'efectivo';
+
+            if ($boleto->boletoCliente) {
+                $cliente = $boleto->cliente;
+                $nombreCompleto = trim(($cliente->nombre ?? '') . ' ' . ($cliente->apellido_paterno ?? '') . ' ' . ($cliente->apellido_materno ?? ''));
+                
+                $pasajeros[] = [
+                    'id_boleto'       => $boleto->id_boleto,
+                    'folio'           => $boleto->folio,
+                    'nombre_completo' => $nombreCompleto ?: 'Pasajero Desconocido',
+                    'asiento'         => $boleto->boletoCliente->asiento->nombre ?? 'N/A',
+                    'peso_equipaje'   => (float)($boleto->boletoCliente->peso_equipaje ?? 0),
+                    'tipo_de_pago'    => $boleto->tipo_de_pago,
+                    'descuento'       => (float)$boleto->descuento,
+                    'total_pagado'    => $ventaTotal,
+                ];
+
+                if ($esEfectivo) {
+                    $totalEfectivoBoletos += $ventaTotal;
+                }
+            }
+
+            if ($boleto->boletoPaquete) {
+                $remitente = $boleto->cliente;
+                $nombreRemitente = trim(($remitente->nombre ?? '') . ' ' . ($remitente->apellido_paterno ?? '') . ' ' . ($remitente->apellido_materno ?? ''));
+
+                $paqueteria[] = [
+                    'id_boleto'    => $boleto->id_boleto,
+                    'folio'        => $boleto->folio,
+                    'guia'         => $boleto->boletoPaquete->guia,
+                    'descripcion'  => $boleto->boletoPaquete->descripcion,
+                    'peso'         => (float)($boleto->boletoPaquete->peso ?? 0),
+                    'destinatario' => $boleto->boletoPaquete->destinatario,
+                    'remitente'    => $nombreRemitente ?: 'Anónimo',
+                    'tipo_de_pago' => $boleto->tipo_de_pago,
+                    'descuento'    => (float)$boleto->descuento,
+                    'total_pagado' => $ventaTotal,
+                ];
+
+                if ($esEfectivo) {
+                    $totalEfectivoPaquetes += $ventaTotal;
+                }
+            }
+        }
+
+        $totalEfectivoGeneral = $totalEfectivoBoletos + $totalEfectivoPaquetes;
+
+        $choferName = 'Sin asignar';
+        if ($corrida->user) {
+            $choferName = trim(($corrida->user->name ?? '') . ' ' . ($corrida->user->apellido_paterno ?? '') . ' ' . ($corrida->user->apellido_materno ?? ''));
+        }
+
+        $bitacora = [
+            'corrida' => [
+                'id_corrida'    => $corrida->id_corrida,
+                'fecha_salida'  => $corrida->datetime_salida ? $corrida->datetime_salida->format('Y-m-d') : null,
+                'hora_salida'   => $corrida->datetime_salida ? $corrida->datetime_salida->format('g:i A') : 'N/A',
+                'fecha_llegada' => $corrida->datetime_llegada ? $corrida->datetime_llegada->format('Y-m-d') : null,
+                'hora_llegada'  => $corrida->datetime_llegada ? $corrida->datetime_llegada->format('g:i A') : 'N/A',
+                'ruta'          => $corrida->ruta->nombre ?? 'Sin ruta',
+                'origen'        => $corrida->ruta->sucursalSalida->nombre ?? 'N/A',
+                'destino'       => $corrida->ruta->sucursalLlegada->nombre ?? 'N/A',
+                'unidad_urban'  => $corrida->urban->codigo_urban ?? 'N/A',
+                'chofer'        => $choferName,
+                'estado'        => $corrida->estado ?? 'Pendiente',
+            ],
+            'pasajeros'  => $pasajeros,
+            'paqueteria' => $paqueteria,
+            'resumen_financiero' => [
+                'total_efectivo_boletos'    => $totalEfectivoBoletos,
+                'total_efectivo_paqueteria' => $totalEfectivoPaquetes,
+                'total_efectivo_general'    => $totalEfectivoGeneral,
+            ]
+        ];
+
+        $pdf = Pdf::loadView('pdf.bitacora_pdf', compact('bitacora'));
+
+        return $pdf->stream('bitacora_corrida_' . $id_corrida . '.pdf');
     }
 }

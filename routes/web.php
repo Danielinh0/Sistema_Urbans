@@ -202,6 +202,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/boleto-cliente', [BoletoYBitacoraController::class, 'generarBoletoCliente'])->name('boleto.cliente');
         Route::post('/boleto-paquete', [BoletoYBitacoraController::class, 'generarBoletoPaquete'])->name('boleto.paquete');
         Route::get('/bitacora/{id_corrida}', [BoletoYBitacoraController::class, 'obtenerBitacora'])->name('bitacora');
+        Route::get('/bitacora/{id_corrida}/pdf', [BoletoYBitacoraController::class, 'descargarBitacoraPDF'])->name('bitacora.pdf');
+        Route::get('/boleto-cliente/{id_boleto}/pdf', [BoletoYBitacoraController::class, 'descargarBoletoClientePDF'])->name('boleto.cliente.pdf');
+        Route::get('/boleto-paquete/{id_boleto}/pdf', [BoletoYBitacoraController::class, 'descargarBoletoPaquetePDF'])->name('boleto.paquete.pdf');
     });
 });
 
