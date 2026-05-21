@@ -8,6 +8,10 @@ use App\Models\BoletoCliente;
 use App\Models\Cliente;
 use App\Models\Corrida;
 use App\Models\DetalleVenta;
+<<<<<<< HEAD
+=======
+use App\Models\User;
+>>>>>>> origin/main
 use App\Models\Venta;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -22,10 +26,15 @@ class VentaBoleto extends Component
 
     // ── Corrida seleccionada ──────────────────────────────────
     public ?int $corridaId = null;
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
     public ?array $corridaData = null;
 
     // ── Asientos ─────────────────────────────────────────────
     public array $asientos = [];
+<<<<<<< HEAD
     public array $asientosOrganizados = [];
     public ?int $cantidadBoletos = null;
     public array $asientosSeleccionados = [];
@@ -45,10 +54,47 @@ class VentaBoleto extends Component
     public string $categoriaDescuento = '';
     public string $abordarEn = '';
     public string $bajarEn = '';
+=======
+
+    public ?int $asientoId = null;
+
+    public string $asientoNombre = '';
+
+    public array $asientosOrganizados = [];
+
+    // ── Búsqueda cliente ─────────────────────────────────────
+    public string $busquedaCliente = '';
+
+    public array $clientesResultados = [];
+
+    public ?int $clienteId = null;
+
+    public bool $mostrarResultados = false;
+
+    // ── Datos del boleto ──────────────────────────────────────
+    public string $nombreCompleto = '';
+
+    public string $pesoEquipaje = '';
+
+    public string $tipoPago = 'Efectivo';
+
+    public float $descuento = 0;
+
+    public string $categoriaDescuento = '';
+
+    public string $abordarEn = '';
+
+    public string $bajarEn = '';
+
+>>>>>>> origin/main
     public string $folio = '';
 
     // ── UI ────────────────────────────────────────────────────
     public string $flashMsg = '';
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
     public string $flashType = 'success';
 
     public function mount(): void
@@ -90,6 +136,10 @@ class VentaBoleto extends Component
         if (strlen($texto) < 2) {
             $this->clientesResultados = [];
             $this->mostrarResultados = false;
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
             return;
         }
 
@@ -126,18 +176,28 @@ class VentaBoleto extends Component
     {
         if ($this->corridaId === $id) {
             $this->resetCorrida();
+
             return;
         }
 
         $corrida = Corrida::with(['ruta', 'urban', 'boletos', 'user'])->find($id);
+<<<<<<< HEAD
         if (!$corrida) {
+=======
+        if (! $corrida) {
+>>>>>>> origin/main
             return;
         }
 
         $this->corridaId = $id;
         $this->corridaData = $this->mapearCorrida($corrida);
+<<<<<<< HEAD
         $this->cantidadBoletos = null;
         $this->limpiarBoletosSeleccionados();
+=======
+        $this->asientoId = null;
+        $this->asientoNombre = '';
+>>>>>>> origin/main
 
         $this->cargarAsientos($corrida);
         $this->dispatch('scroll-to-asientos');
@@ -153,8 +213,22 @@ class VentaBoleto extends Component
 
     public function seleccionarAsiento(int $id): void
     {
+<<<<<<< HEAD
         if (!$this->cantidadBoletos) {
             return;
+=======
+        $asiento = collect($this->asientos)->firstWhere('id', $id);
+        if (! $asiento || $asiento['estado'] !== 'libre') {
+            return;
+        }
+
+        if ($this->asientoId === $id) {
+            $this->asientoId = null;
+            $this->asientoNombre = '';
+        } else {
+            $this->asientoId = $id;
+            $this->asientoNombre = $asiento['nombre'];
+>>>>>>> origin/main
         }
 
         $asiento = collect($this->asientos)->firstWhere('id', $id);
@@ -189,7 +263,11 @@ class VentaBoleto extends Component
     public function seleccionarCliente(int $id): void
     {
         $match = collect($this->clientesResultados)->firstWhere('id', $id);
+<<<<<<< HEAD
         if (!$match) {
+=======
+        if (! $match) {
+>>>>>>> origin/main
             return;
         }
 
@@ -216,12 +294,149 @@ class VentaBoleto extends Component
 
     public function confirmarVenta(): void
     {
+<<<<<<< HEAD
         $this->procesarVenta(false);
+=======
+        $this->validate([
+            'corridaId' => 'required',
+            'asientoId' => 'required',
+            'nombreCompleto' => 'required|min:3',
+            'tipoPago' => 'required',
+        ], [
+            'corridaId.required' => 'Selecciona una corrida.',
+            'asientoId.required' => 'Selecciona un asiento.',
+            'nombreCompleto.required' => 'Ingresa el nombre del pasajero.',
+            'nombreCompleto.min' => 'El nombre debe tener al menos 3 caracteres.',
+        ]);
+
+        try {
+            /** @var User $user */
+            $user = Auth::user();
+
+            if (! $user->hasRole('cajero')) {
+                throw new \Exception('Acceso denegado: Solo los cajeros pueden realizar ventas.');
+            }
+
+            $turnoActivo = $user->turnoActivo;
+            if (! $turnoActivo) {
+                throw new \Exception('No se encontró un turno abierto.');
+            }
+
+            DB::transaction(function () {
+                $clienteId = $this->resolverCliente();
+                $tarifa = (float) ($this->corridaData['tarifa_raw'] ?? 0);
+                $total = max(0, $tarifa - $this->descuento);
+
+                $venta = Venta::create([
+                    'id_cliente' => $clienteId,
+                    'subtotal' => (int) round($tarifa),
+                    'descuento' => (int) round($this->descuento),
+                    'total' => (int) round($total),
+                    'fecha' => today(),
+                ]);
+
+                $detalle = DetalleVenta::create([
+                    'id_venta' => $venta->id_venta,
+                ]);
+
+                $boleto = Boleto::create([
+                    'id_corrida' => $this->corridaId,
+                    'id_cliente' => $clienteId,
+                    'id_detalle_venta' => $detalle->id_detalle_venta,
+                    'folio' => $this->folio,
+                    'estado' => 'activo',
+                    'tipo_de_pago' => $this->tipoPago,
+                    'descuento' => $this->descuento,
+                ]);
+
+                BoletoCliente::create([
+                    'id_boleto' => $boleto->id_boleto,
+                    'id_asiento' => $this->asientoId,
+                    'peso_equipaje' => $this->pesoEquipaje ?: 0,
+                ]);
+            });
+
+            $this->flashMsg = "✓ Boleto {$this->folio} registrado correctamente.";
+            $this->flashType = 'success';
+            $this->resetFormulario();
+            $this->recargarAsientos();
+        } catch (\Throwable $e) {
+            $this->flashMsg = "Error al registrar el boleto: {$e->getMessage()}";
+            $this->flashType = 'error';
+        }
+>>>>>>> origin/main
     }
 
     public function apartar(): void
     {
+<<<<<<< HEAD
         $this->procesarVenta(true);
+=======
+        $this->validate([
+            'corridaId' => 'required',
+            'asientoId' => 'required',
+            'nombreCompleto' => 'required|min:3',
+        ], [
+            'corridaId.required' => 'Selecciona una corrida.',
+            'asientoId.required' => 'Selecciona un asiento.',
+            'nombreCompleto.required' => 'Ingresa el nombre del pasajero.',
+        ]);
+
+        try {
+            /** @var User $user */
+            $user = Auth::user();
+
+            if (! $user->hasRole('cajero')) {
+                throw new \Exception('Acceso denegado: Solo los cajeros pueden realizar ventas.');
+            }
+
+            $turnoActivo = $user->turnoActivo;
+            if (! $turnoActivo) {
+                throw new \Exception('No se encontró un turno abierto.');
+            }
+
+            DB::transaction(function () {
+                $clienteId = $this->resolverCliente();
+                $tarifa = (float) ($this->corridaData['tarifa_raw'] ?? 0);
+
+                $venta = Venta::create([
+                    'id_cliente' => $clienteId,
+                    'subtotal' => (int) round($tarifa),
+                    'descuento' => 0,
+                    'total' => 0,
+                    'fecha' => today(),
+                ]);
+
+                $detalle = DetalleVenta::create([
+                    'id_venta' => $venta->id_venta,
+                ]);
+
+                $boleto = Boleto::create([
+                    'id_corrida' => $this->corridaId,
+                    'id_cliente' => $clienteId,
+                    'id_detalle_venta' => $detalle->id_detalle_venta,
+                    'folio' => $this->folio,
+                    'estado' => 'apartado',
+                    'tipo_de_pago' => 'Pendiente',
+                    'descuento' => 0,
+                ]);
+
+                BoletoCliente::create([
+                    'id_boleto' => $boleto->id_boleto,
+                    'id_asiento' => $this->asientoId,
+                    'peso_equipaje' => $this->pesoEquipaje ?: 0,
+                ]);
+            });
+
+            $this->flashMsg = "✓ Asiento apartado — Folio: {$this->folio}";
+            $this->flashType = 'success';
+            $this->resetFormulario();
+            $this->recargarAsientos();
+        } catch (\Throwable $e) {
+            $this->flashMsg = "Error al apartar: {$e->getMessage()}";
+            $this->flashType = 'error';
+        }
+>>>>>>> origin/main
     }
 
     public function cancelar(): void
@@ -369,9 +584,13 @@ class VentaBoleto extends Component
 
     private function cargarAsientos(Corrida $corrida): void
     {
-        if (!$corrida->urban) {
+        if (! $corrida->urban) {
             $this->asientosOrganizados = [];
             $this->asientos = [];
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
             return;
         }
 
@@ -421,7 +640,7 @@ class VentaBoleto extends Component
                 'estado' => $estadoFinal,
             ];
 
-            if (!isset($organizados[$fila])) {
+            if (! isset($organizados[$fila])) {
                 $organizados[$fila] = ['left' => [], 'right' => []];
             }
 
@@ -436,10 +655,16 @@ class VentaBoleto extends Component
 
     private function recargarAsientos(): void
     {
+<<<<<<< HEAD
         if (!$this->corridaId) {
             return;
         }
 
+=======
+        if (! $this->corridaId) {
+            return;
+        }
+>>>>>>> origin/main
         $corrida = Corrida::with('urban')->find($this->corridaId);
         if ($corrida) {
             $this->cargarAsientos($corrida);
@@ -448,6 +673,7 @@ class VentaBoleto extends Component
 
     private function asegurarAsientosDisponibles(array $asientoIds): void
     {
+<<<<<<< HEAD
         $asientosOcupados = BoletoCliente::whereIn('id_asiento', $asientoIds)
             ->whereHas('boleto', function ($query) {
                 $query->where('id_corrida', $this->corridaId)
@@ -495,6 +721,15 @@ class VentaBoleto extends Component
 
         $cliente = Cliente::create([
             'nombre' => $partes[0] !== '' ? $partes[0] : $nombreCompleto,
+=======
+        if ($this->clienteId) {
+            return $this->clienteId;
+        }
+
+        $partes = preg_split('/\s+/', trim($this->nombreCompleto), 3);
+        $cliente = Cliente::create([
+            'nombre' => $partes[0] ?? $this->nombreCompleto,
+>>>>>>> origin/main
             'apellido_paterno' => $partes[1] ?? '',
             'apellido_materno' => $partes[2] ?? '',
         ]);
@@ -543,6 +778,11 @@ class VentaBoleto extends Component
         $this->corridaId = null;
         $this->corridaData = null;
         $this->asientos = [];
+<<<<<<< HEAD
+=======
+        $this->asientoId = null;
+        $this->asientoNombre = '';
+>>>>>>> origin/main
         $this->asientosOrganizados = [];
         $this->cantidadBoletos = null;
         $this->limpiarBoletosSeleccionados();
@@ -550,6 +790,11 @@ class VentaBoleto extends Component
 
     private function resetFormulario(): void
     {
+<<<<<<< HEAD
+=======
+        $this->asientoId = null;
+        $this->asientoNombre = '';
+>>>>>>> origin/main
         $this->clienteId = null;
         $this->busquedaCliente = '';
         $this->clientesResultados = [];
@@ -561,15 +806,19 @@ class VentaBoleto extends Component
         $this->categoriaDescuento = '';
         $this->abordarEn = '';
         $this->bajarEn = '';
+<<<<<<< HEAD
         $this->cantidadBoletos = null;
         $this->limpiarBoletosSeleccionados();
+=======
+>>>>>>> origin/main
         $this->folio = $this->generarFolio();
     }
 
     private function generarFolio(): string
     {
         $next = (Boleto::max('id_boleto') ?? 0) + 1;
-        return 'BOL-' . now()->format('Y') . '-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+
+        return 'BOL-'.now()->format('Y').'-'.str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 
     // ── Render ────────────────────────────────────────────────

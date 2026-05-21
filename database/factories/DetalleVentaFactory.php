@@ -3,14 +3,15 @@
 namespace Database\Factories;
 
 use App\Models\DetalleVenta;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use app\Models\Venta;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
 /**
  * @extends Factory<DetalleVenta>
  */
 class DetalleVentaFactory extends Factory
 {
-    protected $model = DetalleVenta::class;     
+    protected $model = DetalleVenta::class;
 
     public function definition(): array
     {

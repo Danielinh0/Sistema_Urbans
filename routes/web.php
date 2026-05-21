@@ -1,21 +1,19 @@
 <?php
 
+use App\Http\Controllers\AsientoController;
+use App\Http\Controllers\BoletoController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CorridaController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PrediccionController;
+use App\Http\Controllers\RutaController;
+use App\Http\Controllers\SocioController;
+use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\TurnoController;
+use App\Http\Controllers\UrbanController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    AsientoController,
-    BoletoController,
-    ClienteController,
-    CorridaController,
-    PrediccionController,
-    RutaController,
-    SocioController,
-    UrbanController,
-    UserController,
-    VentaController,
-    SucursalController,
-    DashboardController,
-    TurnoController
-};
 
 Route::view('/', 'welcome')->name('home');
 
@@ -33,9 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Sin middleware role, verificando manualmente
     Route::get('/taquillas', function () {
-        if (!auth()->user()->hasAnyRole(['admin', 'gerente'])) {
+        if (! auth()->user()->hasAnyRole(['admin', 'gerente'])) {
             abort(403);
         }
+
         return view('taquillas.index');
     })->name('taquilla.index')->middleware(['auth', 'verified']);
 
@@ -206,4 +205,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Venta extends Model
 {
     use HasFactory;
 
     protected $table = 'venta';
+
     protected $primaryKey = 'id_venta';
 
     protected $fillable = [
@@ -25,7 +26,6 @@ class Venta extends Model
     protected $casts = [
         'fecha' => 'date',
     ];
-
 
     public function cliente(): BelongsTo
     {

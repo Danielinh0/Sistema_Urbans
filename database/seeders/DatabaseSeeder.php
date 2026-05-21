@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             BoletoSeeder::class,
             BoletoClienteSeeder::class,
             BoletoPaqueteSeeder::class,
-            
+
         ]);
 
         $Usuario = User::factory()->create([

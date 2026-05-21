@@ -51,93 +51,122 @@ new class extends Component {
 };
 ?>
 
-<div>
+<div class="py-2"> {{-- quitado px-4 --}}
 
     <livewire:barra-busqueda placeholder="Buscar por nombre de ruta" />
 
-    <flux:card class="!p-2 overflow-x-auto">
-        <flux:table :paginate="$this->rutas" class="w-full text-sm compact-table" dense>
+    <flux:card> 
+        <flux:table :paginate="$this->rutas" dense>  {{-- quitado class="w-full text-sm compact-table" --}}
             <flux:table.columns>
 
-                <x-header-table sortable="id_ruta" class="w-5 col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                <flux:table.column align="center">
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="map-pinned" class="text-azul_menu!" /> Ruta
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="map-pinned" class="w-[3rem]">Ruta</x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="map-pinned" class="text-azul_menu!" /> Salida
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="map-pinned" class="w-[4rem]">Salida</x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="map-pinned" class="text-azul_menu!" /> Llegada
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="map-pinned" class="w-[4rem]">Llegada</x-header-table>
+                <flux:table.column align="center">
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="land-plot" class="text-azul_menu!" /> Dist. (km)
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="land-plot" class="w-8 col-hide-md">Dist. (km)</x-header-table>
+                <flux:table.column  align="center"
+                    sortable
+                    :sorted="$sortBy === 'tiempo_estimado'"
+                    :direction="$sortDirection"
+                    wire:click="sort('tiempo_estimado')"
 
-                <x-header-table icon="alarm-clock" sortable="tiempo_estimado" class="w-[2rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">Tiempo</x-header-table>
+                >
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="alarm-clock" class="text-azul_menu!" /> Tiempo
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="tickets" sortable="tarifa_clientes" class="w-[2rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection">Tarifa</x-header-table>
+                <flux:table.column align="center">
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="tickets" class="text-azul_menu!" /> Tarifa
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="package" sortable="tarifa_paquete" class="w-[2rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection">Paquetes</x-header-table>
+                <flux:table.column align="center">
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="package" class="text-azul_menu!" /> Paquetes
+                    </span>
+                </flux:table.column>
+
+
                 @if (auth()->user()->hasAnyRole(['admin', 'gerente']))
-                <x-header-table icon="wrench" class="w-[3rem]" align="center">Acciones</x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="wrench" class="text-azul_menu!" /> Acciones
+                    </span>
+                </flux:table.column>
                 @endif
-            </flux:table.columns>
-            <flux:table.rows>
 
+            </flux:table.columns>
+
+            <flux:table.rows>
                 @forelse ($this->rutas as $ruta)
                 <flux:table.row :key="$ruta->id_ruta">
-                    <flux:table.cell class="!px-1 w-5 text-center tabular-nums col-hide-sm">
-                        {{ $ruta->id_ruta }}
+
+                    <flux:table.cell  align="center" class="whitespace-nowrap" title="{{ $ruta->nombre }}">
+                        {{ $ruta->nombre }}
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[8rem]">
-                        <div class="truncate" title="{{ $ruta->nombre }}">
-                            {{ Str::limit($ruta->nombre, 30, '...') }}
-                        </div>
-                    </flux:table.cell>
-
-                    <flux:table.cell class="!px-2 w-[4rem] text-center col-hide-md">
+                    <flux:table.cell class="whitespace-nowrap col-hide-md">
                         {{ $ruta->sucursalSalida?->nombre ?? 'N/A' }}
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[4rem] text-center col-hide-md">
+                    <flux:table.cell class="whitespace-nowrap col-hide-md">
                         {{ $ruta->sucursalLlegada?->nombre ?? 'N/A' }}
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-8 text-center col-hide-md">
-                        {{ $ruta->distancia }}
+                    <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
+                        <flux:badge color="zinc"> {{ $ruta->distancia }} km</flux:badge> 
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[2rem]">
-                        {{ $ruta->tiempo_estimado }}
+                    <flux:table.cell  align="center" class="whitespace-nowrap">
+                       <flux:badge color="zinc">{{ $ruta->tiempo_estimado }} hrs</flux:badge> 
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[2rem] col-hide-md">
-                        <flux:badge color="green" size="sm">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
+                    <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
+                        <flux:badge color="green">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[2rem] col-hide-md">
-                        <flux:badge color="green" size="sm">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
+                    <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
+                        <flux:badge color="green">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
                     </flux:table.cell>
 
                     @can('update', $ruta)
-                    <flux:table.cell class="!px-2 w-[3rem]">
-                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-
+                    <flux:table.cell>
+                        <div class="flex items-center gap-1">
                             <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })">
-                                Editar
                             </flux:button>
-
-
                             <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
                                 wire:click="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })">
-                                Eliminar
                             </flux:button>
-
                         </div>
                     </flux:table.cell>
                     @endcan
+
                 </flux:table.row>
                 @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="7" class="text-center py-4">
+                    <flux:table.cell>
                         No se encontraron rutas.
                     </flux:table.cell>
                 </flux:table.row>
@@ -145,6 +174,7 @@ new class extends Component {
             </flux:table.rows>
 
         </flux:table>
+
         <flux:select size="sm" class="w-full sm:w-auto" wire:model.live="perPage">
             <flux:select.option value="7">7</flux:select.option>
             <flux:select.option value="14">14</flux:select.option>
@@ -152,8 +182,6 @@ new class extends Component {
             <flux:select.option value="48">48</flux:select.option>
         </flux:select>
     </flux:card>
-
-
 
     <livewire:rutas.modal />
 </div>

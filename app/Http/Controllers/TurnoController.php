@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Turno;
+use Illuminate\Http\Request;
 
 class TurnoController extends Controller
 {
@@ -16,13 +16,13 @@ class TurnoController extends Controller
             ->latest('hora_inicio')
             ->first();
 
-        if (!$turno) {
+        if (! $turno) {
             return redirect()->back()
                 ->with('warning', 'No tienes un turno activo para cerrar.');
         }
 
         $turno->update([
-            'hora_fin' => now()->toTimeString()  // Consistente con tu hora_inicio
+            'hora_fin' => now()->toTimeString(),  // Consistente con tu hora_inicio
         ]);
 
         return redirect()->route('dashboard')

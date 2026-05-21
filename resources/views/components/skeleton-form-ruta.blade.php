@@ -58,9 +58,21 @@
                     placeholder="Ej: 45.5" />
                 <flux:error name="distancia" />
             </flux:field>
-            <div>
+            {{-- <div>
                 <x-input-time wire="tiempo_estimado" texto="Tiempo" />
-            </div>
+            </div> --}}
+
+            <flux:field>
+                <flux:label badge="Obligatorio">Tiempo Estimado</flux:label>
+
+                <flux:input
+                    wire:model.live.blur="tiempo_estimado"
+                    x-on:blur="$wire.touchField('tiempo_estimado')"
+                    icon:trailing="clock-8"
+                    placeholder="Ej: 01:30" />
+                <flux:error name="tiempo_estimado" />
+            </flux:field>
+
             <flux:field>
                 <flux:label badge="Obligatorio">Tarifa para personas ($MXN)</flux:label>
 

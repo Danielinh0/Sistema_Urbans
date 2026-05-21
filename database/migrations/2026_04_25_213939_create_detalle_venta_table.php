@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('id_detalle_venta');
             $table->timestamps();
 
-
             $table->foreignId('id_venta')->constrained('venta', 'id_venta')->onDelete('cascade');
         });
     }

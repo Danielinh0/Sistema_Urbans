@@ -11,9 +11,10 @@
             @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
             <div class="pr-2">
                 <flux:modal.trigger name="edit-profile">
-                    <flux:button class="bg-azul_rebajado! cursor-pointer text-azul_menu!
+                    <flux:button class="
+                     bg-azul_rebajado!  text-azul_menu!
                      hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4 hover:scale-110
-                    transition delay-150 duration-300 ease-in-out "
+                       transition delay-150 duration-300 ease-in-out cursor-pointer border-none!"
                         icon="map-pin-plus"> Nueva ruta </flux:button>
                 </flux:modal.trigger>
             </div>
@@ -23,7 +24,6 @@
         <div class="px-3" >
             <livewire:rutas.tabla />
         </div>
-
 
     </section>
 
