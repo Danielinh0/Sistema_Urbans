@@ -2,22 +2,13 @@
 
     <livewire:barra-busqueda placeholder="Buscar por ruta o conductor" />
 
-    <flux:button wire:click="prueba">
-        Save changes
-    </flux:button>
-
     <flux:card>
         <flux:table :paginate="$this->corridas" dense>
             <flux:table.columns>
 
-                <flux:table.column
-                    sortable
-                    :sorted="$sortBy === 'id_ruta'"
-                    :direction="$sortDirection"
-                    wire:click="sort('id_ruta')"
-                >
+                <flux:table.column>
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
-                        <flux:icon name="map-pinned" class="text-azul_menu!" /> Ruta
+                        <flux:icon name="map-pin-house" class="text-azul_menu!" /> Ruta
                     </span>
                 </flux:table.column>
 
@@ -27,48 +18,39 @@
                     </span>
                 </flux:table.column>
 
-                <flux:table.column
-                    sortable
-                    :sorted="$sortBy === 'id_usuario'"
-                    :direction="$sortDirection"
-                    wire:click="sort('id_usuario')"
-                >
+                <flux:table.column>
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
                         <flux:icon name="ticket" class="text-azul_menu!" /> Conductor
+                    </span>
+                </flux:table.column>
+
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="waypoints" class="text-azul_menu!" /> Estado
                     </span>
                 </flux:table.column>
 
                 <flux:table.column
                     class="col-hide-md"
                     sortable
-                    :sorted="$sortBy === 'fecha'"
+                    :sorted="$sortBy === 'datetime_salida'"
                     :direction="$sortDirection"
-                    wire:click="sort('fecha')"
+                    wire:click="sort('datetime_salida')"
                 >
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
                         <flux:icon name="calendar" class="text-azul_menu!" /> Fecha
                     </span>
                 </flux:table.column>
 
-                <flux:table.column
-                    sortable
-                    :sorted="$sortBy === 'hora_salida'"
-                    :direction="$sortDirection"
-                    wire:click="sort('hora_salida')"
-                >
+                <flux:table.column>
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
                         <flux:icon name="alarm-clock" class="text-azul_menu!" /> Salida
                     </span>
                 </flux:table.column>
 
-                <flux:table.column
-                    sortable
-                    :sorted="$sortBy === 'hora_llegada'"
-                    :direction="$sortDirection"
-                    wire:click="sort('hora_llegada')"
-                >
-                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
-                        <flux:icon name="alarm-clock" class="text-azul_menu!" /> Llegada
+                <flux:table.column align="center">
+                    <span class="inline-flex items-center gap-3 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="alarm-clock" class="text-azul_menu!" /> Llegada <br> aproximada
                     </span>
                 </flux:table.column>
 
@@ -93,7 +75,7 @@
 
                     <flux:table.cell class="col-hide-md">
                         @if ($corrida->urban)
-                            <flux:badge color="sky">{{ $corrida->urban->codigo_urban }}</flux:badge>
+                            <flux:badge color="cyan">{{ $corrida->urban->codigo_urban }}</flux:badge>
                         @else
                             <span class="text-zinc-500">Sin urban</span>
                         @endif
@@ -106,21 +88,41 @@
                     </flux:table.cell>
 
                     <flux:table.cell class="col-hide-md">
+                        @php
+                            $badgeColor = match ($corrida->estado) {
+                                'En viaje' => 'amber',
+                                'Cancelada' => 'red',
+                                'Programada' => 'sky',
+                                'Finalizada' => 'green',
+                                default => 'zinc',
+                            };
+                        @endphp
+                        <flux:badge color="{{ $badgeColor }}">{{ $corrida->estado }}</flux:badge>
+                    </flux:table.cell>
 
-                     <flux:badge color="zinc">
-                        {{ $corrida->fecha ? $corrida->fecha->format('d/m/Y') : '-' }}
-                     </flux:badge>   
+                    <flux:table.cell class="col-hide-md">
+                        {{ $corrida->datetime_salida ? $corrida->datetime_salida->format('d/m/Y') : '-' }}
                     </flux:table.cell>
 
                     <flux:table.cell class="tabular-nums" variant="strong">
-                        <flux:badge color="green">
-                            {{ $corrida->hora_salida ? $corrida->hora_salida->format('H:i') : '-' }}
+                        <flux:badge color="emerald">
+                            @if($corrida->datetime_salida)
+                                {{ $corrida->datetime_salida->format('h:i') }}
+                                {{ $corrida->datetime_salida->format('H') < 12 ? 'AM' : 'PM' }}
+                            @else
+                                -
+                            @endif
                         </flux:badge>
                     </flux:table.cell>
 
-                    <flux:table.cell class="tabular-nums" variant="strong">
+                    <flux:table.cell align="center" class="tabular-nums" variant="strong">
                         <flux:badge color="blue">
-                            {{ $corrida->hora_llegada ? $corrida->hora_llegada->format('H:i') : '-' }}
+                            @if($corrida->datetime_llegada)
+                                {{ $corrida->datetime_llegada->format('h:i') }}
+                                {{ $corrida->datetime_llegada->format('H') < 12 ? 'AM' : 'PM' }}
+                            @else
+                                -
+                            @endif
                         </flux:badge>
                     </flux:table.cell>
 
