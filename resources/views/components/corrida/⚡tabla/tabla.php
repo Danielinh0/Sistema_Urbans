@@ -14,7 +14,7 @@ new class extends Component
 
     public $sortBy = 'id_corrida';
 
-    public $sortDirection = 'desc';
+    public $sortDirection = 'asc';
 
     public $search = '';
 
