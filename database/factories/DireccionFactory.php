@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Direccion;
 use App\Models\Calle;
+use App\Models\Direccion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DireccionFactory extends Factory

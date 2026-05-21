@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Colonia;
 use App\Models\CodigoPostal;
+use App\Models\Colonia;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ColoniaFactory extends Factory
@@ -14,7 +14,7 @@ class ColoniaFactory extends Factory
     {
         return [
             'id_cp' => CodigoPostal::all()->random()->id_cp,
-            'nombre' => $this->faker->word() . ' ' . $this->faker->word(),
+            'nombre' => $this->faker->word().' '.$this->faker->word(),
         ];
     }
 }

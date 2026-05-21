@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Venta;
-use App\Models\Boleto;
 use App\Models\Cliente;
+use App\Models\Venta;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VentaFactory extends Factory

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('boleto_paquete', function (Blueprint $table) {
             $table->unsignedBigInteger('id_boleto')->primary();
             $table->foreign('id_boleto')
-            ->references('id_boleto')->on('boleto') ->onDelete('cascade');    
+                ->references('id_boleto')->on('boleto')->onDelete('cascade');
 
             $table->string('guia')->unique();
             $table->string('descripcion');

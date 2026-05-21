@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Estado;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Pais;
 use Illuminate\Database\Seeder;
 

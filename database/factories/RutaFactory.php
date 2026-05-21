@@ -19,7 +19,7 @@ class RutaFactory extends Factory
         }
 
         return [
-            'nombre' => " " . Sucursal::find($origen)->nombre . " - " . Sucursal::find($destino)->nombre,
+            'nombre' => ' '.Sucursal::find($origen)->nombre.' - '.Sucursal::find($destino)->nombre,
             'distancia' => $this->faker->randomFloat(2, 50, 500),
             'tarifa_clientes' => $this->faker->randomFloat(2, 10, 100),
             'tarifa_paquete' => $this->faker->randomFloat(2, 20, 200),

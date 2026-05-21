@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Sucursal;
 use App\Models\Direccion;
+use App\Models\Sucursal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SucursalFactory extends Factory
@@ -13,7 +13,7 @@ class SucursalFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => 'Sucursal ' . $this->faker->city(),
+            'nombre' => $this->faker->city(),
             'id_direccion' => Direccion::factory(),
         ];
     }

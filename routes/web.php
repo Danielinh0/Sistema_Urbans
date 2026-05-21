@@ -1,5 +1,18 @@
 <?php
 
+use App\Http\Controllers\AsientoController;
+use App\Http\Controllers\BoletoController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CorridaController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PrediccionController;
+use App\Http\Controllers\RutaController;
+use App\Http\Controllers\SocioController;
+use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\TurnoController;
+use App\Http\Controllers\UrbanController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AsientoController,
@@ -206,4 +219,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

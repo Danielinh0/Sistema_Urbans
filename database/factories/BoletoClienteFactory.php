@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\BoletoCliente;
-use App\Models\Boleto;
 use App\Models\Asiento;
+use App\Models\Boleto;
+use App\Models\BoletoCliente;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BoletoClienteFactory extends Factory

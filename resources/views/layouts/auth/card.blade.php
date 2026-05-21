@@ -23,7 +23,7 @@
         </div>
         @fluxScripts
         @persist('toast')
-        <flux:toast />
-    @endpersist
+            <flux:toast />
+        @endpersist
     </body>
 </html>

@@ -1,100 +1,149 @@
-<div>
+<div class="py-2">
 
-    <livewire:barra-busqueda
-        placeholder="Buscar por ruta o conductor" />
+    <livewire:barra-busqueda placeholder="Buscar por ruta o conductor" />
 
-    <flux:card class="!p-2 overflow-x-auto">
-        <flux:table :paginate="$this->corridas" class="w-full text-sm compact-table" dense>
+    <flux:card>
+        <flux:table :paginate="$this->corridas" dense>
             <flux:table.columns>
 
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="map-pin-house" class="text-azul_menu!" /> Ruta
+                    </span>
+                </flux:table.column>
 
+                <flux:table.column class="col-hide-md">
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="bus" class="text-azul_menu!" /> Urban
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="map-pinned" sortable="id_ruta" class="w-[11rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Ruta </x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="ticket" class="text-azul_menu!" /> Conductor
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="bus" class="w-[6rem] col-hide-md"> Urban </x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="waypoints" class="text-azul_menu!" /> Estado
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="ticket" sortable="id_usuario" class="w-[9rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Conductor </x-header-table>
+                <flux:table.column
+                    class="col-hide-md"
+                    sortable
+                    :sorted="$sortBy === 'datetime_salida'"
+                    :direction="$sortDirection"
+                    wire:click="sort('datetime_salida')"
+                >
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="calendar" class="text-azul_menu!" /> Fecha
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="calendar" sortable="fecha" class="w-[6rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection"> Fecha </x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="alarm-clock" class="text-azul_menu!" /> Salida
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="alarm-clock" sortable="hora_salida" class="w-[4.5rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Salida </x-header-table>
+                <flux:table.column align="center">
+                    <span class="inline-flex items-center gap-3 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="alarm-clock" class="text-azul_menu!" /> Llegada <br> aproximada
+                    </span>
+                </flux:table.column>
 
-                <x-header-table icon="alarm-clock" sortable="hora_llegada" class="w-[4.5rem]" :sortBy="$sortBy" :sortDirection="$sortDirection"> Llegada </x-header-table>
                 @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
-                <x-header-table icon="wrench" class="w-[10rem]" align="center"> Acciones </x-header-table>
+                <flux:table.column>
+                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                        <flux:icon name="wrench" class="text-azul_menu!" /> Acciones
+                    </span>
+                </flux:table.column>
                 @endif
+
             </flux:table.columns>
             <flux:table.rows>
                 @forelse ($this->corridas as $corrida)
                 <flux:table.row :key="$corrida->id_corrida">
 
-
-                    <flux:table.cell class="!px-2 w-[11rem]">
+                    <flux:table.cell>
                         <div class="truncate" title="{{ $corrida->ruta->nombre ?? 'Sin ruta' }}">
-                            {{ Str::limit($corrida->ruta->nombre ?? 'Sin ruta', 25, '...') }}
+                            {{ $corrida->ruta->nombre ?? 'Sin ruta' }}
                         </div>
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[6rem] col-hide-md">
+                    <flux:table.cell class="col-hide-md">
                         @if ($corrida->urban)
-                        <flux:badge color="sky" size="sm">{{ $corrida->urban->codigo_urban }}</flux:badge>
+                            <flux:badge color="cyan">{{ $corrida->urban->codigo_urban }}</flux:badge>
                         @else
-                        <span class="text-zinc-500">Sin urban</span>
+                            <span class="text-zinc-500">Sin urban</span>
                         @endif
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[9rem]">
+                    <flux:table.cell>
                         <div class="truncate" title="{{ $corrida->user->name ?? 'Sin conductor' }}">
                             {{ $corrida->user->name ?? 'Sin conductor' }}
                         </div>
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[6rem] col-hide-md">
-                        {{ $corrida->fecha ? $corrida->fecha->format('d/m/Y') : '-' }}
+                    <flux:table.cell class="col-hide-md">
+                        @php
+                            $badgeColor = match ($corrida->estado) {
+                                'En viaje' => 'amber',
+                                'Cancelada' => 'red',
+                                'Programada' => 'sky',
+                                'Finalizada' => 'green',
+                                default => 'zinc',
+                            };
+                        @endphp
+                        <flux:badge color="{{ $badgeColor }}">{{ $corrida->estado }}</flux:badge>
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[4.5rem] tabular-nums" variant="strong">
-                        @if($corrida->hora_salida)
-                        {{ $corrida->hora_salida->format('H:i') }}
-                        @else
-                        -
-                        @endif
+                    <flux:table.cell class="col-hide-md">
+                        {{ $corrida->datetime_salida ? $corrida->datetime_salida->format('d/m/Y') : '-' }}
                     </flux:table.cell>
 
-                    <flux:table.cell class="!px-2 w-[4.5rem] tabular-nums" variant="strong">
-                        @if($corrida->hora_llegada)
-                        {{ $corrida->hora_llegada->format('H:i') }}
-                        @else
-                        -
-                        @endif
+                    <flux:table.cell class="tabular-nums" variant="strong">
+                        <flux:badge color="emerald">
+                            @if($corrida->datetime_salida)
+                                {{ $corrida->datetime_salida->format('h:i') }}
+                                {{ $corrida->datetime_salida->format('H') < 12 ? 'AM' : 'PM' }}
+                            @else
+                                -
+                            @endif
+                        </flux:badge>
                     </flux:table.cell>
 
+                    <flux:table.cell align="center" class="tabular-nums" variant="strong">
+                        <flux:badge color="blue">
+                            @if($corrida->datetime_llegada)
+                                {{ $corrida->datetime_llegada->format('h:i') }}
+                                {{ $corrida->datetime_llegada->format('H') < 12 ? 'AM' : 'PM' }}
+                            @else
+                                -
+                            @endif
+                        </flux:badge>
+                    </flux:table.cell>
 
-
-                    <flux:table.cell class="!px-2 w-[10rem]">
-
-                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                            @can('update', $corrida)
-                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu !px-1.5"
+                    @can('update', $corrida)
+                    <flux:table.cell>
+                        <div class="flex items-center gap-1">
+                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
                                 wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
-                                Editar
                             </flux:button>
-                            @endcan
-
-                            @can('delete', $corrida)
-                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto !px-1.5"
+                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
                                 wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
-                                Eliminar
                             </flux:button>
                             @endcan
                         </div>
-
                     </flux:table.cell>
+                    @endcan
 
                 </flux:table.row>
                 @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="8" class="text-center py-4">
+                    <flux:table.cell colspan="8">
                         No se encontraron corridas.
                     </flux:table.cell>
                 </flux:table.row>
@@ -102,6 +151,7 @@
             </flux:table.rows>
 
         </flux:table>
+
         <flux:select size="sm" class="w-full sm:w-auto mt-4" wire:model.live="perPage">
             <flux:select.option value="7">7</flux:select.option>
             <flux:select.option value="14">14</flux:select.option>

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ruta;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class RutaController extends Controller
 {
@@ -16,6 +16,7 @@ class RutaController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Ruta::class);
+
         return view('ruta.index');
     }
 
@@ -25,6 +26,7 @@ class RutaController extends Controller
     public function create()
     {
         $this->authorize('create', Ruta::class);
+
         return view('ruta.create');
     }
 
@@ -69,6 +71,7 @@ class RutaController extends Controller
     {
         $ruta = Ruta::findOrFail($id);
         $this->authorize('update', $ruta);
+
         return redirect()->route('ruta.index');
     }
 
@@ -79,6 +82,7 @@ class RutaController extends Controller
     {
         $ruta = Ruta::findOrFail($id);
         $this->authorize('delete', $ruta);
+
         return redirect()->route('ruta.index');
     }
 }

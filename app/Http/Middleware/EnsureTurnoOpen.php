@@ -2,10 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Turno;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class EnsureTurnoOpen
 {
@@ -21,7 +22,7 @@ class EnsureTurnoOpen
 
         // Solo aplicamos la restricción a cajeros
         if ($user && $user->hasRole('cajero')) {
-            $hayTurnoActivo = \App\Models\Turno::where('id_usuario', $user->id_usuario)
+            $hayTurnoActivo = Turno::where('id_usuario', $user->id_usuario)
                 ->whereNull('hora_fin')
                 ->exists();
         }

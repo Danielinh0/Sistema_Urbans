@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('boleto_cliente', function (Blueprint $table) {
             $table->unsignedBigInteger('id_boleto')->primary();
             $table->foreign('id_boleto')
-            ->references('id_boleto')->on('boleto')->onDelete('cascade');    
-            
+                ->references('id_boleto')->on('boleto')->onDelete('cascade');
+
             $table->foreignId('id_asiento')->constrained('asiento', 'id_asiento')->onDelete('cascade');
             $table->decimal('peso_equipaje', 10, 2)->default(0);
         });

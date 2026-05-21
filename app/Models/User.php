@@ -5,24 +5,20 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+// cambios para que solo sea user y sustituyendo las relaciones logicas en lso modelos
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
-
-
-// cambios para que solo sea user y sustituyendo las relaciones logicas en lso modelos 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
-
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
+
     use HasRoles;
 
     protected $primaryKey = 'id_usuario';
@@ -30,8 +26,6 @@ class User extends Authenticatable
     public $incrementing = true;
 
     protected $keyType = 'int';
-
-
 
     protected $fillable = [
         'id_sucursal',
@@ -77,7 +71,7 @@ class User extends Authenticatable
         return Str::of($fullName)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -102,7 +96,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Turno::class, 'id_usuario', 'id_usuario');
     }
-
 
     public function turnoActivo()
     {
