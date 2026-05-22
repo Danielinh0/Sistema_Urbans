@@ -17,22 +17,6 @@ use App\Http\Controllers\{
     BoletoYBitacoraController
 };
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    AsientoController,
-    BoletoController,
-    ClienteController,
-    CorridaController,
-    PrediccionController,
-    RutaController,
-    SocioController,
-    UrbanController,
-    UserController,
-    VentaController,
-    SucursalController,
-    DashboardController,
-    TurnoController
-};
-
 
 Route::view('/', 'welcome')->name('home');
 
