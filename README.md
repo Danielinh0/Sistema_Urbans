@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="public/images/btnat.png" alt="Sistema Urbans" width="280">
-</p>
-
-<h1 align="center">🚍 Sistema Urbans</h1>
+<h1 align="center">Sistema Urbans</h1>
 
 <p align="center">
   <strong>Sistema integral de gestión para empresas de transporte urbano de pasajeros</strong>
@@ -19,7 +15,7 @@
 
 ---
 
-## 📋 Descripción
+## Descripción
 
 **Sistema Urbans** es una plataforma web diseñada para digitalizar y optimizar las operaciones diarias de una empresa de autobuses urbanos. Abarca desde la venta de boletos en taquilla, la gestión de corridas y rutas, hasta el control de paquetería, turnos de cajeros, reportes estadísticos y predicciones de demanda con inteligencia artificial.
 
@@ -27,65 +23,65 @@ El sistema implementa un esquema de **roles y permisos granulares** que permite 
 
 ---
 
-## ✨ Funcionalidades principales
+## Funcionalidades principales
 
-### 🎟️ Venta de boletos
+### Venta de boletos
 - Punto de venta rápido con selección de asientos interactiva
 - Asociación de boletos a clientes registrados
 - Reimpresión, cancelación y reembolso de boletos
 - Aplicación y autorización de descuentos
 
-### 📦 Paquetería
+### Paquetería
 - Registro de paquetes con formulario detallado
 - Resumen de pago y seguimiento de envíos
 - Asociación de paquetes a corridas y rutas
 
-### 🗺️ Rutas y Corridas
+### Rutas y Corridas
 - CRUD completo de rutas con origen, destino y sucursales asociadas
 - Gestión de corridas: programación, asignación de choferes y urbans
 - Registro de salida y llegada de corridas en tiempo real
 - Vista detallada de pasajeros por corrida
 
-### 🚌 Flota (Urbans)
+### Flota (Urbans)
 - Registro y administración de unidades de transporte
 - Control de estado (activo/inactivo) con soft deletes
 - Asignación de asientos por unidad
 
-### 👥 Socios y Clientes
+### Socios y Clientes
 - Gestión de socios propietarios de unidades
 - Registro de clientes con datos personales y de dirección
 - Historial de compras por cliente
 
-### 🏢 Sucursales
+### Sucursales
 - Administración multi-sucursal
 - Asignación de taquillas por sucursal
 - Control de datos por alcance (sucursal propia o todas)
 
-### 👤 Usuarios y Roles
+### Usuarios y Roles
 - Gestión de usuarios con roles diferenciados
 - Validaciones y bloqueo/desbloqueo de cuentas
 - Sistema de permisos granulares con [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission)
 
-### 🪙 Turnos y Taquillas
+### Turnos y Taquillas
 - Apertura y cierre de turnos por cajero
 - Administración de taquillas (abrir, cerrar, monitorear)
 - Middleware de control: funciones de venta bloqueadas sin turno activo
 
-### 📊 Reportes
+### Reportes
 - Dashboard de reportes con gráficas interactivas (Chart.js)
 - Gráfica de boletos vendidos por mes
 - Gráfica de corridas realizadas
 - Gráfica de rutas más utilizadas
 - Resumen diario y widgets de taquillas
 
-### 🤖 Predicción de demanda
+### Predicción de demanda
 - Módulo de predicciones con inteligencia artificial
 - Estimación de demanda futura por ruta
 - Acceso exclusivo para administradores
 
 ---
 
-## 🏗️ Arquitectura y Stack Tecnológico
+## Arquitectura y Stack Tecnológico
 
 | Capa | Tecnología |
 |---|---|
@@ -103,7 +99,7 @@ El sistema implementa un esquema de **roles y permisos granulares** que permite 
 
 ---
 
-## 🗄️ Modelo de datos
+## Modelo de datos
 
 El sistema cuenta con **22 modelos** interconectados:
 
@@ -129,7 +125,7 @@ Direccion ─── Calle ─── Colonia ─── CodigoPostal ─── Est
 
 ---
 
-## 🔐 Roles y permisos
+## Roles y permisos
 
 El sistema define **4 roles** con permisos específicos:
 
@@ -142,13 +138,13 @@ El sistema define **4 roles** con permisos específicos:
 
 ---
 
-## 🚀 Instalación y configuración
+## Instalación y configuración
 
 ### Prerrequisitos
 
-- PHP ≥ 8.3
+- PHP >= 8.3
 - Composer
-- Node.js ≥ 18 y npm (o bun/pnpm)
+- Node.js >= 18 y npm (o bun/pnpm)
 - MySQL 8+ o SQLite
 
 ### Pasos de instalación
@@ -193,7 +189,7 @@ composer dev
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 Sistema_Urbans/
@@ -231,7 +227,7 @@ Sistema_Urbans/
 
 ---
 
-## 🧪 Testing
+## Testing
 
 El proyecto utiliza **Pest PHP** como framework de testing:
 
@@ -248,7 +244,7 @@ php artisan test --filter=AuthenticationTest
 
 ---
 
-## 🌐 Deploy
+## Deploy
 
 El proyecto está preparado para desplegarse en **Heroku**:
 
@@ -260,12 +256,12 @@ git push heroku main
 
 ---
 
-## 👥 Equipo de desarrollo
+## Equipo de desarrollo
 
 Proyecto desarrollado de forma colaborativa como parte de un sistema de gestión empresarial de transporte.
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto se distribuye bajo la licencia [MIT](https://opensource.org/licenses/MIT).
