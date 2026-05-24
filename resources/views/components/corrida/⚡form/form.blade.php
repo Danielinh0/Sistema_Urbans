@@ -59,8 +59,8 @@
                     <flux:field>
                         <flux:label badge="Obligatorio">Conductor</flux:label>
 
-                        <flux:select wire:model.live="id_chofer_actual" placeholder="Selecciona un chofer">
-                            @foreach ($this->conductoresDisponibles as $conductor)
+                        <flux:select wire:model.live="id_chofer_actual" placeholder="Selecciona un chofer" :disabled="!$this->fecha || !$this->datetime_salida || !$this->id_ruta">
+                            @foreach ($this->choferes() as $conductor)
                                 <flux:select.option value="{{ $conductor->id_usuario }}">
                                     {{ $conductor->name }}
                                 </flux:select.option>
