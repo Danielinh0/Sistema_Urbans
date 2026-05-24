@@ -1,6 +1,16 @@
 <div class="py-2">
 
-    <livewire:barra-busqueda placeholder="Buscar por ruta o conductor" />
+    <livewire:barra-busqueda placeholder="Buscar por ruta o conductor" :filters="[
+        'estado' => [
+            'label' => 'Todas',
+            'options' => [
+                'Programada' => 'Programada',
+                'En viaje' => 'En viaje',
+                'Finalizada' => 'Finalizada',
+                'Cancelada' => 'Cancelada'
+            ]
+        ]
+    ]"/>
 
     <flux:card>
         <flux:table :paginate="$this->corridas" dense>

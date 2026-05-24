@@ -18,11 +18,9 @@ new class extends Component
     public $fecha = '';
     public $datetime_salida = '';
 
-    public $fecha_llegada = '';
     public $datetime_llegada = '';
 
     public $id_urban_actual = '';
-
     public $id_chofer_actual = '';
 
     public array $asignaciones = [];
@@ -201,6 +199,28 @@ new class extends Component
         return $llegada;
     }
 
+    public function urbans_disponibles()
+    {
+    if (!$this->fecha || !$this->datetime_salida || !$this->id_ruta) {
+        return collect();
+    }
+
+    $horaSalida = Carbon::createFromFormat('Y-m-d H:i', "{$this->fecha} {$this->datetime_salida}");
+    $horaLlegada = $this->calcular__llegada($this->fecha, $this->datetime_salida, (int) $this->id_ruta);
+
+    return Urban::where('estado', 'Libre')
+        ->whereDoesntHave('corrida', function ($q) use ($horaSalida, $horaLlegada) {
+            $q->whereBetween('datetime_salida', [$horaSalida, $horaLlegada])
+              ->orWhereBetween('datetime_llegada', [$horaSalida, $horaLlegada])
+              ->orWhere(function ($q2) use ($horaSalida, $horaLlegada) {
+                  $q2->where('datetime_salida', '<', $horaSalida)
+                     ->where('datetime_llegada', '>', $horaLlegada);
+              });
+        })
+        ->get();
+    }
+
+
     public function save()
     {
         $this->validate();
@@ -233,7 +253,11 @@ new class extends Component
             'fecha_llegada',
         ]);
 
-        Flux::toast('Your changes have been saved.');
+        Flux::toast(
+            heading: 'Corrida programada',
+            text: 'La corrida ha sido programada exitosamente.',
+            variant: 'success',
+        );
     }
 
     

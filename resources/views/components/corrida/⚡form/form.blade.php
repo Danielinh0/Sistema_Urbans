@@ -46,15 +46,16 @@
                 <div class="grid grid-cols-2 gap-6">
                     <flux:field>
                         <flux:label badge="Obligatorio">Urban</flux:label>
-                        <flux:select wire:model.live="id_urban_actual" placeholder="Selecciona una urban">
-                            @foreach ($this->urbans as $urban)
+                        <flux:select wire:model.live="id_urban_actual" placeholder="Selecciona una urban" :disabled="!$this->fecha || !$this->datetime_salida || !$this->id_ruta    ">
+                            @foreach ($this->urbans_disponibles() as $urban)
                                 <flux:select.option value="{{ $urban->id_urban }}">
                                     {{ $urban->codigo_urban }} - {{ $urban->placa }}
                                 </flux:select.option>
                             @endforeach
                         </flux:select>
                     </flux:field>
-
+                    
+                    
                     <flux:field>
                         <flux:label badge="Obligatorio">Conductor</flux:label>
 

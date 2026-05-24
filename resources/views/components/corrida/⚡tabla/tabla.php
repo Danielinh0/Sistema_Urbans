@@ -19,6 +19,8 @@ new class extends Component
     public $search = '';
 
     public $perPage = 7;
+    
+    public $filtroEstado = '';
 
     public function sort($column)
     {
@@ -37,6 +39,14 @@ new class extends Component
         $this->resetPage();
     }
 
+    #[On('filterUpdated')]
+    public function aplicarFiltro($filters)
+    {
+        $this->filtroEstado = $filters['estado'] ?? '';
+        $this->resetPage();
+    }
+
+
     #[On('corrida-creada')]
     public function refreshAfterCreate()
     {
@@ -53,6 +63,18 @@ new class extends Component
                 })->orWhereHas('user', function ($q) {
                     $q->whereRaw('LOWER(name) like ?', ['%'.strtolower($this->search).'%']);
                 });
+            })
+            ->when($this->filtroEstado === 'Programada', function ($query) {
+                $query->where('estado', $this->filtroEstado);
+            })
+            ->when($this->filtroEstado === 'En viaje', function ($query) {
+                $query->where('estado', $this->filtroEstado);
+            })
+            ->when($this->filtroEstado === 'Finalizada', function ($query) {
+                $query->where('estado', $this->filtroEstado);
+            })
+            ->when($this->filtroEstado === 'Cancelada', function ($query) {
+                $query->where('estado', $this->filtroEstado);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
