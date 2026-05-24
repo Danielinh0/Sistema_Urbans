@@ -63,7 +63,7 @@ new class extends Component
         <flux:card>
             <flux:table :paginate="$this->clientes">
                 <flux:table.columns>
-                    <x-header-table sortable="id_cliente" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                    
                     <x-header-table icon="user-round" sortable="nombre" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
                     <x-header-table sortable="apellido_paterno" :sortBy="$sortBy" :sortDirection="$sortDirection">Apellido Paterno</x-header-table>
                     <x-header-table sortable="apellido_materno" :sortBy="$sortBy" :sortDirection="$sortDirection">Apellido Materno</x-header-table>
@@ -75,7 +75,7 @@ new class extends Component
                 <flux:table.rows>
                     @forelse ($this->clientes as $cliente)
                     <flux:table.row :key="$cliente->id_cliente">
-                        <flux:table.cell>{{ $cliente->id_cliente }}</flux:table.cell>
+                        
                         <flux:table.cell>{{ $cliente->nombre }}</flux:table.cell>
                         <flux:table.cell>{{ $cliente->apellido_paterno }}</flux:table.cell>
                         <flux:table.cell>{{ $cliente->apellido_materno }}</flux:table.cell>

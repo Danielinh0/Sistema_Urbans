@@ -76,8 +76,7 @@ new class extends Component {
         <div class="overflow-x-auto">
             <flux:table :paginate="$this->socios">
             <flux:table.columns>
-                <x-header-table sortable :sorted="$sortBy === 'id_socio'" :direction="$sortDirection"
-                    wire:click="sort('id_socio')" class="w-8">ID</x-header-table>
+                
                 <x-header-table sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
                     wire:click="sort('nombre')" class="min-w-[100px]">Nombre</x-header-table>
                 <x-header-table sortable :sorted="$sortBy === 'apellido_paterno'" :direction="$sortDirection"
@@ -99,9 +98,7 @@ new class extends Component {
             <flux:table.rows>
                 @forelse ($this->socios as $socio)
                     <flux:table.row :key="$socio->id_socio">
-                        <flux:table.cell class="text-center! p-1">
-                            <span class="text-xs">{{ $socio->id_socio }}</span>
-                        </flux:table.cell>
+                        
                         <flux:table.cell class="font-medium p-1">
                             <span class="text-sm truncate">{{ $socio->nombre }}</span>
                         </flux:table.cell>
