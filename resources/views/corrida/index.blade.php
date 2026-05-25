@@ -1,6 +1,6 @@
 <x-layouts::app :title="__('Corridas')">
 
-    <main class="flex flex-col gap-5 px-4 pt-2">
+    <main class="flex flex-col gap-3 px-4 pt-2">
         <header class="flex flex-col justify-between items-center md:flex-row">
             <div>
                 <x-heading :icono="'map'" texto="Corridas" />
@@ -16,25 +16,36 @@
                 </flux:modal.trigger>
             </div>
             @endif
+
+            
         </header>
         
-        <section class="flex"> 
-            <div class= "flex gap-6 rounded-xl items-center shadow-md p-7">
-                
-                <div class= "rounded-full bg-[#d6eaf8]! p-2 flex items-center gap-2">
-                    <flux:icon name="calendar-clock" class="text-[#3498db]! size-10!" /> 
-                </div>
+        <section class="flex flex-col rounded-lg p-6 gap-1 shadow-sm">
 
-                <div>
-                    <flux:text class="text-3xl font-bold text-[#404040]">{{ $corridasEnProceso }}</flux:text>
-                    <flux:text class="text-xl text-[#808080]">Corridas programadas</flux:text>
-                </div>
+            <div class ="flex items-center gap-3 p-4">
+                    <flux:icon name="sunrise" class="inline size-9 text-azul_menu" />
+                    <flux:text class="text-lg xs:text-4xl font-medium !text-azul_menu ">Informacion del dia</flux:text>
             </div>
+            
+            <div class="flex justify-evenly gap-6  "> 
+                
+                <flux:modal.trigger name="corridas-programadas">
+                    <x-card icono="calendar-clock" fondo_icono="bg-[#ccf7f2]!" color_icono="text-[#005f5a]!" contador="{{ $corridasEnProceso }}" texto="Corridas programadas" />
+                </flux:modal.trigger>
 
-            <x-card icono="calendar-clock" fondo_icono="bg-[#d6eaf8]!" color_icono="text-[#3498db]!" contador="{{ $corridasEnProceso }}" texto="Corridas programadas" />
-
-
+                {{-- <flux:modal.trigger name="corridas-viaje"> --}}
+                    <x-card icono="luggage" fondo_icono="bg-[#fcebdb]!" color_icono="text-[#f39c12]!" contador="{{ $corridasEnViaje }}" texto="Corridas en viaje" />
+                {{-- </flux:modal.trigger> --}}
+                
+                <x-card icono="van" fondo_icono="bg-[#ccf6fc]!" color_icono="text-[#005f78]!" contador="{{ $urbansOcupadas }}" texto="Urbans ocupadas" />
+    
+                <x-card icono="key-square" fondo_icono="bg-[#f1e1f7]!" color_icono="text-[#bb6bd9]!" contador="{{ $choferesOcupados }}" texto="Choferes ocupados" />
+    
+    
+            </div>
         </section>
+
+
         
         <section>
             <livewire:corrida.tabla />
@@ -48,3 +59,24 @@
     </flux:modal>
 
 </x-layouts::app>
+
+
+<flux:modal name="corridas-programadas" class="!max-w-4xl p-9 flex flex-col gap-3">
+    
+    <div class ="flex items-center gap-3 p-3">
+        <flux:icon name="map" class="inline size-9 text-azul_menu" />
+        <flux:text class="text-sm xs:text-3xl font-medium !text-azul_menu ">Corridas programadas</flux:text>
+    </div>
+
+    <livewire:corrida.card.table />
+</flux:modal>
+
+<flux:modal name="corridas-viaje" class="!max-w-4xl p-9 flex flex-col gap-3">
+    
+    <div class ="flex items-center gap-3 p-3">
+        <flux:icon name="tickets-plane" class="inline size-9 text-azul_menu" />
+        <flux:text class="text-sm xs:text-3xl font-medium !text-azul_menu ">Corridas en viaje</flux:text>
+    </div>
+
+    <livewire:corrida.card.table-viaje />
+</flux:modal>
