@@ -20,6 +20,7 @@ new class extends Component
     public $fecha = '';
     public $datetime_salida = '';
 
+    public $fecha_llegada = '';
     public $datetime_llegada = '';
 
     public $id_urban_actual = '';
@@ -66,6 +67,18 @@ new class extends Component
     public function rutas()
     {
         return Ruta::orderBy('id_ruta')->get();
+    }
+
+    #[Computed]
+    public function urbans()
+    {
+        return Urban::all();
+    }
+
+    #[Computed]
+    public function conductores()
+    {
+        return User::role('chofer')->get();
     }
 
     #[Computed]
@@ -215,7 +228,7 @@ new class extends Component
     {
         if (!$this->calcularRango()) return collect();
 
-        return Urban::where('estado', 'Libre')
+        return Urban::where('estado', 'Activa')
             ->whereDoesntHave('corrida', fn($q) => $this->rangoOcupado($q))
             ->get();
     }

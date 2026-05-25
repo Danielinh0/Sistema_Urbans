@@ -202,7 +202,7 @@ new class extends Component {
     public function activate()
     {
         $this->urban->restore();
-        $this->urban->estado = 'Libre';
+        $this->urban->estado = 'Activa';
         $this->urban->save();
         $this->js("Flux.modal('modal-activar-urban').close()");
         $this->dispatch('urban-creada');

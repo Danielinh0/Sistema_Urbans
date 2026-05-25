@@ -49,6 +49,7 @@ new class extends Component {
             'numero_asientos' => $this->numero_asientos,
             'id_socio' => $this->id_socio,
             'placa' => $this->placa,
+            'estado' => 'Activa',
         ]);
 
         for ($i = 0; $i < $this->numero_asientos; $i++) {

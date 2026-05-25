@@ -131,10 +131,6 @@ new class extends Component {
                                 <flux:badge color="green" size="sm">Activa</flux:badge>
                             @elseif ($urban->estado == 'Inactiva')
                                 <flux:badge color="gray" size="sm">Inactiva</flux:badge>
-                            @elseif ($urban->estado == 'En viaje')
-                                <flux:badge color="red" size="sm">En viaje</flux:badge>
-                            @elseif ($urban->estado == 'Viaje programado')
-                                <flux:badge color="yellow" size="sm">Viaje programado</flux:badge>
                             @elseif ($urban->estado == 'Fuera de servicio')
                                 <flux:badge color="orange" size="sm">Fuera de servicio</flux:badge>
                             @elseif ($urban->estado == 'Mantenimiento')
