@@ -218,6 +218,5 @@
         </flux:select>
     </flux:card>
 
-    <livewire:corrida.modal />
 
 </div>
