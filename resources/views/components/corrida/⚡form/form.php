@@ -13,8 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
-new class extends Component
-{
+new class extends Component {
     public $id_ruta = '';
 
     protected $horaSalida;

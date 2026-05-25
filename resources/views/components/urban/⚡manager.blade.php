@@ -275,13 +275,18 @@ new class extends Component {
                     <flux:label badge="Obligatorio">Estado</flux:label>
                     <flux:select wire:model.live="estado" placeholder="Seleccione el estado de la urban">
                         <flux:select.option value="{{ $urban->estado }}">{{ $urban->estado }}</flux:select.option>
-                        @if($urban->estado !== 'Libre' && $urban->estado !== 'Inactiva')
-                            <flux:select.option value="Libre">Libre</flux:select.option>
+                        @if($urban->estado == 'Activa')
+                            <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
+                            <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                        @elseif($urban->estado == 'Mantenimiento')
+                            <flux:select.option value="Activa">Activa</flux:select.option>
+                            <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                        @elseif($urban->estado == 'Fuera de servicio')
+                            <flux:select.option value="Activa">Activa</flux:select.option>
+                            <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
                         @endif
-                        <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
-                        <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
                     </flux:select>
-                    <flux:description>Estado: Libre / Fuera de servicio / Mantenimiento</flux:description>
+                    <flux:description>Estado: Activa / Inactiva / Fuera de servicio / Mantenimiento</flux:description>
                     <flux:error name="estado" />
                 </flux:field>
             </div>

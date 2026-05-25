@@ -18,7 +18,6 @@ use App\Http\Controllers\{
 };
 use Illuminate\Support\Facades\Route;
 
-
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -35,10 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Sin middleware role, verificando manualmente
     Route::get('/taquillas', function () {
-        if (! auth()->user()->hasAnyRole(['admin', 'gerente'])) {
+        if (!auth()->user()->hasAnyRole(['admin', 'gerente'])) {
             abort(403);
         }
-
         return view('taquillas.index');
     })->name('taquilla.index')->middleware(['auth', 'verified']);
 
