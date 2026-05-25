@@ -17,6 +17,9 @@ new class extends Component
 {
     public $id_ruta = '';
 
+    protected $horaSalida;
+    protected $horaLlegada;
+
     public $fecha = '';
     public $datetime_salida = '';
 
@@ -204,11 +207,14 @@ new class extends Component
 
     private function rangoOcupado(Builder $query): Builder
     {
-    return $query->whereBetween('datetime_salida', [$this->horaSalida, $this->horaLlegada])
-        ->orWhereBetween('datetime_llegada', [$this->horaSalida, $this->horaLlegada])
-        ->orWhere(function ($q) {
-            $q->where('datetime_salida', '<', $this->horaSalida)
-              ->where('datetime_llegada', '>', $this->horaLlegada);
+        return $query->whereIn('estado', ['Programada', 'En viaje'])
+        ->where(function ($q) {
+            $q->whereBetween('datetime_salida', [$this->horaSalida, $this->horaLlegada])
+              ->orWhereBetween('datetime_llegada', [$this->horaSalida, $this->horaLlegada])
+              ->orWhere(function ($q2) {
+                  $q2->where('datetime_salida', '<', $this->horaSalida)
+                     ->where('datetime_llegada', '>', $this->horaLlegada);
+              });
         });
     }
 
