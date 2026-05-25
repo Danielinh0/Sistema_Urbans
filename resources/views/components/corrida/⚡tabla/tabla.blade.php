@@ -115,7 +115,7 @@
                             $badgeColor = match ($corrida->estado) {
                                 'En viaje' => 'amber',
                                 'Cancelada' => 'red',
-                                'Programada' => 'sky',
+                                'Programada' => 'blue',
                                 'Finalizada' => 'green',
                                 default => 'zinc',
                             };

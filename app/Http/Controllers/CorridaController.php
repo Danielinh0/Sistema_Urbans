@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Corrida;
 
 class CorridaController extends Controller
 {
@@ -11,7 +12,8 @@ class CorridaController extends Controller
      */
     public function index()
     {
-        return view('corrida.index');
+        $corridasEnProceso = Corrida::where('estado', 'Programada')->count();
+        return view('corrida.index', compact('corridasEnProceso'));
     }
 
     /**
