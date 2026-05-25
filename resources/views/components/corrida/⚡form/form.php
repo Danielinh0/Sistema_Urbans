@@ -11,8 +11,7 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Carbon\Carbon;
 
-new class extends Component
-{
+new class extends Component {
     public $id_ruta = '';
 
     public $fecha = '';

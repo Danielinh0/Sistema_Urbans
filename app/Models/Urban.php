@@ -24,8 +24,7 @@ class Urban extends Model
         'placa',
         'codigo_urban',
         'numero_asientos',
-        'estado',
-        // estado (['Libre', 'Inactiva', 'Fuera de servicio', 'Mantenimiento', 'En viaje', 'Viaje programado'])
+        'estado'
     ];
 
     public function socio(): BelongsTo

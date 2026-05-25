@@ -34,11 +34,13 @@ new class extends Component
     #[Validate('min:1', message: 'La tarifa debe ser mayor a 0.')]
     public $tarifa_paquete;
 
-    #[Validate('required', message: 'La sucursal de salida es requerida.')]
-    public $sucursal_salida = '';
+    #[Validate('exists:sucursal,id_sucursal', message: 'La sucursal seleccionada no es válida.')]
+    public $id_sucursal_salida;
 
     #[Validate('required', message: 'La sucursal de llegada es requerida.')]
-    public $sucursal_llegada = '';
+    #[Validate('exists:sucursal,id_sucursal', message: 'La sucursal seleccionada no es válida.')]
+    #[Validate('different:id_sucursal_salida', message: 'La sucursal de llegada debe ser diferente a la de salida.')]
+    public $id_sucursal_llegada;
 
     public function updatedSucursalSalida($value)
     {
@@ -64,7 +66,6 @@ new class extends Component
             }
         }
     }
-
     public function touchField(string $field): void
     {
         $this->validateOnly($field);
@@ -81,6 +82,12 @@ new class extends Component
     }
 
     #[Computed]
+    public function sucursales()
+    {
+        return \App\Models\Sucursal::orderBy('nombre')->get();
+    }
+
+    #[Computed]
     public function formularioListo(): bool
     {
         return filled($this->nombre)
@@ -88,15 +95,16 @@ new class extends Component
             && filled($this->tiempo_estimado)
             && filled($this->tarifa_clientes)
             && filled($this->tarifa_paquete)
-            && filled($this->sucursal_salida)
-            && filled($this->sucursal_llegada)
+
+            && filled($this->id_sucursal_salida)
+            && filled($this->id_sucursal_llegada)
             && $this->getErrorBag()->isEmpty();
     }
 
     #[On('reset-form')]
     public function resetForm()
     {
-        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete', 'sucursal_salida', 'sucursal_llegada']);
+        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete', 'id_sucursal_salida', 'id_sucursal_llegada']);
         $this->resetErrorBag();
     }
 
@@ -110,11 +118,11 @@ new class extends Component
             'tiempo_estimado' => $this->tiempo_estimado,
             'tarifa_clientes' => $this->tarifa_clientes,
             'tarifa_paquete' => $this->tarifa_paquete,
-            'id_sucursal_salida' => $this->sucursal_salida,
-            'id_sucursal_llegada' => $this->sucursal_llegada,
+            'id_sucursal_salida' => $this->id_sucursal_salida,
+            'id_sucursal_llegada' => $this->id_sucursal_llegada,
         ]);
 
-        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete', 'sucursal_salida', 'sucursal_llegada']);
+        $this->reset(['nombre', 'distancia', 'tiempo_estimado', 'tarifa_clientes', 'tarifa_paquete', 'id_sucursal_salida', 'id_sucursal_llegada']);
         $this->dispatch('ruta-creada');
 
         Flux::toast(

@@ -14,10 +14,10 @@ class UrbanFactory extends Factory
     {
         return [
             'id_socio' => Socio::all()->random()->id_socio,
-            'placa' => $this->faker->unique()->regexify('[A-Z]{3}[0-9]{3}'),
+            'placa' => $this->faker->unique()->regexify('[A-Z]{3}-\d{2}-\d{2}'),
             'codigo_urban' => 'URB-'.$this->faker->unique()->numberBetween(100, 999),
-            'numero_asientos' => 19,
-            'estado' => $this->faker->randomElement(['Libre', 'Fuera de servicio', 'Mantenimiento', 'En viaje', 'Viaje programado']),
+            'numero_asientos' => $this->faker->randomElement([10, 15, 20]),
+            'estado' => $this->faker->randomElement(['Activa', 'Fuera de servicio', 'Mantenimiento', 'Inactiva']),
         ];
     }
 }

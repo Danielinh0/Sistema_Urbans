@@ -145,6 +145,7 @@
                             <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
                                 wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
                             </flux:button>
+                            @endcan
                         </div>
                     </flux:table.cell>
                     @endcan

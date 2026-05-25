@@ -106,6 +106,15 @@
                 </div>
             @endif
 
+            <flux:input wire:model="fecha" type="date" label="Fecha" placeholder="Seleccione una fecha"
+                badge="Obligatorio" />
+
+            <div class="grid grid-cols-2 gap-6">
+
+                <x-input-time wire="hora_salida" texto="Hora de salida" />
+                <x-input-time wire="hora_llegada" texto="Hora de llegada" />
+            </div>
+
         </div>
 
 

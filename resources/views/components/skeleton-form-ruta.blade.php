@@ -45,7 +45,27 @@
             <flux:error name="nombre" />
         </flux:field>
 
-        <div class="grid grid-cols-1  gap-6 mt-7 xs:grid-cols-2 ">
+        <div class="grid grid-cols-1 gap-6 mt-7 xs:grid-cols-2">
+            <flux:field>
+                <flux:label badge="Obligatorio">Sucursal de Salida</flux:label>
+                <flux:select wire:model.live="id_sucursal_salida" placeholder="Selecciona origen...">
+                    @foreach($this->sucursales as $sucursal)
+                        <flux:select.option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+                <flux:error name="id_sucursal_salida" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label badge="Obligatorio">Sucursal de Llegada</flux:label>
+                <flux:select wire:model.live="id_sucursal_llegada" placeholder="Selecciona destino...">
+                    @foreach($this->sucursales as $sucursal)
+                        <flux:select.option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+                <flux:error name="id_sucursal_llegada" />
+            </flux:field>
+
             <flux:field>
                 <flux:label badge="Obligatorio">Distancia (km)</flux:label>
 

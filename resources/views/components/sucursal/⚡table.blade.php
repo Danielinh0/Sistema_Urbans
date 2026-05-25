@@ -59,9 +59,9 @@ new class extends Component {
         <flux:card class="!p-2 overflow-x-auto">
             <flux:table :paginate="$this->sucursales" class="w-full text-sm compact-table" dense>
                 <flux:table.columns>
-                    <x-header-table sortable="id_sucursal" class="w-[3.25rem] col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">ID</x-header-table>
+                    
 
-                    <x-header-table icon="book-a" sortable="nombre" class="w-[11rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
+                    <x-header-table icon="book-a" sortable="nombre" class="w-[15rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">Nombre</x-header-table>
 
                     <x-header-table icon="map-pin-house">Dirección</x-header-table>
 
@@ -73,9 +73,7 @@ new class extends Component {
                 <flux:table.rows>
                     @forelse ($this->sucursales as $sucursal)
                     <flux:table.row :key="$sucursal->id_sucursal">
-                        <flux:table.cell class="!px-2 w-[3.25rem] text-center tabular-nums col-hide-sm">
-                            {{ $sucursal->id_sucursal }}
-                        </flux:table.cell>
+                        
                         <flux:table.cell class="!px-2">
                             {{ $sucursal->nombre }}
                         </flux:table.cell>
