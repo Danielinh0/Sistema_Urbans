@@ -35,7 +35,7 @@ new class extends Component {
     public $placa;
 
     #[Validate('required', message: 'El estado es requerido.')]
-    #[Validate('in:Libre,Inactiva,Fuera de servicio,Mantenimiento,En viaje,Viaje programado', message: 'Seleccione un estado válido.')]
+    #[Validate('in:Activa,Inactiva,Fuera de servicio,Mantenimiento,En viaje,Viaje programado', message: 'Seleccione un estado válido.')]
     public $estado = '';
 
     #[On('preparar-edicion-urban')]

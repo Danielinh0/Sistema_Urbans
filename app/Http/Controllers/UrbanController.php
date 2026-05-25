@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Urban;
 
 class UrbanController extends Controller
 {
@@ -10,8 +11,15 @@ class UrbanController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return view('urban.index');
+    {   
+
+        $UrbansActivas = Urban::where('estado', 'Activa')->count(); 
+        $UrbansInactivas = Urban::where('estado', 'Inactiva')->count();   
+        $UrbansFueraDeServicio = Urban::where('estado', 'Fuera de servicio')->count();   
+        $UrbansMantenimiento = Urban::where('estado', 'Mantenimiento')->count();   
+
+
+        return view('urban.index', compact('UrbansActivas', 'UrbansInactivas', 'UrbansFueraDeServicio', 'UrbansMantenimiento'));
     }
 
     /**

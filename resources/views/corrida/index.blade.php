@@ -27,7 +27,7 @@
                     <flux:text class="text-lg xs:text-4xl font-medium !text-azul_menu ">Informacion del dia</flux:text>
             </div>
             
-            <div class="flex justify-evenly gap-6  w-full"> 
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 w-full">
                 
                 <flux:modal.trigger name="corridas-programadas">
                     <x-card icono="calendar-clock" fondo_icono="bg-[#ccf7f2]!" color_icono="text-[#005f5a]!" contador="{{ $corridasEnProceso }}" texto="Corridas programadas" />
@@ -40,7 +40,6 @@
                 <x-card icono="van" fondo_icono="bg-[#ccf6fc]!" color_icono="text-[#005f78]!" contador="{{ $urbansOcupadas }}" texto="Urbans ocupadas" />
     
                 <x-card icono="key-square" fondo_icono="bg-[#f1e1f7]!" color_icono="text-[#bb6bd9]!" contador="{{ $choferesOcupados }}" texto="Choferes ocupados" />
-                
 
             </div>
         </section>
@@ -57,7 +56,7 @@
         </flux:modal>
         
         <flux:modal name="corridas-programadas" class="!max-w-4xl p-9"> 
-            <div class="flex flex-col gap-3"> <!-- 👈 Lo movemos al primer hijo direct0 -->
+            <div class="flex flex-col gap-3"> 
                 <div class ="flex items-center gap-3 p-3">
                     <flux:icon name="map" class="inline size-9 text-azul_menu" />
                     <flux:text class="text-sm xs:text-3xl font-medium !text-azul_menu ">Corridas programadas</flux:text>
@@ -66,7 +65,7 @@
             </div>
         </flux:modal>
     
-        <flux:modal name="corridas-viaje" class="!max-w-4xl p-9"> <!-- 👈 Lo mismo aquí -->
+        <flux:modal name="corridas-viaje" class="!max-w-4xl p-9"> 
             <div class="flex flex-col gap-3">
                 <div class ="flex items-center gap-3 p-3">
                     <flux:icon name="tickets-plane" class="inline size-9 text-azul_menu" />

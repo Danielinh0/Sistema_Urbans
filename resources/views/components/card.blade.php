@@ -5,10 +5,10 @@
     'contador' => null,
     'texto' => null
 ])
-<div class= "flex gap-6 rounded-xl items-center shadow-md p-7 bg-white w-[350px]
-             transition duration-300 ease-in-out hover:-translate-y-4.5 cursor-pointer" >
+<div class="flex gap-6 rounded-xl items-center shadow-md p-7 bg-white w-full text-pretty
+            transition duration-300 ease-in-out hover:-translate-y-4.5 cursor-pointer">
                 
-    <div class= "rounded-full p-3 {{ $fondo_icono }} p-2 flex items-center gap-2">
+    <div class="rounded-full p-3 {{ $fondo_icono }} flex items-center gap-2">
         <flux:icon name="{{ $icono }}" class="{{ $color_icono }} size-10!" /> 
     </div>
 
