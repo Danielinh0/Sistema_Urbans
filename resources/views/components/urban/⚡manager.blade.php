@@ -35,7 +35,7 @@ new class extends Component {
     public $placa;
 
     #[Validate('required', message: 'El estado es requerido.')]
-    #[Validate('in:Libre,Inactiva,Fuera de servicio,Mantenimiento,En viaje,Viaje programado', message: 'Seleccione un estado válido.')]
+    #[Validate('in:Activa,Inactiva,Fuera de servicio,Mantenimiento,En viaje,Viaje programado', message: 'Seleccione un estado válido.')]
     public $estado = '';
 
     #[On('preparar-edicion-urban')]
@@ -158,7 +158,7 @@ new class extends Component {
                 Asiento::create([
                     'id_urban' => $this->urban->id_urban,
                     'nombre' => $this->codigo_urban . '-' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
-                    'estado' => 'Libre',
+                    'estado' => 'Activa',
                 ]);
             }
         } else {
@@ -202,7 +202,7 @@ new class extends Component {
     public function activate()
     {
         $this->urban->restore();
-        $this->urban->estado = 'Libre';
+        $this->urban->estado = 'Activa';
         $this->urban->save();
         $this->js("Flux.modal('modal-activar-urban').close()");
         $this->dispatch('urban-creada');
@@ -275,13 +275,18 @@ new class extends Component {
                     <flux:label badge="Obligatorio">Estado</flux:label>
                     <flux:select wire:model.live="estado" placeholder="Seleccione el estado de la urban">
                         <flux:select.option value="{{ $urban->estado }}">{{ $urban->estado }}</flux:select.option>
-                        @if($urban->estado !== 'Libre' && $urban->estado !== 'Inactiva')
-                            <flux:select.option value="Libre">Libre</flux:select.option>
+                        @if($urban->estado == 'Activa')
+                            <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
+                            <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                        @elseif($urban->estado == 'Mantenimiento')
+                            <flux:select.option value="Activa">Activa</flux:select.option>
+                            <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                        @elseif($urban->estado == 'Fuera de servicio')
+                            <flux:select.option value="Activa">Activa</flux:select.option>
+                            <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
                         @endif
-                        <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
-                        <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
                     </flux:select>
-                    <flux:description>Estado: Libre / Fuera de servicio / Mantenimiento</flux:description>
+                    <flux:description>Estado: Activa / Inactiva / Fuera de servicio / Mantenimiento</flux:description>
                     <flux:error name="estado" />
                 </flux:field>
             </div>
