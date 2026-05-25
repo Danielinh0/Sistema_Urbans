@@ -86,13 +86,5 @@ new class extends Component
         return Urban::orderBy('id_urban')->get();
     }
 
-    // public function prueba()
-    // {
-    //     Flux::toast(
-    //         heading: 'Changes saved',
-    //         text: 'Your changes have been saved.',
-    //         variant: 'success',
-    //     );
-
-    // }
+    
 };
