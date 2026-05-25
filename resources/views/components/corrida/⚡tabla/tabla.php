@@ -48,6 +48,8 @@ new class extends Component
 
 
     #[On('corrida-creada')]
+    #[On('corrida-actualizada')]
+    #[On('corrida-eliminada')]
     public function refreshAfterCreate()
     {
         $this->resetPage();
