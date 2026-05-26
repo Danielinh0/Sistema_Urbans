@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Sucursal;
 
 class SucursalController extends Controller
 {
@@ -11,7 +13,29 @@ class SucursalController extends Controller
      */
     public function index()
     {
-        return view('sucursal.index');
+        $totalSucursales = Sucursal::count();
+
+        $sucursalesSinRutasSalida = Sucursal::whereDoesntHave('rutas', function ($query) {})->whereNotIn('id_sucursal', function ($query) {
+            $query->select('id_sucursal_salida')->from('ruta');
+        })->count();
+
+
+        $sucursalesCompartidas = Sucursal::whereIn('id_direccion', function ($query) {
+            $query->select('id_direccion')
+                ->from('sucursal')
+                ->whereNotNull('id_direccion')
+                ->groupBy('id_direccion')
+                ->havingRaw('COUNT(*) > 1');
+        })->count();
+
+        $sucursalesAisladas = Sucursal::whereDoesntHave('rutas')->count();
+
+        return view('sucursal.index', compact(
+            'totalSucursales',
+            'sucursalesSinRutasSalida',
+            'sucursalesCompartidas',
+            'sucursalesAisladas'
+        ));
     }
 
     /**

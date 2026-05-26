@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Cliente;
 
 class ClienteController extends Controller
 {
@@ -11,7 +13,33 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        return view('cliente.index');
+        $totalClientes = Cliente::count();
+
+        $clientesFrecuentes = Cliente::has('boletos', '>=', 3)->count();
+
+        $clientesHoy = Cliente::whereHas('boletos.corrida', function ($query) {
+            $query->whereIn('estado', ['Programada', 'En viaje'])
+                ->whereDate('datetime_salida', today());
+        })
+            ->distinct('id_cliente')
+            ->count();
+
+        $clientesNuevosMes = Cliente::whereHas('ventas', function ($query) {
+
+            $query->whereMonth('fecha', Carbon::now()->month)
+                ->whereYear('fecha', Carbon::now()->year);
+        })
+            ->whereDoesntHave('ventas', function ($query) {
+                $query->where('fecha', '<', Carbon::now()->startOfMonth());
+            })
+            ->count();
+
+        return view('cliente.index', compact(
+            'totalClientes',
+            'clientesFrecuentes',
+            'clientesHoy',
+            'clientesNuevosMes'
+        ));
     }
 
     /**

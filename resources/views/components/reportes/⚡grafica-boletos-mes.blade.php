@@ -68,11 +68,6 @@ new class extends Component
                 @endforeach
             </flux:select>
 
-            {{-- ✅ Botón PDF píldora azul --}}
-            <button class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-full shadow-sm transition-colors duration-150">
-                <flux:icon name="pdf-icon" class="size-4" />
-                PDF
-            </button>
         </div>
     </div>
 

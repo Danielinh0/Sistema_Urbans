@@ -71,8 +71,8 @@
                 <flux:select wire:model.live="cantidadBoletos">
                     <option value="">Selecciona una cantidad</option>
                     @for($i = 1; $i <= (int) ($corridaData['libres'] ?? 0); $i++)
-                    <option value="{{ $i }}">{{ $i }} boleto{{ $i === 1 ? '' : 's' }}</option>
-                    @endfor
+                        <option value="{{ $i }}">{{ $i }} boleto{{ $i === 1 ? '' : 's' }}</option>
+                        @endfor
                 </flux:select>
             </div>
             <div>
