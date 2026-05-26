@@ -73,7 +73,7 @@ new class extends Component {
 };
 ?>
 
-<form wire:submit="save" class="p-6">
+<form wire:submit="save" class="p-4">
     <flux:card>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-6">
             {{-- Código de la Urban --}}
@@ -121,7 +121,8 @@ new class extends Component {
             </flux:field>
         </div>
         <div class="mt-8">
-            <flux:button type="submit" variant="primary" class="w-full">Crear Urban</flux:button>
+            <flux:button type="submit" icon="truck-electric" variant="primary" class="w-full bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado">
+                Crear Urban</flux:button>
         </div>
     </flux:card>
 </form>

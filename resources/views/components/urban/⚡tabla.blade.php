@@ -100,12 +100,12 @@ new class extends Component {
             'options' => ['Activa', 'Fuera de servicio', 'Mantenimiento', 'Inactiva']
         ]
     ]" />
-    <flux:card class="!p-2 overflow-x-auto">
+    <flux:card class="px-12 py-10" >
         <flux:table :paginate="$this->urbans">
             <flux:table.columns>
                 
 
-                <x-header-table align="center" sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
+                <x-header-table align="center" icon="arrow-up-0-1" sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
 
                 <x-header-table icon="armchair" sortable="numero_asientos" align="center"
                     :sortBy="$sortBy" :sortDirection="$sortDirection">Asientos</x-header-table>
@@ -134,13 +134,13 @@ new class extends Component {
 
                         <flux:table.cell>
                             @if ($urban->estado == 'Activa')
-                                <flux:badge color="green" size="sm">Activa</flux:badge>
+                                <flux:badge color="green">Activa</flux:badge>
                             @elseif ($urban->estado == 'Inactiva')
-                                <flux:badge color="purple" size="sm">Inactiva</flux:badge>
+                                <flux:badge color="purple">Inactiva</flux:badge>
                             @elseif ($urban->estado == 'Fuera de servicio')
-                                <flux:badge color="sky" size="sm">Fuera de servicio</flux:badge>
+                                <flux:badge color="sky">Fuera de servicio</flux:badge>
                             @elseif ($urban->estado == 'Mantenimiento')
-                                <flux:badge color="yellow" size="sm">Mantenimiento</flux:badge>
+                                <flux:badge color="yellow">Mantenimiento</flux:badge>
                             @endif
                         </flux:table.cell>
 
@@ -153,7 +153,7 @@ new class extends Component {
                             @can('update', $urban)
                                 @if ($urban->estado !== 'Inactiva')
                                
-                                <flux:button size="sm" variant="ghost" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
+                                <flux:button size="sm" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
                                     wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
                                     
                                 </flux:button>

@@ -22,7 +22,7 @@
         <section class="flex flex-col rounded-lg p-6 gap-1 shadow-sm -mt-3">
 
             <div class ="flex items-center gap-3 p-4">
-                    <flux:icon name="sunrise" class="inline size-9 text-azul_menu" />
+                    <flux:icon name="info" class="inline size-9 text-azul_menu" />
                     <flux:text class="text-lg xs:text-4xl font-medium !text-azul_menu ">Estado de las urbans</flux:text>
             </div>
             
@@ -45,9 +45,11 @@
 
 
         <div>
-            <flux:modal name="edit-urban" class="w-[50%] p-10" x-on:close="Livewire.dispatch('reset-form')">
-                <div>
-                    <flux:heading class="!text-xl !font-bold" size="lg">Crear una nueva urban</flux:heading>
+            <flux:modal name="edit-urban" class="w-[50%] p-8" x-on:close="Livewire.dispatch('reset-form')">
+                
+                <div class="inline-flex items-center gap-3 pl-5">
+                    <flux:icon name="bus" class="inline size-7" />
+                    <flux:heading class="text-2xl! font-bold">Crear una nueva urban</flux:heading>
                 </div>
                 <livewire:urban.form />
             </flux:modal>
