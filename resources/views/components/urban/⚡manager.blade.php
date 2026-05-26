@@ -11,6 +11,8 @@ use App\Models\Corrida;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
+
+    public bool $mostrarAdvertenciaDesactivacion = false; // Agregado
     public ?Urban $urban = null;
 
     // Reglas de validación idénticas al formulario de creación
@@ -61,6 +63,7 @@ new class extends Component {
     {
         $this->resetErrorBag();
         session()->forget('error');
+        $this->mostrarAdvertenciaDesactivacion = false; // Agregado
 
         $this->urban = Urban::findOrFail($id);
         $this->js("Flux.modal('modal-eliminar-urban').show()");
@@ -181,30 +184,35 @@ new class extends Component {
         $this->dispatch('urban-creada');
     }
 
-    public function delete()
+   public function delete()
     {
         $corridasAfectadas = Corrida::where('id_urban', $this->urban->id_urban)
             ->where('estado', 'Programada')
-            ->where('datetime_salida', '>=', now()) // Solo de este momento en adelante
+            ->where('datetime_salida', '>=', now())
             ->orderBy('datetime_salida', 'asc')
             ->get();
 
         $tieneCorridasPendientes = $corridasAfectadas->isNotEmpty();
 
         if ($tieneCorridasPendientes) {
-            session()->flash('error', 'No puedes desactivar esta urban porque tiene corridas programadas pendientes. Por favor, cancela o reasigna esas corridas antes de intentar desactivar la urban.');
+            $this->mostrarAdvertenciaDesactivacion = true;
             return;
         }        
 
+        $this->ejecutarDesactivacion();
+    }
+
+    private function ejecutarDesactivacion()
+    {
         $this->urban->delete();
 
-        // Opcional: Solo borra asientos si realmente ya no los necesitas para historial
         Asiento::where('id_urban', $this->urban->id_urban)->delete();
 
         $this->urban->update([
             'estado' => 'Inactiva',
         ]);
 
+        $this->mostrarAdvertenciaDesactivacion = false;
         $this->js("Flux.modal('modal-eliminar-urban').close()");
         $this->dispatch('urban-eliminada');
     }
@@ -315,22 +323,49 @@ new class extends Component {
 
     </flux:modal>
 
-    <flux:modal name="modal-eliminar-urban" class="min-w-[22rem]">
+        <flux:modal name="modal-eliminar-urban" class="min-w-[22rem]">
         @if($urban)
             <div class="space-y-6">
                 <flux:heading size="lg">Desactivar Urban</flux:heading>
+                
                 @if (session()->has('error'))
                     <div class="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
                         {{ session('error') }}
                     </div>
                 @endif
+                
                 <flux:text>
                     ¿Estás seguro de que deseas desactivar la urban <b>{{ $urban->codigo_urban }}</b>?
                 </flux:text>
+
+                @if($mostrarAdvertenciaDesactivacion)
+                <div x-data="{ visible: @entangle('mostrarAdvertenciaDesactivacion') }" x-show="visible" x-collapse>
+                    <div x-show="visible" x-transition>
+                        <flux:callout icon="calendar-clock" color="amber">
+                            <flux:callout.heading>Corridas programadas detectadas</flux:callout.heading>
+                            <flux:callout.text>
+                                No puedes desactivar esta urban porque tiene corridas programadas pendientes. 
+                            </flux:callout.text>
+
+                            <x-slot name="actions">
+                                
+                                    <flux:button href="{{ route('urban.show', $urban->id_urban) }}" icon="map-pin-search" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                        Reasginar corridas
+                                    </flux:button>
+                            </x-slot>
+
+                            <x-slot name="controls">
+                                <flux:button icon="x-mark" variant="ghost" x-on:click="visible = false" />
+                            </x-slot>
+                        </flux:callout>
+                    </div>
+                </div>
+                @endif
+
                 <div class="flex gap-2">
                     <flux:spacer />
                     <flux:modal.close>
-                        <flux:button variant="ghost">Cancelar</flux:button>
+                        <flux:button variant="ghost" wire:click="$set('mostrarAdvertenciaDesactivacion', false)">Cancelar</flux:button>
                     </flux:modal.close>
                     <flux:button wire:click="delete" variant="danger">Desactivar</flux:button>
                 </div>
