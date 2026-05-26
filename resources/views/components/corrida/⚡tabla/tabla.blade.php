@@ -65,11 +65,24 @@
                 </flux:table.column>
 
                 @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
+                
+                {{-- <flux:table.column align="center">
+                    <div class="flex flex-col items-start gap-0.5 text-azul_menu">
+                        <span class="inline-flex items-center gap-1 text-sm font-semibold">
+                            <flux:icon name="git-compare-arrows" class="text-azul_menu!" /> 
+                            Control de la corrida
+                        </span>
+
+                        <span class="text-xs font-medium">(Cambiar estado)</span>
+                    </div>
+                </flux:table.column> --}}
+
                 <flux:table.column>
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
                         <flux:icon name="wrench" class="text-azul_menu!" /> Acciones
                     </span>
                 </flux:table.column>
+
                 @endif
 
             </flux:table.columns>
@@ -102,7 +115,7 @@
                             $badgeColor = match ($corrida->estado) {
                                 'En viaje' => 'amber',
                                 'Cancelada' => 'red',
-                                'Programada' => 'sky',
+                                'Programada' => 'blue',
                                 'Finalizada' => 'green',
                                 default => 'zinc',
                             };
@@ -137,17 +150,52 @@
                     </flux:table.cell>
 
                     @can('update', $corrida)
+                    {{-- <flux:table.cell align="center">
+                        <div class="flex items-center gap-2 w-full justify-center">
+                            
+                            <flux:button size="xs" icon="navigation"
+                                        class="bg-fondo-amarillo! text-texto-fondo!
+                                        hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado" 
+                            wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
+                                Comenzar
+                            </flux:button>
+
+                            <flux:button size="xs" variant="ghost" icon="map-pin-check" 
+                                         class="bg-verde-hover! text-verde-confirmacion!
+                                         hover:bg-verde-confirmacion! hover:text-verde-hover! border-none! btn-animado"
+                            wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
+                                Finalizar 
+                            </flux:button>
+
+                            <flux:button size="xs" variant="ghost" icon="map-pin-off" 
+                                         class="bg-fondo-rojo! text-texto-rojo!
+                                         hover:bg-texto-rojo! hover:text-white! border-none! btn-animado"   
+                            wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
+                                Cancelar
+                            </flux:button>
+
+
+                        </div>
+                    </flux:table.cell> --}}
+
                     <flux:table.cell>
-                        <div class="flex items-center gap-1">
-                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
+                        <div class="flex gap-4">
+
+                            <flux:button size="sm" icon="git-compare-arrows" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado"
+                                wire:click="$dispatch('cambio-estado-corrida', { id: {{ $corrida->id_corrida }} })">
+                            </flux:button>
+
+                            <flux:button size="sm" variant="ghost" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
                                 wire:click="$dispatch('edicion-corrida', { id: {{ $corrida->id_corrida }} })">
                             </flux:button>
-                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+
+                            <flux:button size="sm" variant="ghost" icon="trash" class="bg-fondo-rojo! text-texto-rojo! hover:bg-texto-rojo! hover:text-white! border-none! btn-animado"
                                 wire:click="$dispatch('eliminacion-corrida', { id: {{ $corrida->id_corrida }} })">
                             </flux:button>
-                            @endcan
+                            
                         </div>
                     </flux:table.cell>
+
                     @endcan
 
                 </flux:table.row>
@@ -169,5 +217,6 @@
             <flux:select.option value="48">48</flux:select.option>
         </flux:select>
     </flux:card>
+
 
 </div>

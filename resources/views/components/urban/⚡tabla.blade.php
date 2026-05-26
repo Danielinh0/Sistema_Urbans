@@ -100,18 +100,18 @@ new class extends Component {
             'options' => ['Activa', 'Fuera de servicio', 'Mantenimiento', 'Inactiva']
         ]
     ]" />
-    <flux:card class="!p-2 overflow-x-auto">
-        <flux:table :paginate="$this->urbans" class="w-full text-sm compact-table" dense>
+    <flux:card class="px-12 py-10" >
+        <flux:table :paginate="$this->urbans">
             <flux:table.columns>
                 
 
-                <x-header-table sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
+                <x-header-table align="center" icon="arrow-up-0-1" sortable="codigo_urban" :sortBy="$sortBy" :sortDirection="$sortDirection">Código</x-header-table>
 
-                <x-header-table icon="armchair" sortable="numero_asientos" class="col-hide-sm"
+                <x-header-table icon="armchair" sortable="numero_asientos" align="center"
                     :sortBy="$sortBy" :sortDirection="$sortDirection">Asientos</x-header-table>
 
                 <x-header-table icon="bus" sortable="placa" :sortBy="$sortBy" :sortDirection="$sortDirection">Placa</x-header-table>
-                <x-header-table icon="activity" sortable="estado" :sortBy="$sortBy" :sortDirection="$sortDirection">Estado</x-header-table>
+                <x-header-table  icon="activity" sortable="estado" :sortBy="$sortBy" :sortDirection="$sortDirection">Estado</x-header-table>
                 <x-header-table icon="user" sortable="id_socio" :sortBy="$sortBy" :sortDirection="$sortDirection">Socio</x-header-table>
 
                 <x-header-table icon="wrench" align="center">Acciones</x-header-table>
@@ -121,53 +121,60 @@ new class extends Component {
                 @forelse ($this->urbans as $urban)
                     <flux:table.row :key="$urban->id_urban">
                         
-                        <flux:table.cell variant="strong" class="!px-2">
-                            <flux:badge color="cyan" size="sm">{{ $urban->codigo_urban }}</flux:badge>
+                        <flux:table.cell align="center">
+                            <flux:badge color="cyan">{{ $urban->codigo_urban }}</flux:badge>
                         </flux:table.cell>
-                        <flux:table.cell class="!px-2 col-hide-sm">{{ $urban->numero_asientos }}</flux:table.cell>
-                        <flux:table.cell class="!px-2">{{ $urban->placa }}</flux:table.cell>
-                        <flux:table.cell class="!px-2">
+
+
+                        <flux:table.cell align="center">
+                            {{ $urban->numero_asientos }}
+                        </flux:table.cell>
+
+                        <flux:table.cell>{{ $urban->placa }}</flux:table.cell>
+
+                        <flux:table.cell>
                             @if ($urban->estado == 'Activa')
-                                <flux:badge color="green" size="sm">Activa</flux:badge>
+                                <flux:badge color="green">Activa</flux:badge>
                             @elseif ($urban->estado == 'Inactiva')
-                                <flux:badge color="gray" size="sm">Inactiva</flux:badge>
-                            @elseif ($urban->estado == 'En viaje')
-                                <flux:badge color="red" size="sm">En viaje</flux:badge>
-                            @elseif ($urban->estado == 'Viaje programado')
-                                <flux:badge color="yellow" size="sm">Viaje programado</flux:badge>
+                                <flux:badge color="purple">Inactiva</flux:badge>
                             @elseif ($urban->estado == 'Fuera de servicio')
-                                <flux:badge color="orange" size="sm">Fuera de servicio</flux:badge>
+                                <flux:badge color="sky">Fuera de servicio</flux:badge>
                             @elseif ($urban->estado == 'Mantenimiento')
-                                <flux:badge color="blue" size="sm">Mantenimiento</flux:badge>
+                                <flux:badge color="yellow">Mantenimiento</flux:badge>
                             @endif
                         </flux:table.cell>
-                        <flux:table.cell class="!px-2">
+
+
+                        <flux:table.cell >
                             {{ $urban->socio->nombre . ' ' . $urban->socio->apellido_paterno }}
                         </flux:table.cell>
 
-                        <flux:table.cell class="flex gap-1 justify-end !px-2 whitespace-nowrap">
+                        <flux:table.cell align="center" class="flex justify-center gap-4">
                             @can('update', $urban)
-                            @if ($urban->estado !== 'Inactiva')
-                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
-                                wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
-                                Editar
-                            </flux:button>
-                            @endif
+                                @if ($urban->estado !== 'Inactiva')
+                               
+                                <flux:button size="sm" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
+                                    wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
+                                    
+                                </flux:button>
+                                @endif
                             @endcan
 
                             @can('delete', $urban)
                             @if ($urban->estado !== 'Inactiva')
-                            <flux:button size="sm" variant="ghost" icon="chevron-double-down" class="!text-rojo_texto"
+                            <flux:button size="sm" variant="ghost" icon="chevron-double-down" class="bg-fondo-rojo! text-texto-rojo! hover:bg-texto-rojo! hover:text-white! border-none! btn-animado"
+
                                 wire:click="$dispatch('preparar-eliminacion-urban', { id: {{ $urban->id_urban }} })">
-                                Desactivar
-                            </flux:button>
+                                </flux:button>
                             @else
-                            <flux:button size="sm" variant="ghost" icon="chevron-double-up" class="!text-verde_texto"
-                            wire:click="$dispatch('preparar-activacion-urban', { id: {{ $urban->id_urban }} })">
-                                Activar
-                            </flux:button>
-                            @endif
-                            @endcan
+                                <flux:button size="sm" icon="chevron-double-up" class="bg-verde-hover! text-verde-confirmacion! hover:bg-verde-confirmacion! hover:text-verde-hover! border-none! btn-animado"
+                                    wire:click="$dispatch('preparar-activacion-urban', { id: {{ $urban->id_urban }} })">
+                                    Activar
+                                </flux:button>
+                            
+                                @endif
+                            
+                                @endcan
                         </flux:table.cell>
                     </flux:table.row>
                 @empty

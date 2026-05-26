@@ -40,6 +40,23 @@
     --color-azul_rebajado: #B2D4F9;
     --color-verde_texto: #019031;
 
+    --color-fondo-amarillo:#fff1bf;
+    --color-texto-fondo:#bb4d00;
+    --color-hover-amarillo:#FAA543;
+
+    
+    --color-verde-confirmacion: #00a661;
+    --color-verde-hover: #f0fdf4;
+
+    --color-texto-rojo:#c10007;
+    --color-fondo-rojo:#ffe0e1;
+
+}
+
+@layer components {
+    .btn-animado {
+        @apply transition delay-130 duration-300 ease-in-out hover:-translate-y-1/4 cursor-pointer;
+    }
 }
 
 @layer theme {

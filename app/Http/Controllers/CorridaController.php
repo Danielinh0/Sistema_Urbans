@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Corrida;
 
 class CorridaController extends Controller
 {
@@ -11,7 +12,15 @@ class CorridaController extends Controller
      */
     public function index()
     {
-        return view('corrida.index');
+        $corridasEnProceso = Corrida::where('estado', 'Programada')->whereDate('datetime_salida', today())->count();
+
+        $corridasEnViaje = Corrida::where('estado', 'En viaje')->whereDate('datetime_salida', today())->count();
+
+        $urbansOcupadas = Corrida::whereIn('estado', ['Programada', 'En viaje'])->whereDate('datetime_salida', today())->distinct('id_urban')->count('id_urban');
+
+        $choferesOcupados = Corrida::whereIn('estado', ['Programada', 'En viaje'])->whereDate('datetime_salida', today())->distinct('id_usuario')->count('id_usuario'); 
+
+        return view('corrida.index', compact('corridasEnProceso', 'corridasEnViaje', 'urbansOcupadas', 'choferesOcupados'));
     }
 
     /**

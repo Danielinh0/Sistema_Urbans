@@ -59,24 +59,14 @@ new class extends Component
     public function corridas()
     {
         return Corrida::query()
+            ->where('estado', 'Programada')
+            ->whereDate('datetime_salida', today())
             ->when($this->search !== '', function ($query) {
                 $query->whereHas('ruta', function ($q) {
                     $q->whereRaw('LOWER(nombre) like ?', ['%'.strtolower($this->search).'%']);
                 })->orWhereHas('user', function ($q) {
                     $q->whereRaw('LOWER(name) like ?', ['%'.strtolower($this->search).'%']);
                 });
-            })
-            ->when($this->filtroEstado === 'Programada', function ($query) {
-                $query->where('estado', $this->filtroEstado);
-            })
-            ->when($this->filtroEstado === 'En viaje', function ($query) {
-                $query->where('estado', $this->filtroEstado);
-            })
-            ->when($this->filtroEstado === 'Finalizada', function ($query) {
-                $query->where('estado', $this->filtroEstado);
-            })
-            ->when($this->filtroEstado === 'Cancelada', function ($query) {
-                $query->where('estado', $this->filtroEstado);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
@@ -88,5 +78,4 @@ new class extends Component
         return Urban::orderBy('id_urban')->get();
     }
 
-    
 };

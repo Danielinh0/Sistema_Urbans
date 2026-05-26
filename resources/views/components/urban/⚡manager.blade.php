@@ -5,7 +5,9 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use App\Models\Urban;
 use App\Models\Socio;
-use App\Models\Asiento;
+use App\Models\Asiento; 
+use App\Models\Corrida;
+
 use Livewire\Attributes\Computed;
 
 new class extends Component {
@@ -181,10 +183,18 @@ new class extends Component {
 
     public function delete()
     {
-        if ($this->urban->estado == 'En viaje' || $this->urban->estado == 'Viaje programado') {
-            session()->flash('error', 'No puedes desactivar este vehículo porque tiene corridas pendientes o en curso.');
+        $corridasAfectadas = Corrida::where('id_urban', $this->urban->id_urban)
+            ->where('estado', 'Programada')
+            ->where('datetime_salida', '>=', now()) // Solo de este momento en adelante
+            ->orderBy('datetime_salida', 'asc')
+            ->get();
+
+        $tieneCorridasPendientes = $corridasAfectadas->isNotEmpty();
+
+        if ($tieneCorridasPendientes) {
+            session()->flash('error', 'No puedes desactivar esta urban porque tiene corridas programadas pendientes. Por favor, cancela o reasigna esas corridas antes de intentar desactivar la urban.');
             return;
-        }
+        }        
 
         $this->urban->delete();
 
@@ -270,31 +280,39 @@ new class extends Component {
                     <flux:error name="placa" />
                 </flux:field>
 
+            </div>
+            
+            <div class="mt-3">
+                
                 {{-- Estado --}}
-                <flux:field>
-                    <flux:label badge="Obligatorio">Estado</flux:label>
-                    <flux:select wire:model.live="estado" placeholder="Seleccione el estado de la urban">
-                        <flux:select.option value="{{ $urban->estado }}">{{ $urban->estado }}</flux:select.option>
-                        @if($urban->estado == 'Activa')
-                            <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
-                            <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
-                        @elseif($urban->estado == 'Mantenimiento')
-                            <flux:select.option value="Activa">Activa</flux:select.option>
-                            <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
-                        @elseif($urban->estado == 'Fuera de servicio')
-                            <flux:select.option value="Activa">Activa</flux:select.option>
-                            <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
-                        @endif
-                    </flux:select>
-                    <flux:description>Estado: Activa / Inactiva / Fuera de servicio / Mantenimiento</flux:description>
-                    <flux:error name="estado" />
-                </flux:field>
+                    <flux:field>
+                        <flux:label badge="Obligatorio">Estado</flux:label>
+                        <flux:select wire:model.live="estado" placeholder="Seleccione el estado de la urban">
+                            <flux:select.option value="{{ $urban->estado }}">{{ $urban->estado }}</flux:select.option>
+                            @if($urban->estado == 'Activa')
+                                <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
+                                <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                            @elseif($urban->estado == 'Mantenimiento')
+                                <flux:select.option value="Activa">Activa</flux:select.option>
+                                <flux:select.option value="Fuera de servicio">Fuera de servicio</flux:select.option>
+                            @elseif($urban->estado == 'Fuera de servicio')
+                                <flux:select.option value="Activa">Activa</flux:select.option>
+                                <flux:select.option value="Mantenimiento">Mantenimiento</flux:select.option>
+                            @endif
+                        </flux:select>
+                        <flux:description>Estado: Activa / Fuera de servicio / Mantenimiento</flux:description>
+                        <flux:error name="estado" />
+                    </flux:field>
+
             </div>
 
             <div class="mt-8">
-                <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
+                <flux:button wire:click="update" variant="primary" icon="refresh-ccw"
+                class="w-full bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! 
+                btn-animado">Guardar Cambios</flux:button>
             </div>
         @endif
+
     </flux:modal>
 
     <flux:modal name="modal-eliminar-urban" class="min-w-[22rem]">

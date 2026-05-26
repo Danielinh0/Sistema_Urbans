@@ -10,13 +10,19 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 new class extends Component {
     public $id_ruta = '';
 
+    protected $horaSalida;
+    protected $horaLlegada;
+
     public $fecha = '';
     public $datetime_salida = '';
 
+    public $fecha_llegada = '';
     public $datetime_llegada = '';
 
     public $id_urban_actual = '';
@@ -66,9 +72,15 @@ new class extends Component {
     }
 
     #[Computed]
+    public function urbans()
+    {
+        return Urban::all();
+    }
+
+    #[Computed]
     public function conductores()
     {
-        return User::role('chofer')->orderBy('id_usuario')->get();
+        return User::role('chofer')->get();
     }
 
     #[Computed]
@@ -86,12 +98,6 @@ new class extends Component {
             )
             ->orderBy('id_usuario')
             ->get();
-    }
-
-    #[Computed]
-    public function urbans()
-    {
-        return Urban::where('estado', 'Libre')->orderBy('id_urban')->get();
     }
 
     public function agregarAsignacion()
@@ -198,27 +204,51 @@ new class extends Component {
         return $llegada;
     }
 
-    public function urbans_disponibles()
+    private function rangoOcupado(Builder $query): Builder
     {
-    if (!$this->fecha || !$this->datetime_salida || !$this->id_ruta) {
-        return collect();
-    }
-
-    $horaSalida = Carbon::createFromFormat('Y-m-d H:i', "{$this->fecha} {$this->datetime_salida}");
-    $horaLlegada = $this->calcular__llegada($this->fecha, $this->datetime_salida, (int) $this->id_ruta);
-
-    return Urban::where('estado', 'Libre')
-        ->whereDoesntHave('corrida', function ($q) use ($horaSalida, $horaLlegada) {
-            $q->whereBetween('datetime_salida', [$horaSalida, $horaLlegada])
-              ->orWhereBetween('datetime_llegada', [$horaSalida, $horaLlegada])
-              ->orWhere(function ($q2) use ($horaSalida, $horaLlegada) {
-                  $q2->where('datetime_salida', '<', $horaSalida)
-                     ->where('datetime_llegada', '>', $horaLlegada);
+        return $query->whereIn('estado', ['Programada', 'En viaje'])
+        ->where(function ($q) {
+            $q->whereBetween('datetime_salida', [$this->horaSalida, $this->horaLlegada])
+              ->orWhereBetween('datetime_llegada', [$this->horaSalida, $this->horaLlegada])
+              ->orWhere(function ($q2) {
+                  $q2->where('datetime_salida', '<', $this->horaSalida)
+                     ->where('datetime_llegada', '>', $this->horaLlegada);
               });
-        })
-        ->get();
+        });
     }
 
+    private function calcularRango(): bool
+    {
+        if (!$this->fecha || !$this->datetime_salida || !$this->id_ruta) {
+            return false;
+        }
+
+        $this->horaSalida = Carbon::createFromFormat('Y-m-d H:i', "{$this->fecha} {$this->datetime_salida}");
+        $this->horaLlegada = $this->calcular__llegada($this->fecha, $this->datetime_salida, (int) $this->id_ruta);
+
+        return true;
+    }
+
+    public function urbans_disponibles(): Collection
+    {
+        if (!$this->calcularRango()) return collect();
+
+        return Urban::where('estado', 'Activa')
+            ->whereDoesntHave('corrida', fn($q) => $this->rangoOcupado($q))
+            ->get();
+    }
+
+    public function choferes(): Collection
+    {
+        if (!$this->calcularRango()) return collect();
+
+        $choferesEnUso = collect($this->asignaciones)->pluck('id_usuario');
+
+        return User::role('chofer')
+            ->whereDoesntHave('corridas', fn($q) => $this->rangoOcupado($q))
+            ->when($choferesEnUso->isNotEmpty(), fn($q) => $q->whereNotIn('id_usuario', $choferesEnUso))
+            ->get();
+    }
 
     public function save()
     {
