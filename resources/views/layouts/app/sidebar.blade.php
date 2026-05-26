@@ -20,7 +20,11 @@
 
             <flux:sidebar.group :heading="__('Menu principal')" class="grid gap-4">
                 <x-item-sidebar icon="home" ruta="dashboard" texto="Dashboard" />
+
+                @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
                 <x-item-sidebar icon="map-pinned" ruta="ruta.index" texto="Rutas" :disabled="!$hayTurnoActivo" />
+                @endif
+
                 @if(auth()->user()->hasAnyRole(['admin', 'gerente']))
                 <x-item-sidebar icon="user-round" ruta="socio.index" texto="Socios" />
                 <x-item-sidebar icon="bus" ruta="urban.index" texto="Urbans" />
@@ -45,7 +49,7 @@
 
         <flux:spacer />
 
-        
+
 
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
     </flux:sidebar>
@@ -122,9 +126,9 @@
     {{ $slot }}
 
     @fluxScripts
-    
+
     @persist('toast')
-        <flux:toast />
+    <flux:toast />
     @endpersist
 </body>
 

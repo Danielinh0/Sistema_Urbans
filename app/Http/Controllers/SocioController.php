@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Socio; // Asegúrate de importar el modelo
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request; // Importante para usar $this->authorize
+use Illuminate\Support\Carbon;
 
 class SocioController extends Controller
 {
@@ -15,10 +16,27 @@ class SocioController extends Controller
      */
     public function index()
     {
+
+        $sociosActivos = Socio::where('estado', 'Activo')->count();
+
+        $sociosSinFlotilla = Socio::where('estado', 'Activo')
+            ->whereDoesntHave('urbans')
+            ->count();
+
+        $nuevosSociosMes = Socio::whereMonth('fecha_de_incorporacion', Carbon::now()->month)
+            ->whereYear('fecha_de_incorporacion', Carbon::now()->year)
+            ->count();
+
+        $sociosEliminados = Socio::onlyTrashed()->count();
         // Autorización para ver el listado (Admin y Gerente)
         $this->authorize('viewAny', Socio::class);
 
-        return view('socio.index');
+        return view('socio.index', compact(
+            'sociosActivos',
+            'sociosSinFlotilla',
+            'nuevosSociosMes',
+            'sociosEliminados'
+        ));
     }
 
     /**

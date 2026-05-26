@@ -37,7 +37,7 @@ new class extends Component
         // ✅ Solo Programada es seleccionable
         // (también verificamos que no haya salido ya)
         $estadoReal = $corrida->estado;
-        if ($estadoReal !== 'programada') return;
+        if ($estadoReal !== 'Programada') return;
 
         // Toggle: si ya estaba seleccionada, deseleccionar
         if ($this->corridaSeleccionadaId === $id) {
@@ -82,7 +82,7 @@ new class extends Component
             'libres'         => $libres,
             'lleno'          => $total > 0 && $libres === 0,
             'estado'         => $estadoActual,
-            'seleccionable' => $estadoActual === 'programada',
+            'seleccionable' => $estadoActual === 'Programada',
         ];
     }
 

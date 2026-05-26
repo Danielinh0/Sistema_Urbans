@@ -15,9 +15,27 @@ class RutaController extends Controller
      */
     public function index()
     {
+        $rutasAltaDemanda = Ruta::whereHas('corridas', function ($query) {
+            $query->whereIn('estado', ['Programada', 'En viaje'])
+                ->whereDate('datetime_salida', today());
+        }, '>=', 3)->count();
+
+        $rutasSinAsignacion = Ruta::whereDoesntHave('corridas', function ($query) {
+            $query->whereDate('datetime_salida', today());
+        })->count();
+
+        $rutasMayorDuracion = Ruta::where('tiempo_estimado', '>=', '04:00:00')->count();
+
+        $rutasMasCaras = Ruta::where('tarifa_clientes', '>=', 500)->count();
+
         $this->authorize('viewAny', Ruta::class);
 
-        return view('ruta.index');
+        return view('ruta.index', compact(
+            'rutasAltaDemanda',
+            'rutasSinAsignacion',
+            'rutasMayorDuracion',
+            'rutasMasCaras'
+        ));
     }
 
     /**
