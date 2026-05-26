@@ -206,15 +206,17 @@ new class extends Component {
 
     private function rangoOcupado(Builder $query): Builder
     {
+        // Ampliamos el rango de búsqueda +/- 30 minutos por regla de negocio (descanso)
+        $inicioPropuesto = $this->horaSalida->copy()->subMinutes(30);
+        $finPropuesto = $this->horaLlegada->copy()->addMinutes(30);
+
         return $query->whereIn('estado', ['Programada', 'En viaje'])
-        ->where(function ($q) {
-            $q->whereBetween('datetime_salida', [$this->horaSalida, $this->horaLlegada])
-              ->orWhereBetween('datetime_llegada', [$this->horaSalida, $this->horaLlegada])
-              ->orWhere(function ($q2) {
-                  $q2->where('datetime_salida', '<', $this->horaSalida)
-                     ->where('datetime_llegada', '>', $this->horaLlegada);
-              });
-        });
+            ->where(function ($q) use ($inicioPropuesto, $finPropuesto) {
+                // Condición universal de traslape:
+                // (Salida Existente < Fin Propuesto) Y (Llegada Existente > Inicio Propuesto)
+                $q->where('datetime_salida', '<', $finPropuesto)
+                  ->where('datetime_llegada', '>', $inicioPropuesto);
+            });
     }
 
     private function calcularRango(): bool

@@ -106,21 +106,4 @@
         @endif
     </flux:modal>
 
-    <flux:modal name="modal-eliminar-corrida" class="w-[40%] md:min-w-[22rem]">
-        @if($corrida)
-        <div class="space-y-6">
-            <flux:heading size="lg">Eliminar Corrida</flux:heading>
-            <flux:text>
-                ¿Estás seguro de que deseas eliminar esta corrida asiganada a <b>{{ $corrida->user->name ?? 'conductor' }}</b>?
-            </flux:text>
-            <div class="flex gap-2">
-                <flux:spacer />
-                <flux:modal.close>
-                    <flux:button variant="ghost">Cancelar</flux:button>
-                </flux:modal.close>
-                <flux:button wire:click="delete" variant="danger">Eliminar</flux:button>
-            </div>
-        </div>
-        @endif
-    </flux:modal>
 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -11,7 +12,28 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('usuario.index');
+        $usuariosEnTurno = User::whereHas('turnoActivo')->count();
+
+        $administradoresYGerentes = User::role(['admin', 'gerente'])->count();
+
+        $usuariosSinTurno = User::role(['cajero'])
+            ->whereDoesntHave('turnos', function ($query) {
+                $query->whereDate('fecha', today());
+            })->count();
+
+        $conductoresHoy = User::whereHas('corridas', function ($query) {
+            $query->whereIn('estado', ['Programada', 'En viaje'])
+                ->whereDate('datetime_salida', today());
+        })
+            ->distinct('id_usuario')
+            ->count();
+
+        return view('usuario.index', compact(
+            'usuariosEnTurno',
+            'administradoresYGerentes',
+            'usuariosSinTurno',
+            'conductoresHoy'
+        ));
     }
 
     /**
