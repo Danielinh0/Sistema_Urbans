@@ -71,12 +71,13 @@ new class extends Component
         </div>
     </div>
 
-    <div class="flex-1 p-6 min-h-0"
+    <div class="p-4 sm:p-6"
         wire:key="grafica-boletos-{{ $year }}"
         x-data="{
-            chart: null,
-            init() {
-                if (this.chart) this.chart.destroy();
+        chart: null,
+        init() {
+            if (this.chart) { this.chart.destroy(); this.chart = null; }
+            this.$nextTick(() => {
                 this.chart = new Chart(this.$refs.canvas, {
                     type: 'bar',
                     data: {
@@ -106,10 +107,13 @@ new class extends Component
                         }
                     }
                 });
-            }
-        }"
+            });
+        }
+    }"
         x-init="init()">
-        <canvas x-ref="canvas" class="w-full h-full"></canvas>
+        <div class="relative h-64 sm:h-80">
+            <canvas x-ref="canvas"></canvas>
+        </div>
     </div>
 
 </div>
