@@ -231,7 +231,10 @@ new class extends Component
         @endif
 
         <div class="mt-8">
-            <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
+            <flux:button wire:click="update" variant="primary" icon="refresh-ccw"
+            class="w-full bg-azul_rebajado! text-azul_menu!
+                hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4
+                transition delay-130 duration-300 ease-in-out cursor-pointer border-none!">Guardar Cambios</flux:button>
         </div>
         @endif
     </flux:modal>
