@@ -135,11 +135,11 @@ new class extends Component {
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        <flux:badge color="zinc"> {{ $ruta->distancia }} km</flux:badge> 
+                        <flux:badge color="amber"> {{ $ruta->distancia }} km</flux:badge> 
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap">
-                       <flux:badge color="zinc">{{ $ruta->tiempo_estimado }} hrs</flux:badge> 
+                       <flux:badge color="cyan">{{ $ruta->tiempo_estimado }} hrs</flux:badge> 
                     </flux:table.cell>
 
                     <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
@@ -152,11 +152,16 @@ new class extends Component {
 
                     @can('update', $ruta)
                     <flux:table.cell>
-                        <div class="flex items-center gap-1">
-                            <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu"
+                        <div class="flex items-center gap-3">
+                            <flux:button size="sm" href="{{ route('ruta.show', $ruta->id_ruta) }}" icon="eye" 
+                                class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                            </flux:button>    
+
+                            <flux:button size="sm" variant="ghost" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
                                 wire:click="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })">
                             </flux:button>
-                            <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto"
+
+                            <flux:button size="sm" variant="ghost" icon="trash" class="bg-fondo-rojo! text-texto-rojo! hover:bg-texto-rojo! hover:text-white! border-none! btn-animado"
                                 wire:click="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })">
                             </flux:button>
                         </div>

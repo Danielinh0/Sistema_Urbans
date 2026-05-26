@@ -13,6 +13,9 @@ new class extends Component
 
     public ?Ruta $ruta = null;
 
+    public bool $mostrarAdvertenciaEdicion = false;
+    public bool $mostrarAdvertenciaEliminacion = false;
+
     public $sucursal_salida;
     public $sucursal_llegada;
 
@@ -44,6 +47,7 @@ new class extends Component
     {
         $this->ruta = Ruta::findOrFail($id);
         $this->authorize('update', $this->ruta);
+        $this->mostrarAdvertenciaEdicion = false;
         $this->nombre = $this->ruta->nombre;
         $this->distancia = $this->ruta->distancia;
         $this->tiempo_estimado = $this->ruta->tiempo_estimado;
@@ -88,6 +92,7 @@ new class extends Component
     {
         $this->ruta = Ruta::findOrFail($id);
         $this->authorize('delete', $this->ruta);
+        $this->mostrarAdvertenciaEliminacion = false;
         $this->js("Flux.modal('modal-eliminar-ruta').show()");
     }
 
@@ -135,6 +140,22 @@ new class extends Component
             'sucursal_llegada.different' => 'La sucursal de llegada debe ser diferente a la de salida.',
         ]);
 
+        $corridasAfectadas = \App\Models\Corrida::where('id_ruta', $this->ruta->id_ruta)
+            ->where('estado', 'Programada')
+            ->where('datetime_salida', '>=', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->get();
+
+        if ($corridasAfectadas->isNotEmpty()) {
+            $this->mostrarAdvertenciaEdicion = true;
+            return;
+        }
+
+        $this->ejecutarEdicion();
+    }
+
+    private function ejecutarEdicion()
+    {
         $this->ruta->update([
             'nombre' => $this->nombre,
             'distancia' => $this->distancia,
@@ -145,6 +166,7 @@ new class extends Component
             'id_sucursal_llegada' => $this->sucursal_llegada,
         ]);
 
+        $this->mostrarAdvertenciaEdicion = false;
         $this->js("Flux.modal('modal-editar-ruta').close()");
         $this->dispatch('ruta-creada');
     }
@@ -153,7 +175,24 @@ new class extends Component
     {
         $this->authorize('delete', $this->ruta);
 
+        $corridasAfectadas = \App\Models\Corrida::where('id_ruta', $this->ruta->id_ruta)
+            ->where('estado', 'Programada')
+            ->where('datetime_salida', '>=', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->get();
+
+        if ($corridasAfectadas->isNotEmpty()) {
+            $this->mostrarAdvertenciaEliminacion = true;
+            return;
+        }
+
+        $this->ejecutarDesactivacion();
+    }
+
+    private function ejecutarDesactivacion()
+    {
         $this->ruta->delete();
+        $this->mostrarAdvertenciaEliminacion = false;
         $this->js("Flux.modal('modal-eliminar-ruta').close()");
         $this->dispatch('ruta-eliminada');
     }
@@ -168,6 +207,29 @@ new class extends Component
             <x-skeleton-form-ruta />
         </flux:card>
 
+        @if($mostrarAdvertenciaEdicion)
+            <div x-data="{ visible: @entangle('mostrarAdvertenciaEdicion') }" x-show="visible" x-collapse class="mt-6">
+                <div x-show="visible" x-transition>
+                    <flux:callout icon="calendar-clock" color="amber">
+                        <flux:callout.heading>Corridas programadas detectadas</flux:callout.heading>
+                        <flux:callout.text>
+                            No puedes editar esta ruta porque tiene corridas programadas pendientes. 
+                        </flux:callout.text>
+
+                        <x-slot name="actions">
+                            <flux:button href="{{ route('ruta.show', ['id' => $ruta->id_ruta, 'reasignar' => true]) }}" icon="map-pin-search" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                Reasignar corridas
+                            </flux:button>
+                        </x-slot>
+
+                        <x-slot name="controls">
+                            <flux:button icon="x-mark" variant="ghost" x-on:click="visible = false" />
+                        </x-slot>
+                    </flux:callout>
+                </div>
+            </div>
+        @endif
+
         <div class="mt-8">
             <flux:button wire:click="update" variant="primary" class="w-full">Guardar Cambios</flux:button>
         </div>
@@ -181,10 +243,34 @@ new class extends Component
             <flux:text>
                 ¿Estás seguro de que deseas eliminar la ruta <b>{{ $ruta->nombre }}</b>?
             </flux:text>
+
+            @if($mostrarAdvertenciaEliminacion)
+                <div x-data="{ visible: @entangle('mostrarAdvertenciaEliminacion') }" x-show="visible" x-collapse>
+                    <div x-show="visible" x-transition>
+                        <flux:callout icon="calendar-clock" color="amber">
+                            <flux:callout.heading>Corridas programadas detectadas</flux:callout.heading>
+                            <flux:callout.text>
+                                No puedes eliminar esta ruta porque tiene corridas programadas pendientes. 
+                            </flux:callout.text>
+
+                            <x-slot name="actions">
+                                <flux:button href="{{ route('ruta.show', ['id' => $ruta->id_ruta, 'reasignar' => true]) }}" icon="map-pin-search" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                    Reasignar corridas
+                                </flux:button>
+                            </x-slot>
+
+                            <x-slot name="controls">
+                                <flux:button icon="x-mark" variant="ghost" x-on:click="visible = false" />
+                            </x-slot>
+                        </flux:callout>
+                    </div>
+                </div>
+            @endif
+
             <div class="flex gap-2">
                 <flux:spacer />
                 <flux:modal.close>
-                    <flux:button variant="ghost">Cancelar</flux:button>
+                    <flux:button variant="ghost" wire:click="$set('mostrarAdvertenciaEliminacion', false)">Cancelar</flux:button>
                 </flux:modal.close>
                 <flux:button wire:click="delete" variant="danger">Eliminar</flux:button>
             </div>

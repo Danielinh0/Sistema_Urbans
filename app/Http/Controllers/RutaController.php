@@ -68,7 +68,19 @@ class RutaController extends Controller
         $ruta = Ruta::findOrFail($id);
         $this->authorize('view', $ruta);
 
-        return view('ruta.show', ['id' => $id]);
+        $corridasProgramadas = \App\Models\Corrida::where('id_ruta', $ruta->id_ruta)
+            ->where('estado', 'Programada')
+            ->where('datetime_salida', '>=', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->count();
+
+        $corridasFinalizadas = \App\Models\Corrida::where('id_ruta', $ruta->id_ruta)
+            ->where('estado', 'Finalizada')
+            ->where('datetime_salida', '<', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->count();
+
+        return view('ruta.show', compact('ruta', 'corridasProgramadas', 'corridasFinalizadas'));
     }
 
     /**
