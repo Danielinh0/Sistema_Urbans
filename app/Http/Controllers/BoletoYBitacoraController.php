@@ -448,7 +448,7 @@ class BoletoYBitacoraController extends Controller
             'urban',
             'user',
             'boletos' => function ($query) {
-                $query->whereIn('estado', ['activo', 'apartado', 'Pagado']);
+                $query->whereIn('estado', ['activo', 'apartado', 'Pagado','abordado']);
             },
             'boletos.cliente',
             'boletos.boletoCliente.asiento',
