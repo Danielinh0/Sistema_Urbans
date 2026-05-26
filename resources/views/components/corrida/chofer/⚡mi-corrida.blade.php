@@ -1,10 +1,12 @@
 <?php
 
 use App\Models\Asiento;
+use App\Models\Boleto;
 use App\Models\BoletoCliente;
 use App\Models\Corrida;
 use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
 
 new class extends Component
 {
@@ -12,6 +14,11 @@ new class extends Component
     public ?int    $corridaId          = null;
     public array   $asientos           = [];
     public array   $asientosOrganizados = [];
+    public string  $busquedaAbordaje    = '';
+    public bool    $modoAbordaje        = false;
+
+    public string $flashMsg = '';
+    public string $flashType = 'success';
 
     // Asiento seleccionado para ver info
     public ?int    $asientoViendo      = null;
@@ -22,8 +29,33 @@ new class extends Component
         $this->cargarMiCorrida();
     }
 
+    private function normalizarEstado(?string $estado): string
+    {
+        return strtolower(trim((string) $estado));
+    }
+
+    private function corridaPuedeAbordar($corrida): bool
+    {
+        if (!$corrida || !$corrida->datetime_salida) {
+            return false;
+        }
+
+        $estado = $this->normalizarEstado($corrida->estado);
+
+        return $estado === 'programada'
+            && now()->greaterThanOrEqualTo($corrida->datetime_salida->copy()->subMinutes(15));
+    }
+
     private function cargarMiCorrida(): void
     {
+        $this->corridaInfo = null;
+        $this->corridaId = null;
+        $this->asientos = [];
+        $this->asientosOrganizados = [];
+        $this->asientoViendo = null;
+        $this->infoBoleto = null;
+        $this->modoAbordaje = false;
+
         $user = auth()->user();
         $ahora = now();
 
@@ -43,12 +75,14 @@ new class extends Component
         if (!$corrida) return;
 
         $this->corridaId = $corrida->id_corrida;
+        $puedeAbordar = $this->corridaPuedeAbordar($corrida);
+        $estadoCorrida = $this->normalizarEstado($corrida->estado);
 
         $asientosOcupadosMap = BoletoCliente::whereHas(
             'boleto',
             fn($q) =>
             $q->where('id_corrida', $corrida->id_corrida)
-                ->whereIn('estado', ['activo', 'apartado'])
+            ->whereIn('estado', ['activo', 'apartado', 'abordado', 'usado'])
         )
             ->with(['boleto:id_boleto,estado,descuento,id_corrida', 'asiento:id_asiento,nombre'])
             ->with(['boleto.cliente'])
@@ -81,10 +115,22 @@ new class extends Component
 
             $estadoFinal = 'libre';
             $pasajero    = null;
+            $boletoId    = null;
+            $estadoBoleto = null;
+            $tipoPago    = null;
 
             if ($asientosOcupadosMap->has($a->id_asiento)) {
                 $bc          = $asientosOcupadosMap->get($a->id_asiento);
-                $estadoFinal = strtolower($bc->boleto->estado) === 'apartado' ? 'apartado' : 'ocupado';
+                $estadoBoleto = $this->normalizarEstado($bc->boleto->estado);
+                $estadoFinal = match ($estadoBoleto) {
+                    'apartado' => 'apartado',
+                    'abordado' => 'abordado',
+                    'usado' => 'usado',
+                    'cancelado' => 'cancelado',
+                    default => 'ocupado',
+                };
+                $boletoId    = $bc->boleto->id_boleto;
+                $tipoPago    = $bc->boleto->tipo_de_pago;
                 $cliente     = $bc->boleto->cliente;
                 $pasajero    = $cliente
                     ? trim("{$cliente->nombre} {$cliente->apellido_paterno} {$cliente->apellido_materno}")
@@ -96,6 +142,9 @@ new class extends Component
                 'nombre'   => $a->nombre,
                 'estado'   => $estadoFinal,
                 'pasajero' => $pasajero,
+                'boleto_id' => $boletoId,
+                'boleto_estado' => $estadoBoleto,
+                'tipo_pago' => $tipoPago,
             ];
 
             if (!isset($organizados[$fila])) {
@@ -111,9 +160,12 @@ new class extends Component
         $this->asientos            = $asientosPlano;
 
         $total    = $corrida->urban?->numero_asientos ?? 0;
-        $ocupados = collect($asientosPlano)->whereIn('estado', ['ocupado', 'apartado'])->count();
+        $ocupados = collect($asientosPlano)->whereIn('estado', ['ocupado', 'apartado', 'abordado'])->count();
 
         $this->corridaInfo = [
+            'estado'       => $corrida->estado,
+            'puede_abordar' => $puedeAbordar,
+            'en_viaje'     => $estadoCorrida === 'en viaje',
             'hora_salida'  => $corrida->datetime_salida->format('g:i A'),
             'hora_llegada' => $corrida->datetime_llegada?->format('g:i A') ?? 'N/A',
             'fecha'        => $corrida->datetime_salida->locale('es')->isoFormat('dddd D [de] MMMM, YYYY'),
@@ -126,6 +178,114 @@ new class extends Component
             'ocupados'     => $ocupados,
             'libres'       => max(0, $total - $ocupados),
         ];
+    }
+
+    public function iniciarAbordaje(): void
+    {
+        if (!$this->corridaId || !($this->corridaInfo['puede_abordar'] ?? false)) {
+            $this->flashMsg = 'El abordaje solo se habilita cuando faltan menos de 15 minutos para la salida.';
+            $this->flashType = 'error';
+            return;
+        }
+
+        $this->modoAbordaje = true;
+        $this->flashMsg = 'Modo de abordaje activado.';
+        $this->flashType = 'success';
+    }
+
+    public function salirDeAbordaje(): void
+    {
+        $this->modoAbordaje = false;
+        $this->flashMsg = 'Se cerró el modo de abordaje.';
+        $this->flashType = 'success';
+    }
+
+    public function marcarAbordado(int $idAsiento, bool $confirmarCobro = false): void
+    {
+        if (!$this->corridaId) {
+            return;
+        }
+
+        $bc = BoletoCliente::where('id_asiento', $idAsiento)
+            ->whereHas('boleto', fn($q) => $q->where('id_corrida', $this->corridaId))
+            ->with(['boleto.cliente'])
+            ->first();
+
+        if (!$bc) {
+            $this->flashMsg = 'No se encontró un boleto válido para este asiento.';
+            $this->flashType = 'error';
+            return;
+        }
+
+        $estadoActual = $this->normalizarEstado($bc->boleto->estado);
+
+        if (!in_array($estadoActual, ['activo', 'apartado'], true)) {
+            $this->flashMsg = 'Este boleto ya fue procesado.';
+            $this->flashType = 'error';
+            return;
+        }
+
+        if ($estadoActual === 'apartado' && !$confirmarCobro) {
+            $this->flashMsg = 'Debes confirmar el cobro antes de abordar un boleto reservado.';
+            $this->flashType = 'error';
+            return;
+        }
+
+        DB::transaction(function () use ($bc) {
+            $bc->boleto->update([
+                'estado' => 'abordado',
+            ]);
+        });
+
+        $this->flashMsg = 'Boleto marcado como abordado.';
+        $this->flashType = 'success';
+        $this->cargarMiCorrida();
+        $this->verAsiento($idAsiento);
+    }
+
+    public function confirmarSalida(): void
+    {
+        if (!$this->corridaId) {
+            return;
+        }
+
+        DB::transaction(function () {
+            Boleto::where('id_corrida', $this->corridaId)
+                ->whereIn('estado', ['activo', 'apartado'])
+                ->update(['estado' => 'cancelado']);
+
+            $corrida = Corrida::find($this->corridaId);
+            if ($corrida) {
+                $corrida->update(['estado' => 'En viaje']);
+            }
+        });
+
+        $this->modoAbordaje = false;
+        $this->flashMsg = 'Salida confirmada. Los boletos no abordados se cancelaron.';
+        $this->flashType = 'success';
+        $this->cargarMiCorrida();
+    }
+
+    public function confirmarLlegada(): void
+    {
+        if (!$this->corridaId) {
+            return;
+        }
+
+        DB::transaction(function () {
+            Boleto::where('id_corrida', $this->corridaId)
+                ->where('estado', 'abordado')
+                ->update(['estado' => 'usado']);
+
+            $corrida = Corrida::find($this->corridaId);
+            if ($corrida) {
+                $corrida->update(['estado' => 'Finalizada']);
+            }
+        });
+
+        $this->flashMsg = 'Llegada confirmada. La corrida quedó finalizada.';
+        $this->flashType = 'success';
+        $this->cargarMiCorrida();
     }
 
     // ✅ Ver info de un asiento sin comprar
@@ -150,7 +310,7 @@ new class extends Component
                 'boleto',
                 fn($q) =>
                 $q->where('id_corrida', $this->corridaId)
-                    ->whereIn('estado', ['activo', 'apartado'])
+                    ->whereIn('estado', ['activo', 'apartado', 'abordado', 'usado'])
             )
             ->with(['boleto.cliente'])
             ->first();
@@ -179,10 +339,29 @@ new class extends Component
 
     public function with(): array
     {
+        $busqueda = trim(mb_strtolower($this->busquedaAbordaje));
+        $asientosAbordaje = collect($this->asientos)
+            ->filter(function ($seat) use ($busqueda) {
+                if (!in_array($seat['estado'], ['ocupado', 'apartado', 'abordado'], true)) {
+                    return false;
+                }
+
+                if ($busqueda === '') {
+                    return true;
+                }
+
+                $texto = mb_strtolower(trim(($seat['nombre'] ?? '') . ' ' . ($seat['pasajero'] ?? '') . ' ' . ($seat['estado'] ?? '')));
+                return str_contains($texto, $busqueda);
+            })
+            ->values()
+            ->toArray();
+
         return [
             'libres'    => collect($this->asientos)->where('estado', 'libre')->count(),
             'ocupados'  => collect($this->asientos)->where('estado', 'ocupado')->count(),
             'apartados' => collect($this->asientos)->where('estado', 'apartado')->count(),
+            'abordados' => collect($this->asientos)->where('estado', 'abordado')->count(),
+            'asientosAbordaje' => $asientosAbordaje,
         ];
     }
 };
@@ -216,6 +395,48 @@ new class extends Component
                 </div>
             </div>
             <div class="flex items-center gap-2">
+                @if(($corridaInfo['puede_abordar'] ?? false) && !$modoAbordaje)
+                <flux:button
+                    wire:click="iniciarAbordaje"
+                    variant="primary"
+                    size="sm"
+                >
+                    Iniciar abordaje
+                </flux:button>
+                @endif
+
+                @if($modoAbordaje)
+                <flux:button
+                    wire:click="salirDeAbordaje"
+                    variant="outline"
+                    size="sm"
+                    icon="x-mark"
+                >
+                    Cerrar abordaje
+                </flux:button>
+
+                <flux:button
+                    wire:click="confirmarSalida"
+                    variant="outline"
+                    size="sm"
+                    icon="arrow-right"
+                    class="border-red-300! text-red-600! hover:bg-red-50! dark:border-red-700! dark:text-red-300! dark:hover:bg-red-900/20!"
+                >
+                    Confirmar salida
+                </flux:button>
+                @endif
+
+                @if($corridaInfo['en_viaje'] ?? false)
+                <flux:button
+                    wire:click="confirmarLlegada"
+                    variant="primary"
+                    size="sm"
+                    icon="map-pin-check"
+                >
+                    Confirmar llegada
+                </flux:button>
+                @endif
+
                 <flux:button
                     href="{{ route('servicios.bitacora.pdf', $corridaId) }}"
                     target="_blank"
@@ -228,6 +449,9 @@ new class extends Component
                 <flux:badge color="green">{{ $libres }} Libres</flux:badge>
                 @if($apartados > 0)
                 <flux:badge color="amber">{{ $apartados }} Apartados</flux:badge>
+                @endif
+                @if(($abordados ?? 0) > 0)
+                <flux:badge color="blue">{{ $abordados }} Abordados</flux:badge>
                 @endif
                 <flux:badge color="red">{{ $ocupados }} Ocupados</flux:badge>
             </div>
@@ -329,15 +553,52 @@ new class extends Component
                     <span class="w-4 h-4 rounded bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-400 inline-block"></span>Apartado
                 </span>
                 <span class="flex items-center gap-1.5">
-                    <span class="w-4 h-4 rounded bg-blue-600 border-2 border-blue-700 inline-block"></span>Viendo
+                    <span class="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-400 inline-block"></span>Abordado
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="w-4 h-4 rounded bg-slate-200 dark:bg-slate-700 border-2 border-slate-400 inline-block"></span>Cancelado
                 </span>
             </div>
+
+            @if($modoAbordaje)
+            <div class="mb-5 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 space-y-3">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h4 class="font-bold text-blue-700 dark:text-blue-300 text-sm">Modo de abordaje activo</h4>
+                        <p class="text-xs text-blue-600/80 dark:text-blue-400/80 mt-1">Busca un pasajero o toca un asiento para marcarlo como abordado.</p>
+                    </div>
+                    <flux:badge color="blue" size="sm">Operación</flux:badge>
+                </div>
+                <flux:input
+                    wire:model.live.debounce.300ms="busquedaAbordaje"
+                    placeholder="Buscar pasajero o asiento..."
+                >
+                    <x-slot name="iconLeading">
+                        <flux:icon name="magnifying-glass" class="size-4" />
+                    </x-slot>
+                </flux:input>
+                <div class="flex flex-wrap gap-2">
+                    @forelse($asientosAbordaje as $seat)
+                    <button
+                        type="button"
+                        wire:click="verAsiento({{ $seat['id'] }})"
+                        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors
+                        {{ $asientoViendo === $seat['id'] ? 'border-blue-500 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'border-blue-200 bg-white text-gray-700 dark:border-blue-800 dark:bg-neutral-900 dark:text-gray-200' }}">
+                        <span>{{ $seat['nombre'] }}</span>
+                        <span class="opacity-70">{{ $seat['pasajero'] ?? 'Sin nombre' }}</span>
+                    </button>
+                    @empty
+                    <p class="text-xs text-blue-600/80 dark:text-blue-400/80">No hay coincidencias con tu búsqueda.</p>
+                    @endforelse
+                </div>
+            </div>
+            @endif
 
             {{-- Van visual --}}
             <div class="flex justify-center">
                 <div class="relative select-none" style="width:270px">
                     <div class="relative rounded-[2.5rem] border-[3px] border-gray-300 dark:border-neutral-600
-                                bg-gradient-to-b from-slate-100 to-gray-50 dark:from-neutral-800 dark:to-neutral-900
+                                bg-linear-to-b from-slate-100 to-gray-50 dark:from-neutral-800 dark:to-neutral-900
                                 px-5 pt-7 pb-10 shadow-lg">
 
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 rounded-b-2xl
@@ -349,7 +610,7 @@ new class extends Component
                         {{-- Conductor --}}
                         <div class="flex items-center justify-between mb-3 mt-1">
                             <div class="flex items-center gap-2">
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md">
+                                <div class="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md">
                                     <flux:icon name="bus" class="size-6 text-white" />
                                 </div>
                                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Conductor</span>
@@ -363,6 +624,8 @@ new class extends Component
                             $asientoViendo === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110',
                             $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 text-red-600 cursor-pointer hover:opacity-80',
                             $seat['estado'] === 'apartado' => 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 text-amber-700 cursor-pointer hover:opacity-80',
+                            $seat['estado'] === 'abordado' => 'bg-blue-100 dark:bg-blue-900/40 border-blue-400 text-blue-700 cursor-pointer hover:opacity-80',
+                            $seat['estado'] === 'cancelado' => 'bg-slate-200 dark:bg-slate-700 border-slate-400 text-slate-600 cursor-pointer hover:opacity-80',
                             default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 text-emerald-700 cursor-pointer hover:bg-emerald-200',
                             };
                             @endphp
@@ -381,13 +644,15 @@ new class extends Component
                             @continue($fila == 0)
                             @php $esFilaTrasera = (count($lados['left']) + count($lados['right'])) >= 4; @endphp
                             <div class="flex items-center justify-center {{ $esFilaTrasera ? 'gap-1.5' : 'gap-4' }}">
-                                <div class="flex gap-1.5 justify-end {{ $esFilaTrasera ? '' : 'min-w-[86px]' }}">
+                                <div class="flex gap-1.5 justify-end {{ $esFilaTrasera ? '' : 'min-w-21.5' }}">
                                     @foreach($lados['left'] as $seat)
                                     @php
                                     $sc = match(true) {
                                     $asientoViendo === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110',
                                     $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 text-red-600 cursor-pointer hover:opacity-80',
                                     $seat['estado'] === 'apartado' => 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 text-amber-700 cursor-pointer hover:opacity-80',
+                                    $seat['estado'] === 'abordado' => 'bg-blue-100 dark:bg-blue-900/40 border-blue-400 text-blue-700 cursor-pointer hover:opacity-80',
+                                    $seat['estado'] === 'cancelado' => 'bg-slate-200 dark:bg-slate-700 border-slate-400 text-slate-600 cursor-pointer hover:opacity-80',
                                     default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 text-emerald-700 cursor-pointer hover:bg-emerald-200',
                                     };
                                     @endphp
@@ -405,13 +670,15 @@ new class extends Component
                                 </div>
                                 @endif
 
-                                <div class="flex gap-1.5 justify-start {{ $esFilaTrasera ? '' : 'min-w-[40px]' }}">
+                                <div class="flex gap-1.5 justify-start {{ $esFilaTrasera ? '' : 'min-w-10' }}">
                                     @foreach($lados['right'] as $seat)
                                     @php
                                     $sc = match(true) {
                                     $asientoViendo === $seat['id'] => 'bg-blue-600 border-blue-700 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-700 scale-110',
                                     $seat['estado'] === 'ocupado' => 'bg-red-100 dark:bg-red-900/40 border-red-400 text-red-600 cursor-pointer hover:opacity-80',
                                     $seat['estado'] === 'apartado' => 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 text-amber-700 cursor-pointer hover:opacity-80',
+                                    $seat['estado'] === 'abordado' => 'bg-blue-100 dark:bg-blue-900/40 border-blue-400 text-blue-700 cursor-pointer hover:opacity-80',
+                                    $seat['estado'] === 'cancelado' => 'bg-slate-200 dark:bg-slate-700 border-slate-400 text-slate-600 cursor-pointer hover:opacity-80',
                                     default => 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-400 text-emerald-700 cursor-pointer hover:bg-emerald-200',
                                     };
                                     @endphp
@@ -476,14 +743,23 @@ new class extends Component
                         <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                             Asiento {{ $infoBoleto['asiento'] }}
                         </span>
-                        <flux:badge color="{{ $infoBoleto['estado'] === 'apartado' ? 'amber' : 'blue' }}" size="sm">
+                        @php
+                            $colorEstado = match (strtolower($infoBoleto['estado'])) {
+                                'apartado' => 'amber',
+                                'abordado' => 'blue',
+                                'usado' => 'emerald',
+                                'cancelado' => 'gray',
+                                default => 'blue',
+                            };
+                        @endphp
+                        <flux:badge color="{{ $colorEstado }}" size="sm">
                             {{ ucfirst($infoBoleto['estado']) }}
                         </flux:badge>
                     </div>
 
                     {{-- Pasajero --}}
                     <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-neutral-800 rounded-xl">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
                             <flux:icon name="user-round" class="size-5 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
@@ -496,7 +772,7 @@ new class extends Component
 
                     {{-- Destino --}}
                     <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-neutral-800 rounded-xl">
-                        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
                             <flux:icon name="map-pinned" class="size-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
@@ -534,6 +810,18 @@ new class extends Component
                             <p class="font-bold text-gray-700 dark:text-gray-300">{{ $infoBoleto['tipo_pago'] }}</p>
                         </div>
                     </div>
+
+                    @if($modoAbordaje && in_array(strtolower($infoBoleto['estado']), ['activo', 'apartado'], true))
+                    <div class="pt-1 space-y-2">
+                        <flux:button
+                            wire:click="marcarAbordado({{ $asientoViendo }}, {{ strtolower($infoBoleto['estado']) === 'apartado' ? 'true' : 'false' }})"
+                            variant="primary"
+                            class="w-full"
+                        >
+                            {{ strtolower($infoBoleto['estado']) === 'apartado' ? 'Cobrar y abordar' : 'Marcar abordado' }}
+                        </flux:button>
+                    </div>
+                    @endif
 
                 </div>
                 @endif
