@@ -10,6 +10,20 @@
 
      <section class="flex flex-col gap-5 px-5 pt-2">
         
+        @if(request()->has('reasignar'))
+            <div x-data="{ show: true }" x-show="show" x-collapse>
+                <flux:callout icon="map-pin-minus" color="amber" class="mt-4">
+                    <flux:callout.heading>Reasignación de corridas obligatoria</flux:callout.heading>
+                    <flux:callout.text>
+                        Para poder desactivar esta urban, primero debes cancelar o reasignar otra urban a las siguientes corridas programadas.
+                    </flux:callout.text>
+                    <x-slot name="controls">
+                        <flux:button icon="x-mark" variant="ghost" x-on:click="show = false" />
+                    </x-slot>
+                </flux:callout>
+            </div>
+        @endif
+
         <header class="flex flex-col justify-between items-center md:flex-row">
             <div>
                 <x-heading :icono="'bus'" texto="Informacion de la urban {{ $urban->codigo_urban }}" />

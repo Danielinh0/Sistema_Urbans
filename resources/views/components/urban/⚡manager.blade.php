@@ -348,9 +348,9 @@ new class extends Component {
                             </flux:callout.text>
 
                             <x-slot name="actions">
-                                
-                                    <flux:button href="{{ route('urban.show', $urban->id_urban) }}" icon="map-pin-search" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
-                                        Reasginar corridas
+
+                                    <flux:button href="{{ route('urban.show', ['id' => $urban->id_urban, 'reasignar' => true]) }}" icon="map-pin-search" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                        Reasignar corridas
                                     </flux:button>
                             </x-slot>
 

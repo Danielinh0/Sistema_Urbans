@@ -153,7 +153,7 @@ new class extends Component {
                             @can('update', $urban)
                                 @if ($urban->estado !== 'Inactiva')
 
-                                 <flux:button href="{{ route('urban.show', $urban->id_urban) }}" icon="eye" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                 <flux:button size="sm" href="{{ route('urban.show', $urban->id_urban) }}" icon="eye" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
                                         
                                 </flux:button>
 
