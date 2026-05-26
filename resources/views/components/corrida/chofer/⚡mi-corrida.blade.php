@@ -46,8 +46,10 @@ new class extends Component
             && now()->greaterThanOrEqualTo($corrida->datetime_salida->copy()->subMinutes(15));
     }
 
-    private function cargarMiCorrida(): void
+    private function cargarMiCorrida(bool $conservarModoAbordaje = false): void
     {
+        $modoAbordajeActivo = $conservarModoAbordaje && $this->modoAbordaje;
+
         $this->corridaInfo = null;
         $this->corridaId = null;
         $this->asientos = [];
@@ -178,6 +180,8 @@ new class extends Component
             'ocupados'     => $ocupados,
             'libres'       => max(0, $total - $ocupados),
         ];
+
+        $this->modoAbordaje = $modoAbordajeActivo && ($this->corridaInfo['puede_abordar'] ?? false || $estadoCorrida === 'en viaje');
     }
 
     public function iniciarAbordaje(): void
@@ -239,7 +243,7 @@ new class extends Component
 
         $this->flashMsg = 'Boleto marcado como abordado.';
         $this->flashType = 'success';
-        $this->cargarMiCorrida();
+        $this->cargarMiCorrida(true);
         $this->verAsiento($idAsiento);
     }
 
