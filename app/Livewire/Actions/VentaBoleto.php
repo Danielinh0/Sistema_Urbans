@@ -217,12 +217,12 @@ class VentaBoleto extends Component
 
     public function confirmarVenta(): void
     {
-        $this->procesarVenta(false);
+        $this->procesarVenta(false, true);
     }
 
     public function apartar(): void
     {
-        $this->procesarVenta(true);
+        $this->procesarVenta(true, false);
     }
 
     public function cancelar(): void
@@ -233,7 +233,7 @@ class VentaBoleto extends Component
 
     // ── Helpers privados ──────────────────────────────────────
 
-    private function procesarVenta(bool $esApartado): void
+    private function procesarVenta(bool $esApartado, bool $descargarBoletos): void
     {
         $seleccionados = $this->obtenerBoletosSeleccionadosOrdenados();
 
@@ -260,7 +260,9 @@ class VentaBoleto extends Component
                 throw new \Exception('No se encontró un turno abierto.');
             }
 
-            DB::transaction(function () use ($esApartado, $seleccionados) {
+            $boletosGenerados = [];
+
+            DB::transaction(function () use ($esApartado, $seleccionados, &$boletosGenerados) {
                 $this->asegurarAsientosDisponibles($this->asientosSeleccionados);
 
                 $clienteVentaId = $this->resolverClienteDesdeNombre($this->nombreCompleto);
@@ -309,6 +311,8 @@ class VentaBoleto extends Component
                         'id_asiento' => $ticket['id_asiento'],
                         'peso_equipaje' => max(0, (float) ($ticket['pesoEquipaje'] ?? 0)),
                     ]);
+
+                    $boletosGenerados[] = $boleto->id_boleto;
                 }
             });
 
@@ -317,6 +321,16 @@ class VentaBoleto extends Component
                 ? "✓ {$cantidad} boletos apartados correctamente."
                 : "✓ {$cantidad} boletos registrados correctamente.";
             $this->flashType = 'success';
+
+            if ($descargarBoletos && !empty($boletosGenerados)) {
+                $urls = collect($boletosGenerados)
+                    ->map(fn (int $idBoleto) => route('servicios.boleto.cliente.pdf', ['id_boleto' => $idBoleto]))
+                    ->values()
+                    ->all();
+
+                $this->dispatch('descargar-boletos-pdf', urls: $urls);
+            }
+
             $this->resetFormulario();
             $this->recargarAsientos();
         } catch (\Throwable $e) {

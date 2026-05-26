@@ -36,8 +36,8 @@ new class extends Component
 
         // ✅ Solo Programada es seleccionable
         // (también verificamos que no haya salido ya)
-        $estadoReal = $corrida->estado;
-        if ($estadoReal !== 'Programada') return;
+        $estadoReal = strtolower(trim((string) $corrida->estado));
+        if ($estadoReal !== 'programada') return;
 
         // Toggle: si ya estaba seleccionada, deseleccionar
         if ($this->corridaSeleccionadaId === $id) {
@@ -50,7 +50,7 @@ new class extends Component
         $this->dispatch('corrida-seleccionada', id: $id);
     }
 
-    private function mapearCorrida(Corrida $corrida): array
+    private function mapearCorrida($corrida): array
     {
         $total    = $corrida->urban?->numero_asientos ?? 0;
         $vendidos = $corrida->boletos->count();
@@ -62,9 +62,10 @@ new class extends Component
 
         // Lógica de estado basada en la columna 'estado' de la BD y tiempos
         $estadoActual = $corrida->estado; // 'Activa', 'Finalizada', etc.
+        $estadoNormalizado = strtolower(trim((string) $estadoActual));
 
-        if ($estadoActual !== 'Cancelada' && $estadoActual !== 'Reservada') {
-            if ($salida->isPast() && $estadoActual !== 'Finalizada') {
+        if ($estadoNormalizado !== 'cancelada' && $estadoNormalizado !== 'reservada') {
+            if ($salida->isPast() && $estadoNormalizado !== 'finalizada') {
                 $estadoActual = 'En Camino';
             }
         }
@@ -82,7 +83,7 @@ new class extends Component
             'libres'         => $libres,
             'lleno'          => $total > 0 && $libres === 0,
             'estado'         => $estadoActual,
-            'seleccionable' => $estadoActual === 'Programada',
+            'seleccionable' => strtolower(trim((string) $estadoActual)) === 'programada',
         ];
     }
 
