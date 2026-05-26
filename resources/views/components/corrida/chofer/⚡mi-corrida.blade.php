@@ -216,6 +216,15 @@ new class extends Component
                 </div>
             </div>
             <div class="flex items-center gap-2">
+                <flux:button
+                    href="{{ route('servicios.bitacora.pdf', $corridaId) }}"
+                    target="_blank"
+                    variant="outline"
+                    size="sm"
+                    icon="document-text"
+                >
+                    Generar bitácora
+                </flux:button>
                 <flux:badge color="green">{{ $libres }} Libres</flux:badge>
                 @if($apartados > 0)
                 <flux:badge color="amber">{{ $apartados }} Apartados</flux:badge>

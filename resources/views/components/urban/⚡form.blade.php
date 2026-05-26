@@ -55,7 +55,7 @@ new class extends Component {
         for ($i = 0; $i < $this->numero_asientos; $i++) {
             Asiento::create([
                 'id_urban' => $urban->id_urban,
-                'nombre' => $this->codigo_urban . '-' . '0' . ($i + 1),
+                'nombre' => 'A' . ($i + 1),
                 'estado' => 'Libre',
             ]);
         }

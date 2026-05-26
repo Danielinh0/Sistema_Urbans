@@ -14,7 +14,7 @@ class BoletoFactory extends Factory
 
     public function definition(): array
     {
-        $estados = ['activo', 'cancelado', 'usado', 'reservado'];
+        $estados = ['activo', 'cancelado', 'usado', 'reservado','abordado'];
         $tiposPago = ['efectivo', 'tarjeta', 'transferencia', 'qr'];
 
         return [

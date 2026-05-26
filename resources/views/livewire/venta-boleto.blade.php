@@ -1,4 +1,23 @@
-<div class="space-y-6 pb-10">
+<div
+    class="space-y-6 pb-10"
+    x-data
+    x-on:descargar-boletos-pdf.window="
+        (async () => {
+            const urls = $event.detail?.urls ?? [];
+
+            for (const [index, url] of urls.entries()) {
+                const response = await fetch(url, { credentials: 'same-origin' });
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = objectUrl;
+                link.download = `boleto-cliente-${index + 1}.pdf`;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+            }
+        })()
+    "
+>
 
     {{-- ── 1. Buscador ─────────────────────────────────────────── --}}
     <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6">
