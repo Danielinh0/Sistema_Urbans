@@ -13,6 +13,7 @@ use Livewire\Attributes\Computed;
 new class extends Component {
 
     public bool $mostrarAdvertenciaDesactivacion = false; // Agregado
+    public bool $mostrarAdvertenciaEdicion = false; // Agregado para update
     public ?Urban $urban = null;
 
     // Reglas de validación idénticas al formulario de creación
@@ -47,6 +48,7 @@ new class extends Component {
     {
         $this->resetErrorBag();
         session()->forget('error');
+        $this->mostrarAdvertenciaEdicion = false;
 
         $this->urban = Urban::findOrFail($id);
         $this->codigo_urban = $this->urban->codigo_urban;
@@ -130,11 +132,24 @@ new class extends Component {
 
         $this->validate();
 
-        if ($this->urban->estado == 'En viaje' || $this->urban->estado == 'Viaje programado') {
-            session()->flash('error', 'No puedes editar este vehículo porque tiene corridas pendientes o  en curso.');
+        $corridasAfectadas = Corrida::where('id_urban', $this->urban->id_urban)
+            ->where('estado', 'Programada')
+            ->where('datetime_salida', '>=', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->get();
+
+        $tieneCorridasPendientes = $corridasAfectadas->isNotEmpty();
+
+        if ($tieneCorridasPendientes) {
+            $this->mostrarAdvertenciaEdicion = true;
             return;
         }
 
+        $this->ejecutarEdicion();
+    }
+
+    private function ejecutarEdicion()
+    {
         $this->urban->update([
             'codigo_urban' => $this->codigo_urban,
             'numero_asientos' => $this->numero_asientos,
@@ -180,6 +195,7 @@ new class extends Component {
                 ->delete();
         }
 
+        $this->mostrarAdvertenciaEdicion = false;
         $this->js("Flux.modal('modal-editar-urban').close()");
         $this->dispatch('urban-creada');
     }
@@ -313,6 +329,29 @@ new class extends Component {
                     </flux:field>
 
             </div>
+
+            @if($mostrarAdvertenciaEdicion)
+                <div x-data="{ visible: @entangle('mostrarAdvertenciaEdicion') }" x-show="visible" x-collapse class="mt-6">
+                    <div x-show="visible" x-transition>
+                        <flux:callout icon="calendar-clock" color="amber">
+                            <flux:callout.heading>Corridas programadas detectadas</flux:callout.heading>
+                            <flux:callout.text>
+                                No puedes editar esta urban porque tiene corridas programadas pendientes. 
+                            </flux:callout.text>
+
+                            <x-slot name="actions">
+                                <flux:button href="{{ route('urban.show', ['id' => $urban->id_urban, 'reasignar' => true]) }}" icon="map-pin-search" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                    Reasignar corridas
+                                </flux:button>
+                            </x-slot>
+
+                            <x-slot name="controls">
+                                <flux:button icon="x-mark" variant="ghost" x-on:click="visible = false" />
+                            </x-slot>
+                        </flux:callout>
+                    </div>
+                </div>
+            @endif
 
             <div class="mt-8">
                 <flux:button wire:click="update" variant="primary" icon="refresh-ccw"
