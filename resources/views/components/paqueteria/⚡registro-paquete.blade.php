@@ -44,12 +44,12 @@ new class extends Component
 
 <div class="p-6 space-y-6">
 
-    <flux:card class="flex items-center justify-between">
+    <flux:card class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <flux:heading size="lg">Registro de Paquetería</flux:heading>
             <flux:subheading>Seleccione fecha y corrida</flux:subheading>
         </div>
-        <div class="w-64">
+        <div class="w-full sm:w-64"> {{-- ← ancho completo en móvil --}}
             <flux:input type="date" label="Fecha de Envío" wire:model.live="fechaEnvio" />
         </div>
     </flux:card>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Urban;
+use App\Models\Corrida;
 
 class UrbanController extends Controller
 {
@@ -22,13 +23,6 @@ class UrbanController extends Controller
         return view('urban.index', compact('UrbansActivas', 'UrbansInactivas', 'UrbansFueraDeServicio', 'UrbansMantenimiento'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('urban.create');
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -42,17 +36,25 @@ class UrbanController extends Controller
      * Display the specified resource.
      */
     public function show($id)
-    {
-        return view('urban.show', ['id' => $id]);
+    {   
+        $urban = Urban::findOrFail($id);
+
+        $corridasProgramadas = Corrida::where('id_urban', $urban->id_urban)
+            ->where('estado', 'Programada')
+            ->where('datetime_salida', '>=', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->count();
+
+        $corridasFinalizadas = Corrida::where('id_urban', $urban->id_urban)
+            ->where('estado', 'Finalizada')
+            ->where('datetime_salida', '<', now())
+            ->orderBy('datetime_salida', 'asc')
+            ->count();
+
+        return view('urban.show', compact('urban', 'corridasProgramadas', 'corridasFinalizadas'));
+        // return view('urban.show', ['id' => $id]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('urban.edit', ['id' => $id]);
-    }
 
     /**
      * Update the specified resource in storage.

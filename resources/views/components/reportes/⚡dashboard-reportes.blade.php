@@ -16,7 +16,7 @@ new class extends Component {
     @livewire('reportes.resumen-hoy')
 
     {{-- Fila 2: Gráfica principal (80%) + Taquillas (20%) --}}
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:h-[400px]">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:h-[450px]">
         <div class="lg:col-span-4 min-h-0">
             @livewire('reportes.grafica-corridas')
         </div>

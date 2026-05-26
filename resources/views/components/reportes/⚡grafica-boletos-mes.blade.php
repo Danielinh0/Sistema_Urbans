@@ -68,20 +68,16 @@ new class extends Component
                 @endforeach
             </flux:select>
 
-            {{-- ✅ Botón PDF píldora azul --}}
-            <button class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-full shadow-sm transition-colors duration-150">
-                <flux:icon name="pdf-icon" class="size-4" />
-                PDF
-            </button>
         </div>
     </div>
 
-    <div class="flex-1 p-6 min-h-0"
+    <div class="p-4 sm:p-6"
         wire:key="grafica-boletos-{{ $year }}"
         x-data="{
-            chart: null,
-            init() {
-                if (this.chart) this.chart.destroy();
+        chart: null,
+        init() {
+            if (this.chart) { this.chart.destroy(); this.chart = null; }
+            this.$nextTick(() => {
                 this.chart = new Chart(this.$refs.canvas, {
                     type: 'bar',
                     data: {
@@ -111,10 +107,13 @@ new class extends Component
                         }
                     }
                 });
-            }
-        }"
+            });
+        }
+    }"
         x-init="init()">
-        <canvas x-ref="canvas" class="w-full h-full"></canvas>
+        <div class="relative h-64 sm:h-80">
+            <canvas x-ref="canvas"></canvas>
+        </div>
     </div>
 
 </div>

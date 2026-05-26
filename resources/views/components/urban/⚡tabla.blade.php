@@ -152,7 +152,11 @@ new class extends Component {
                         <flux:table.cell align="center" class="flex justify-center gap-4">
                             @can('update', $urban)
                                 @if ($urban->estado !== 'Inactiva')
-                               
+
+                                 <flux:button size="sm" href="{{ route('urban.show', $urban->id_urban) }}" icon="eye" class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                        
+                                </flux:button>
+
                                 <flux:button size="sm" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
                                     wire:click="$dispatch('preparar-edicion-urban', { id: {{ $urban->id_urban }} })">
                                     
