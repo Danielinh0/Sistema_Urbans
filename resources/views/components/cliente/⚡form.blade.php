@@ -62,7 +62,9 @@ new class extends Component
         </div>
 
         <div class="mt-8">
-            <flux:button type="submit" variant="primary" class="w-full">Crear Cliente</flux:button>
+            <flux:button type="submit" variant="primary" class="w-full bg-azul_rebajado! text-azul_menu!
+                     hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4
+                       transition delay-130 duration-300 ease-in-out cursor-pointer border-none!">Crear Cliente</flux:button>
         </div>
     </flux:card>
 </form>

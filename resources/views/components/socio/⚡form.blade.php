@@ -193,7 +193,9 @@ new class extends Component {
             <flux:button
                 type="submit"
                 variant="primary"
-                class="w-full"
+                class="w-full bg-azul_rebajado! text-azul_menu!
+                     hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4
+                       transition delay-130 duration-300 ease-in-out cursor-pointer border-none!"
                 :disabled="!$this->formularioListo">
                 Crear Socio
             </flux:button>
