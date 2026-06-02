@@ -91,7 +91,6 @@ new class extends Component {
     <flux:card>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
-            {{-- Solo letras --}}
             <flux:field>
                 <flux:label badge="Obligatorio">Nombre(s)</flux:label>
                 <div x-on:blur.capture="$wire.touchField('nombre')">
@@ -137,7 +136,7 @@ new class extends Component {
 
             <flux:field>
                 <flux:label badge="Obligatorio">Estado</flux:label>
-                <div x-on:blur.capture="$wire.touchField('estado')"> {{-- 👈 --}}
+                <div x-on:blur.capture="$wire.touchField('estado')">
                     <flux:select wire:model.live="estado" placeholder="Seleccione el estado">
                         <flux:select.option value="Activo">Activo</flux:select.option>
                         <flux:select.option value="Inactivo">Inactivo</flux:select.option>
@@ -146,7 +145,6 @@ new class extends Component {
                 <flux:error name="estado" />
             </flux:field>
 
-            {{-- Date tampoco necesita restricción de teclas --}}
             <flux:field>
                 <flux:label badge="Obligatorio">Fecha de Incorporación</flux:label>
                 <div x-on:blur.capture="$wire.touchField('fecha_de_incorporacion')">
@@ -159,7 +157,6 @@ new class extends Component {
                 <flux:error name="fecha_de_incorporacion" />
             </flux:field>
 
-            {{-- Solo números --}}
             <flux:field>
                 <flux:label badge="Obligatorio">Número Telefónico</flux:label>
                 <div x-on:blur.capture="$wire.touchField('numero_telefonico')">
@@ -168,8 +165,8 @@ new class extends Component {
                         type="text"
                         inputmode="numeric"
                         x-on:keydown="!/^[0-9]$/.test($event.key)
-        && !['Backspace','Delete','Tab','ArrowLeft','ArrowRight'].includes($event.key)
-        && $event.preventDefault()"
+                            && !['Backspace','Delete','Tab','ArrowLeft','ArrowRight'].includes($event.key)
+                            && $event.preventDefault()"
                         icon:trailing="smartphone"
                         description:trailing="Ingrese un numero de telefono valido" />
                 </div>
@@ -194,7 +191,7 @@ new class extends Component {
                 type="submit"
                 variant="primary"
                 class="w-full bg-azul_rebajado! text-azul_menu!
-                     hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4
+                       hover:bg-azul_menu! hover:text-white! hover:-translate-y-1/4
                        transition delay-130 duration-300 ease-in-out cursor-pointer border-none!"
                 :disabled="!$this->formularioListo">
                 Crear Socio
