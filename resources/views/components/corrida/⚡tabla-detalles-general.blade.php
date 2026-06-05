@@ -192,9 +192,9 @@ new class extends Component
                             @if($corrida['lleno'])
                             <flux:badge color="red" size="sm" inset="top bottom">Lleno</flux:badge>
                             @elseif($corrida['libres'] <= 3)
-                                <flux:badge color="amber" size="sm" inset="top bottom">{{ $corrida['libres'] }} Libres</flux:badge>
+                                <flux:badge color="amber" size="sm" inset="top bottom">{{ $corrida['libres'] + 1 }} Libres</flux:badge>
                                 @else
-                                <flux:badge color="green" size="sm" inset="top bottom">{{ $corrida['libres'] }} Libres</flux:badge>
+                                <flux:badge color="green" size="sm" inset="top bottom">{{ $corrida['libres'] + 1 }} Libres</flux:badge>
                                 @endif
                         </td>
 
