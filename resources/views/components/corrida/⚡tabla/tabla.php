@@ -18,7 +18,7 @@ new class extends Component
 
     public $search = '';
 
-    public $perPage = 7;
+    public $perPage = 10;
     
     public $filtroEstado = '';
 

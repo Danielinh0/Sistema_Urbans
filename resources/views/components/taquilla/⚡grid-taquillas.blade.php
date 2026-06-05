@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Models\Taquilla;
 use App\Models\Turno;
 use App\Models\User;
@@ -12,13 +13,128 @@ new class extends Component
     public $cajeroId             = null;
     public $montoInicial         = 0;
 
-    public function abrirModal($idTaquilla)
-    {
-        $this->taquillaSeleccionada = $idTaquilla;
-        $this->cajeroId             = null;
-        $this->montoInicial         = 0;
-        $this->modal('abrir-taquilla')->show();
+    // Propiedades para Eliminar
+    public $taquillaAEliminar = null;
+public $errorEliminacion  = null;
+
+// Propiedades para retiro
+public $taquillaRetiro  = null;
+public $montoRetiro     = 1;
+public $maxMontoRetiro  = 0;
+public $retiroMensaje = null;
+
+public function prepararRetiro($idTaquilla)
+{
+    $taquilla = Taquilla::findOrFail($idTaquilla);
+    $this->retiroExcedido = false;
+$this->retiroMensaje  = null;
+
+    $this->taquillaRetiro  = $taquilla;
+    $this->maxMontoRetiro  = (float) $taquilla->monto_actual;
+    $this->montoRetiro     = 1;
+    $this->retiroExcedido  = false;
+    $this->modal('retirar-monto')->show();
+}
+
+public function confirmarRetiro()
+{
+    $this->validate([
+        'montoRetiro' => [
+            'required',
+            'numeric',
+            'min:1',
+            "max:{$this->maxMontoRetiro}",
+        ],
+    ], [
+        'montoRetiro.required' => 'Ingresa un monto.',
+        'montoRetiro.numeric'  => 'El monto debe ser numérico.',
+        'montoRetiro.min'      => 'El monto mínimo a retirar es $1.',
+        'montoRetiro.max'      => "No puedes retirar más de $$this->maxMontoRetiro.",
+    ]);
+
+    $taquilla = Taquilla::findOrFail($this->taquillaRetiro->id_taquilla);
+    $taquilla->decrement('monto_actual', $this->montoRetiro);
+
+    $this->taquillaRetiro = null;
+    $this->modal('retirar-monto')->close();
+    session()->flash('success', "Retiro de $$this->montoRetiro realizado correctamente.");
+}
+
+public $retiroExcedido = false;
+
+public function updatedMontoRetiro($value): void
+{
+    $val = (float) $value;
+    $max = (float) $this->maxMontoRetiro;
+
+    if ($value === '' || $value === null) {
+        $this->retiroExcedido = true;
+        $this->retiroMensaje  = 'Ingresa un monto a retirar.';
+    } elseif ($val <= 0) {
+        $this->retiroExcedido = true;
+        $this->retiroMensaje  = 'El monto debe ser mayor a $0.';
+    } elseif ($val > $max) {
+        $this->retiroExcedido = true;
+        $this->retiroMensaje  = 'El monto excede el saldo disponible de $' . number_format($max, 2) . '.';
+    } else {
+        $this->retiroExcedido = false;
+        $this->retiroMensaje  = null;
     }
+}
+
+public function prepararEliminacion($idTaquilla)
+{
+    $taquilla = Taquilla::findOrFail($idTaquilla);
+    $this->errorEliminacion = null;
+
+    // Validar si está abierta
+    $estaAbierta = Turno::where('id_taquilla', $idTaquilla)
+        ->whereNull('hora_fin')
+        ->exists();
+
+    if ($estaAbierta) {
+        $this->errorEliminacion = 'No se puede eliminar una taquilla que está abierta.';
+        $this->taquillaAEliminar = $taquilla;
+        $this->modal('eliminar-taquilla')->show();
+        return;
+    }
+
+    // Validar si tiene dinero
+    if ($taquilla->monto_actual > 0) {
+        $this->errorEliminacion = "La taquilla tiene $" . number_format($taquilla->monto_actual, 2) . " de saldo. Retira el dinero antes de eliminarla.";
+        $this->taquillaAEliminar = $taquilla;
+        $this->modal('eliminar-taquilla')->show();
+        return;
+    }
+
+    $this->taquillaAEliminar = $taquilla;
+    $this->modal('eliminar-taquilla')->show();
+}
+
+public function confirmarEliminacion()
+{
+    if (!$this->taquillaAEliminar || $this->errorEliminacion) {
+        return;
+    }
+
+    Taquilla::findOrFail($this->taquillaAEliminar->id_taquilla)->delete();
+
+    $this->taquillaAEliminar = null;
+    $this->modal('eliminar-taquilla')->close();
+    session()->flash('success', 'Taquilla eliminada correctamente.');
+}
+
+
+
+    public function abrirModal($idTaquilla)
+{
+    $taquilla = Taquilla::findOrFail($idTaquilla);
+
+    $this->taquillaSeleccionada = $idTaquilla;
+    $this->cajeroId             = null;
+    $this->montoInicial         = $taquilla->monto_actual; // ← monto actual de la taquilla
+    $this->modal('abrir-taquilla')->show();
+}
 
     public function confirmarApertura()
     {
@@ -51,6 +167,11 @@ new class extends Component
         $this->modal('abrir-taquilla')->close();
         session()->flash('success', "Taquilla #{$this->taquillaSeleccionada} abierta correctamente.");
     }
+
+    #[On('taquilla-creada')]
+public function refrescar(): void
+{
+}
 
     public function cerrarTaquilla($idTaquilla)
     {
@@ -155,26 +276,49 @@ new class extends Component
                 @endif
             </div>
 
-            <div class="px-4 pb-4">
-                @if($taquilla->esta_abierta)
-                {{-- Rojo más oscuro y sobrio --}}
-                <flux:button
-                    variant="primary"
-                    class="w-full "
-                    wire:click="cerrarTaquilla({{ $taquilla->id_taquilla }})"
-                    wire:confirm="¿Cerrar la taquilla {{ $taquilla->nombre ?? '#' . $taquilla->id_taquilla }}?">
-                    Cerrar Taquilla
-                </flux:button>
-                @else
-                {{-- Azul primario --}}
-                <flux:button
-                    variant="primary"
-                    class="w-full !bg-blue-800 hover:!bg-blue-900 !border-blue-800 !text-white"
-                    wire:click="abrirModal({{ $taquilla->id_taquilla }})">
-                    Abrir Taquilla
-                </flux:button>
-                @endif
-            </div>
+            <div class="px-4 pb-4 space-y-2">
+    @if($taquilla->esta_abierta)
+    <flux:button
+        variant="primary"
+        class="w-full"
+        wire:click="cerrarTaquilla({{ $taquilla->id_taquilla }})"
+        wire:confirm="¿Cerrar la taquilla {{ $taquilla->nombre ?? '#' . $taquilla->id_taquilla }}?">
+        Cerrar Taquilla
+    </flux:button>
+    @else
+    <flux:button
+        variant="primary"
+        class="w-full !bg-blue-800 hover:!bg-blue-900 !border-blue-800 !text-white"
+        wire:click="abrirModal({{ $taquilla->id_taquilla }})">
+        Abrir Taquilla
+    </flux:button>
+    @endif
+
+    {{-- Botón retirar monto --}}
+    <flux:button
+    variant="ghost"
+    class="w-full !border !border-green-400 !text-green-600 hover:!bg-green-50
+           dark:!border-green-700 dark:!text-green-400 dark:hover:!bg-green-950/30"
+    wire:click="prepararRetiro({{ $taquilla->id_taquilla }})"
+    :disabled="$taquilla->monto_actual <= 0">
+    Retirar Monto
+</flux:button>
+
+
+    {{-- Botón eliminar siempre visible --}}
+    <button
+        wire:click="prepararEliminacion({{ $taquilla->id_taquilla }})"
+        class="w-full px-4 py-2 rounded-lg text-sm font-medium
+               bg-red-100 hover:bg-red-200
+               text-red-700
+               border border-red-400 hover:border-red-500
+               dark:bg-red-950/40 dark:hover:bg-red-950/60
+               dark:text-red-400
+               dark:border-red-800 dark:hover:border-red-700
+               transition-colors duration-150 cursor-pointer">
+        Eliminar Taquilla
+    </button>
+</div>
 
         </div>
         @endforeach
@@ -189,16 +333,16 @@ new class extends Component
             </div>
 
             <flux:select
-                wire:model="cajeroId"
-                label="Cajero"
-                placeholder="Selecciona un cajero...">
-                @foreach($cajeros as $cajero)
-                <flux:select.option value="{{ $cajero->id_usuario }}">
-                    {{ $cajero->name }}
-                </flux:select.option>
-                @endforeach
-            </flux:select>
-            <flux:error name="cajeroId" />
+    wire:model="cajeroId"
+    label="Cajero">
+    <flux:select.option value="">Seleccionar cajero</flux:select.option>  {{-- ← quitar disabled selected --}}
+    @foreach($cajeros as $cajero)
+    <flux:select.option value="{{ $cajero->id_usuario }}">
+        {{ $cajero->name }}
+    </flux:select.option>
+    @endforeach
+</flux:select>
+           
 
             <flux:input
                 wire:model="montoInicial"
@@ -206,13 +350,13 @@ new class extends Component
                 type="number"
                 step="0.01"
                 icon="currency-dollar"
-                placeholder="0.00" />
+                />
             <flux:error name="montoInicial" />
 
             <div class="flex gap-2">
                 <flux:button
                     variant="primary"
-                    class="flex-1"
+                    class="flex-1 bg-blue-800 hover:bg-blue-900 border-blue-800 text-white"
                     wire:click="confirmarApertura">
                     Confirmar Apertura
                 </flux:button>
@@ -225,4 +369,120 @@ new class extends Component
         </div>
     </flux:modal>
 
+
+    {{-- Modal de eliminación --}}
+<flux:modal name="eliminar-taquilla" class="max-w-md">
+    <div class="space-y-6">
+        <div>
+            <flux:heading size="lg">Eliminar Taquilla</flux:heading>
+            <flux:subheading>
+                Taquilla #{{ $taquillaAEliminar?->id_taquilla }}
+            </flux:subheading>
+        </div>
+
+        @if($errorEliminacion)
+            {{-- Estado: no se puede eliminar --}}
+            <flux:callout variant="danger" icon="exclamation-triangle">
+                {{ $errorEliminacion }}
+            </flux:callout>
+
+            <div class="flex justify-end">
+                <flux:button
+                    variant="ghost"
+                    x-on:click="$flux.modal('eliminar-taquilla').close()">
+                    Entendido
+                </flux:button>
+            </div>
+        @else
+            {{-- Estado: confirmación --}}
+            <flux:text>
+                ¿Estás seguro de que deseas eliminar la taquilla
+                <b>#{{ $taquillaAEliminar?->id_taquilla }}</b>?
+                Esta acción no se puede deshacer.
+            </flux:text>
+
+            <div class="flex gap-2 justify-end">
+                <flux:button
+                    variant="ghost"
+                    x-on:click="$flux.modal('eliminar-taquilla').close()">
+                    Cancelar
+                </flux:button>
+                <flux:button
+                    variant="danger"
+                    wire:click="confirmarEliminacion">
+                    Sí, eliminar
+                </flux:button>
+            </div>
+        @endif
+    </div>
+</flux:modal>
+
+{{-- Modal de retiro --}}
+<flux:modal name="retirar-monto" class="max-w-sm">
+    <div class="space-y-6">
+        <div>
+            <flux:heading size="lg">Retirar Monto</flux:heading>
+            <flux:subheading>
+                Taquilla #{{ $taquillaRetiro?->id_taquilla }}
+                &mdash; Disponible:
+                <span class="font-semibold text-zinc-700 dark:text-zinc-200">
+                    ${{ number_format($taquillaRetiro?->monto_actual ?? 0, 2) }}
+                </span>
+            </flux:subheading>
+        </div>
+
+        <flux:input
+            wire:model.live="montoRetiro"
+            label="Monto a retirar"
+            type="number"
+            min="1"
+            max="{{ $maxMontoRetiro }}"
+            step="1"
+            icon="currency-dollar"
+            onkeydown="return /[0-9]/.test(event.key) || ['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(event.key)"  />
+       
+
+        {{-- Barra de progreso visual --}}
+        @if($maxMontoRetiro > 0)
+        <div class="space-y-1">
+            <div class="flex justify-between text-xs text-zinc-400">
+                <span>$0</span>
+                <span>${{ number_format($maxMontoRetiro, 2) }}</span>
+            </div>
+            <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                <div
+    class="bg-green-400 h-2 rounded-full transition-all duration-200"
+    style="width: {{ min(100, ((float)$montoRetiro / (float)$maxMontoRetiro) * 100) }}%">
+</div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Advertencia reactiva --}}
+@if($retiroExcedido && $retiroMensaje)
+<flux:callout variant="danger" icon="exclamation-triangle">
+    {{ $retiroMensaje }}
+</flux:callout>
+@endif
+<flux:error name="montoRetiro" />
+
+    <div class="flex gap-2 justify-end">
+    <flux:button
+        variant="ghost"
+        x-on:click="$flux.modal('retirar-monto').close()">
+        Cancelar
+    </flux:button>
+    <flux:button
+        variant="primary"
+        class="!bg-blue-800 hover:!bg-blue-900 !border-blue-800 !text-white
+               disabled:!opacity-50 disabled:!cursor-not-allowed"
+        wire:click="confirmarRetiro"
+        :disabled="$retiroExcedido || $montoRetiro <= 0">
+        Confirmar Retiro
+    </flux:button>
+</div>        
+
+
+    </div>
+</flux:modal>
 </div>

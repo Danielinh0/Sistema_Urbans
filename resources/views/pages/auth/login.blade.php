@@ -36,14 +36,7 @@
                     :placeholder="__('••••••••')"
                     viewable />
 
-                @if (Route::has('password.request'))
-                <flux:link
-                    class="absolute top-0 end-0 text-xs text-blue-800 hover:text-blue-900 transition-colors"
-                    :href="route('password.request')"
-                    wire:navigate>
-                    {{ __('¿Olvidaste tu contraseña?') }}
-                </flux:link>
-                @endif
+                
             </div>
 
             {{-- Recuérdame --}}

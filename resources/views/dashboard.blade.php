@@ -106,7 +106,7 @@
                 <div class="absolute inset-0 bg-gradient-to-br from-green-600/75 via-green-500/50 to-transparent"></div>
                 <div class="relative flex flex-col justify-between h-full p-5">
                     <h2 class="text-white font-extrabold text-xl leading-tight drop-shadow-lg max-w-[65%]">
-                        Abrir Taquillas
+                        Gestionar Taquillas
                     </h2>
                     <div class="flex items-center justify-between">
                         <span class="inline-flex items-center gap-1.5 bg-amber-400 text-gray-900 text-xs font-bold px-3 py-1.5 rounded-full shadow">

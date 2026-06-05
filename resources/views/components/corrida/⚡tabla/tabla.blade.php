@@ -196,10 +196,10 @@
         </flux:table>
 
         <flux:select size="sm" class="w-full sm:w-auto mt-4" wire:model.live="perPage">
-            <flux:select.option value="7">7</flux:select.option>
-            <flux:select.option value="14">14</flux:select.option>
-            <flux:select.option value="27">27</flux:select.option>
-            <flux:select.option value="48">48</flux:select.option>
+            <flux:select.option value="10">10</flux:select.option>
+            <flux:select.option value="25">25</flux:select.option>
+            <flux:select.option value="50">50</flux:select.option>
+            <flux:select.option value="100">100</flux:select.option>
         </flux:select>
     </flux:card>
 
