@@ -9,8 +9,7 @@ use Livewire\WithPagination;
 use Flux\Flux;
 
 
-new class extends Component
-{
+new class extends Component {
     use WithPagination;
 
     public $sortBy = 'id_corrida';
@@ -19,8 +18,8 @@ new class extends Component
 
     public $search = '';
 
-    public $perPage = 7;
-    
+    public $perPage = 10;
+
     public $filtroEstado = '';
 
     public function sort($column)
@@ -64,9 +63,9 @@ new class extends Component
             ->whereDate('datetime_salida', today())
             ->when($this->search !== '', function ($query) {
                 $query->whereHas('ruta', function ($q) {
-                    $q->whereRaw('LOWER(nombre) like ?', ['%'.strtolower($this->search).'%']);
+                    $q->whereRaw('LOWER(nombre) like ?', ['%' . strtolower($this->search) . '%']);
                 })->orWhereHas('user', function ($q) {
-                    $q->whereRaw('LOWER(name) like ?', ['%'.strtolower($this->search).'%']);
+                    $q->whereRaw('LOWER(name) like ?', ['%' . strtolower($this->search) . '%']);
                 });
             })
             ->orderBy($this->sortBy, $this->sortDirection)
