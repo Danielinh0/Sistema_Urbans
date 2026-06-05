@@ -7,8 +7,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Sucursal;
 
-new class extends Component
-{
+new class extends Component {
     use WithPagination;
 
     public $sortBy = 'id_usuario';
@@ -16,6 +15,7 @@ new class extends Component
     public $search = '';
     public $filtroSucursal = '';
     public $filtroRol = '';
+    public $perPage = 10;
 
     public function sort($column)
     {
@@ -51,12 +51,14 @@ new class extends Component
     }
 
     #[Computed]
-    public function sucursales(){
+    public function sucursales()
+    {
         return Sucursal::orderBy('nombre')->get();
     }
 
     #[Computed]
-    public function all_roles(){
+    public function all_roles()
+    {
         return \Spatie\Permission\Models\Role::orderBy('name')->get();
     }
 
@@ -86,7 +88,7 @@ new class extends Component
                 });
             })
             ->orderBy($sortColumn, $this->sortDirection)
-            ->paginate(10);
+            ->paginate($this->perPage);
     }
 };
 ?>
@@ -96,9 +98,12 @@ new class extends Component
 
     <div>
         <flux:card class="!p-2 overflow-x-auto">
-            <flux:table :paginate="$this->usuarios" class="w-full min-w-[34rem] md:min-w-[46rem] xl:min-w-[70rem] text-sm compact-table usuarios-table" dense>
+            <flux:table :paginate="$this->usuarios"
+                class="w-full min-w-[34rem] md:min-w-[46rem] xl:min-w-[70rem] text-sm compact-table usuarios-table"
+                dense>
                 <flux:table.columns>
-                    <x-header-table sortable="id_usuario" class="w-[3.25rem] text-center col-hide-sm" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                    <x-header-table sortable="id_usuario" class="w-[3.25rem] text-center col-hide-sm" :sortBy="$sortBy"
+                        :sortDirection="$sortDirection">
                         ID
                     </x-header-table>
 
@@ -106,15 +111,18 @@ new class extends Component
                         Nombre
                     </x-header-table>
 
-                    <x-header-table icon="mail" sortable="email" class="w-[13rem] col-hide-md" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                    <x-header-table icon="mail" sortable="email" class="w-[13rem] col-hide-md" :sortBy="$sortBy"
+                        :sortDirection="$sortDirection">
                         Email
                     </x-header-table>
 
-                    <x-header-table icon="building-2" sortable="id_sucursal" class="w-[13rem]" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                    <x-header-table icon="building-2" sortable="id_sucursal" class="w-[13rem]" :sortBy="$sortBy"
+                        :sortDirection="$sortDirection">
                         Sucursal
                     </x-header-table>
 
-                    <x-header-table icon="shield-check" sortable="rol_nombre" class="w-[6rem] text-center" :sortBy="$sortBy" :sortDirection="$sortDirection">
+                    <x-header-table icon="shield-check" sortable="rol_nombre" class="w-[6rem] text-center"
+                        :sortBy="$sortBy" :sortDirection="$sortDirection">
                         Tipo
                     </x-header-table>
 
@@ -176,24 +184,14 @@ new class extends Component
 
                             <flux:table.cell class="!px-2 w-[10rem]">
                                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                    <flux:button
-                                        size="sm"
-                                        variant="ghost"
-                                        icon="pencil"
-                                        class="!text-azul_menu !px-1.5"
-                                        title="Editar usuario"
-                                        aria-label="Editar usuario"
+                                    <flux:button size="sm" variant="ghost" icon="pencil" class="!text-azul_menu !px-1.5"
+                                        title="Editar usuario" aria-label="Editar usuario"
                                         wire:click="$dispatch('preparar-edicion-usuario', { id: {{ $usuario->id_usuario }} })">
                                         Editar
                                     </flux:button>
 
-                                    <flux:button
-                                        size="sm"
-                                        variant="ghost"
-                                        icon="trash"
-                                        class="!text-rojo_texto !px-1.5"
-                                        title="Eliminar usuario"
-                                        aria-label="Eliminar usuario"
+                                    <flux:button size="sm" variant="ghost" icon="trash" class="!text-rojo_texto !px-1.5"
+                                        title="Eliminar usuario" aria-label="Eliminar usuario"
                                         wire:click="$dispatch('preparar-eliminacion-usuario', { id: {{ $usuario->id_usuario }} })">
                                         <span class="hidden xl:inline ml-1">Eliminar</span>
                                     </flux:button>
@@ -209,6 +207,13 @@ new class extends Component
                     @endforelse
                 </flux:table.rows>
             </flux:table>
+
+            <flux:select size="sm" class="w-full sm:w-auto mt-4" wire:model.live="perPage">
+                <flux:select.option value="10">10</flux:select.option>
+                <flux:select.option value="25">25</flux:select.option>
+                <flux:select.option value="50">50</flux:select.option>
+                <flux:select.option value="100">100</flux:select.option>
+            </flux:select>
         </flux:card>
 
         <livewire:usuario.manager />

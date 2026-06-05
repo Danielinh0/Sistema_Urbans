@@ -12,7 +12,7 @@ new class extends Component {
     public $sortBy = 'id_ruta';
     public $sortDirection = 'asc';
     public $search = '';
-    public $perPage = 7;
+    public $perPage = 10;
 
     public function sort($column)
     {
@@ -55,8 +55,8 @@ new class extends Component {
 
     <livewire:barra-busqueda placeholder="Buscar por nombre de ruta" />
 
-    <flux:card> 
-        <flux:table :paginate="$this->rutas" dense>  {{-- quitado class="w-full text-sm compact-table" --}}
+    <flux:card>
+        <flux:table :paginate="$this->rutas" dense> {{-- quitado class="w-full text-sm compact-table" --}}
             <flux:table.columns>
 
                 <flux:table.column align="center">
@@ -83,13 +83,8 @@ new class extends Component {
                     </span>
                 </flux:table.column>
 
-                <flux:table.column  align="center"
-                    sortable
-                    :sorted="$sortBy === 'tiempo_estimado'"
-                    :direction="$sortDirection"
-                    wire:click="sort('tiempo_estimado')"
-
-                >
+                <flux:table.column align="center" sortable :sorted="$sortBy === 'tiempo_estimado'"
+                    :direction="$sortDirection" wire:click="sort('tiempo_estimado')">
                     <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
                         <flux:icon name="alarm-clock" class="text-azul_menu!" /> Tiempo
                     </span>
@@ -109,82 +104,84 @@ new class extends Component {
 
 
                 @if (auth()->user()->hasAnyRole(['admin', 'gerente']))
-                <flux:table.column>
-                    <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
-                        <flux:icon name="wrench" class="text-azul_menu!" /> Acciones
-                    </span>
-                </flux:table.column>
+                    <flux:table.column>
+                        <span class="inline-flex items-center gap-1 text-azul_menu text-sm font-semibold">
+                            <flux:icon name="wrench" class="text-azul_menu!" /> Acciones
+                        </span>
+                    </flux:table.column>
                 @endif
 
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($this->rutas as $ruta)
-                <flux:table.row :key="$ruta->id_ruta">
+                    <flux:table.row :key="$ruta->id_ruta">
 
-                    <flux:table.cell  align="center" class="whitespace-nowrap" title="{{ $ruta->nombre }}">
-                        {{ $ruta->nombre }}
-                    </flux:table.cell>
+                        <flux:table.cell align="center" class="whitespace-nowrap" title="{{ $ruta->nombre }}">
+                            {{ $ruta->nombre }}
+                        </flux:table.cell>
 
-                    <flux:table.cell class="whitespace-nowrap col-hide-md">
-                        {{ $ruta->sucursalSalida?->nombre ?? 'N/A' }}
-                    </flux:table.cell>
+                        <flux:table.cell class="whitespace-nowrap col-hide-md">
+                            {{ $ruta->sucursalSalida?->nombre ?? 'N/A' }}
+                        </flux:table.cell>
 
-                    <flux:table.cell class="whitespace-nowrap col-hide-md">
-                        {{ $ruta->sucursalLlegada?->nombre ?? 'N/A' }}
-                    </flux:table.cell>
+                        <flux:table.cell class="whitespace-nowrap col-hide-md">
+                            {{ $ruta->sucursalLlegada?->nombre ?? 'N/A' }}
+                        </flux:table.cell>
 
-                    <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        <flux:badge color="amber"> {{ $ruta->distancia }} km</flux:badge> 
-                    </flux:table.cell>
+                        <flux:table.cell align="center" class="whitespace-nowrap col-hide-md">
+                            <flux:badge color="amber"> {{ $ruta->distancia }} km</flux:badge>
+                        </flux:table.cell>
 
-                    <flux:table.cell  align="center" class="whitespace-nowrap">
-                       <flux:badge color="cyan">{{ $ruta->tiempo_estimado }} hrs</flux:badge> 
-                    </flux:table.cell>
+                        <flux:table.cell align="center" class="whitespace-nowrap">
+                            <flux:badge color="cyan">{{ $ruta->tiempo_estimado }} hrs</flux:badge>
+                        </flux:table.cell>
 
-                    <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        <flux:badge color="green">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
-                    </flux:table.cell>
+                        <flux:table.cell align="center" class="whitespace-nowrap col-hide-md">
+                            <flux:badge color="green">${{ number_format($ruta->tarifa_clientes, 2) }}</flux:badge>
+                        </flux:table.cell>
 
-                    <flux:table.cell  align="center" class="whitespace-nowrap col-hide-md">
-                        <flux:badge color="green">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
-                    </flux:table.cell>
+                        <flux:table.cell align="center" class="whitespace-nowrap col-hide-md">
+                            <flux:badge color="green">${{ number_format($ruta->tarifa_paquete, 2) }}</flux:badge>
+                        </flux:table.cell>
 
-                    @can('update', $ruta)
-                    <flux:table.cell>
-                        <div class="flex items-center gap-3">
-                            <flux:button size="sm" href="{{ route('ruta.show', $ruta->id_ruta) }}" icon="eye" 
-                                class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
-                            </flux:button>    
+                        @can('update', $ruta)
+                            <flux:table.cell>
+                                <div class="flex items-center gap-3">
+                                    <flux:button size="sm" href="{{ route('ruta.show', $ruta->id_ruta) }}" icon="eye"
+                                        class="text-texto-fondo! bg-fondo-amarillo! hover:bg-hover-amarillo! hover:text-white! border-none! btn-animado">
+                                    </flux:button>
 
-                            <flux:button size="sm" variant="ghost" icon="pencil" class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
-                                wire:click="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })">
-                            </flux:button>
+                                    <flux:button size="sm" variant="ghost" icon="pencil"
+                                        class="bg-azul_rebajado! text-azul_menu! hover:bg-azul_menu! hover:text-white! border-none! btn-animado"
+                                        wire:click="$dispatch('edicion-ruta', { id: {{ $ruta->id_ruta }} })">
+                                    </flux:button>
 
-                            <flux:button size="sm" variant="ghost" icon="trash" class="bg-fondo-rojo! text-texto-rojo! hover:bg-texto-rojo! hover:text-white! border-none! btn-animado"
-                                wire:click="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })">
-                            </flux:button>
-                        </div>
-                    </flux:table.cell>
-                    @endcan
+                                    <flux:button size="sm" variant="ghost" icon="trash"
+                                        class="bg-fondo-rojo! text-texto-rojo! hover:bg-texto-rojo! hover:text-white! border-none! btn-animado"
+                                        wire:click="$dispatch('eliminacion-ruta', { id: {{ $ruta->id_ruta }} })">
+                                    </flux:button>
+                                </div>
+                            </flux:table.cell>
+                        @endcan
 
-                </flux:table.row>
+                    </flux:table.row>
                 @empty
-                <flux:table.row>
-                    <flux:table.cell>
-                        No se encontraron rutas.
-                    </flux:table.cell>
-                </flux:table.row>
+                    <flux:table.row>
+                        <flux:table.cell>
+                            No se encontraron rutas.
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
             </flux:table.rows>
 
         </flux:table>
 
         <flux:select size="sm" class="w-full sm:w-auto" wire:model.live="perPage">
-            <flux:select.option value="7">7</flux:select.option>
-            <flux:select.option value="14">14</flux:select.option>
-            <flux:select.option value="27">27</flux:select.option>
-            <flux:select.option value="48">48</flux:select.option>
+            <flux:select.option value="10">10</flux:select.option>
+            <flux:select.option value="25">25</flux:select.option>
+            <flux:select.option value="50">50</flux:select.option>
+            <flux:select.option value="100">100</flux:select.option>
         </flux:select>
     </flux:card>
 

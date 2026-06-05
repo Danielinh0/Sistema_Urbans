@@ -194,6 +194,7 @@ new class extends Component {
             <flux:select.option value="10">10</flux:select.option>
             <flux:select.option value="25">25</flux:select.option>
             <flux:select.option value="50">50</flux:select.option>
+            <flux:select.option value="100">100</flux:select.option>
         </flux:select>
     </flux:card>
 

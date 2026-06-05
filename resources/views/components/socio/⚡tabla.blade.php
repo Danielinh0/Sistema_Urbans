@@ -12,7 +12,7 @@ new class extends Component {
     public $sortBy = 'id_socio';
     public $sortDirection = 'asc';
     public $search = '';
-    public $perPage = 6;
+    public $perPage = 10;
     public $filtroEstado = '';
 
     public function sort($column)
@@ -75,100 +75,101 @@ new class extends Component {
     <flux:card>
         <div class="overflow-x-auto">
             <flux:table :paginate="$this->socios">
-            <flux:table.columns>
-                
-                <x-header-table sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
-                    wire:click="sort('nombre')" class="min-w-[100px]">Nombre</x-header-table>
-                <x-header-table sortable :sorted="$sortBy === 'apellido_paterno'" :direction="$sortDirection"
-                    wire:click="sort('apellido_paterno')" class="min-w-[100px]">A. Paterno</x-header-table>
-                <x-header-table sortable :sorted="$sortBy === 'apellido_materno'" :direction="$sortDirection"
-                    wire:click="sort('apellido_materno')" class="min-w-[100px]">A. Materno</x-header-table>
-                <x-header-table icon="activity" sortable :sorted="$sortBy === 'estado'" :direction="$sortDirection"
-                    wire:click="sort('estado')" class="w-16 text-center!">Estado</x-header-table>
-                <x-header-table icon="calendar" sortable :sorted="$sortBy === 'fecha_de_incorporacion'"
-                    :direction="$sortDirection"
-                    wire:click="sort('fecha_de_incorporacion')" class="w-20 text-center!">Incorp.</x-header-table>
-                <x-header-table icon="smartphone" sortable :sorted="$sortBy === 'numero_telefonico'"
-                    :direction="$sortDirection" wire:click="sort('numero_telefonico')">Contacto</x-header-table>
-                <x-header-table icon="bus">Urbans</x-header-table>
-                @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
-                    <x-header-table align="center">Acciones</x-header-table>
-                @endif
-            </flux:table.columns>
-            <flux:table.rows>
-                @forelse ($this->socios as $socio)
-                    <flux:table.row :key="$socio->id_socio">
-                        
-                        <flux:table.cell class="font-medium p-1">
-                            <span class="text-sm truncate">{{ $socio->nombre }}</span>
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->apellido_paterno }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            {{ $socio->apellido_materno }}
-                        </flux:table.cell>
-                        <flux:table.cell class="text-center!">
-                            @if ($socio->estado == 'Activo')
-                                <flux:badge color="green">Activo</flux:badge>
-                            @else
-                                <flux:badge color="red">Inactivo</flux:badge>
-                            @endif
-                        </flux:table.cell>
-                        <flux:table.cell class="text-center!">
-                            {{ $socio->fecha_de_incorporacion }}
-                        </flux:table.cell>
-                        <flux:table.cell>
-                            <flux:dropdown>
-                                <flux:button variant="ghost" icon="smartphone" size="sm">Contactos</flux:button>
-                                <flux:menu>
-                                    <flux:menu.item icon="phone">{{ $socio->numero_telefonico }}</flux:menu.item>
-                                    <flux:menu.item icon="mail">{{ $socio->correo }}</flux:menu.item>
-                                </flux:menu>
-                            </flux:dropdown>
-                        </flux:table.cell>
+                <flux:table.columns>
+
+                    <x-header-table sortable :sorted="$sortBy === 'nombre'" :direction="$sortDirection"
+                        wire:click="sort('nombre')" class="min-w-[100px]">Nombre</x-header-table>
+                    <x-header-table sortable :sorted="$sortBy === 'apellido_paterno'" :direction="$sortDirection"
+                        wire:click="sort('apellido_paterno')" class="min-w-[100px]">A. Paterno</x-header-table>
+                    <x-header-table sortable :sorted="$sortBy === 'apellido_materno'" :direction="$sortDirection"
+                        wire:click="sort('apellido_materno')" class="min-w-[100px]">A. Materno</x-header-table>
+                    <x-header-table icon="activity" sortable :sorted="$sortBy === 'estado'" :direction="$sortDirection"
+                        wire:click="sort('estado')" class="w-16 text-center!">Estado</x-header-table>
+                    <x-header-table icon="calendar" sortable :sorted="$sortBy === 'fecha_de_incorporacion'"
+                        :direction="$sortDirection" wire:click="sort('fecha_de_incorporacion')"
+                        class="w-20 text-center!">Incorp.</x-header-table>
+                    <x-header-table icon="smartphone" sortable :sorted="$sortBy === 'numero_telefonico'"
+                        :direction="$sortDirection" wire:click="sort('numero_telefonico')">Contacto</x-header-table>
+                    <x-header-table icon="bus">Urbans</x-header-table>
+                    @if(auth()->user()->hasAnyRole(['gerente', 'admin']))
+                        <x-header-table align="center">Acciones</x-header-table>
+                    @endif
+                </flux:table.columns>
+                <flux:table.rows>
+                    @forelse ($this->socios as $socio)
+                        <flux:table.row :key="$socio->id_socio">
+
+                            <flux:table.cell class="font-medium p-1">
+                                <span class="text-sm truncate">{{ $socio->nombre }}</span>
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                {{ $socio->apellido_paterno }}
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                {{ $socio->apellido_materno }}
+                            </flux:table.cell>
+                            <flux:table.cell class="text-center!">
+                                @if ($socio->estado == 'Activo')
+                                    <flux:badge color="green">Activo</flux:badge>
+                                @else
+                                    <flux:badge color="red">Inactivo</flux:badge>
+                                @endif
+                            </flux:table.cell>
+                            <flux:table.cell class="text-center!">
+                                {{ $socio->fecha_de_incorporacion }}
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <flux:dropdown>
+                                    <flux:button variant="ghost" icon="smartphone" size="sm">Contactos</flux:button>
+                                    <flux:menu>
+                                        <flux:menu.item icon="phone">{{ $socio->numero_telefonico }}</flux:menu.item>
+                                        <flux:menu.item icon="mail">{{ $socio->correo }}</flux:menu.item>
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </flux:table.cell>
 
 
-                        <flux:table.cell>
-                            <flux:dropdown>
-                                <flux:button variant="ghost" icon="bus" size="sm">Urbans</flux:button>
-                                <flux:menu>
-                                    @foreach ($socio->urbans as $urban)
-                                        <flux:menu.item icon="bus">{{ $urban->codigo_urban }}</flux:menu.item>
-                                    @endforeach
-                                </flux:menu>
-                            </flux:dropdown>
-                        </flux:table.cell>
-                        <flux:table.cell class="flex gap-2">
-                            @can('update', $socio)
-                                <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
-                                    wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
-                                    <span class="hidden md:inline ml-1">Editar</span>
+                            <flux:table.cell>
+                                <flux:dropdown>
+                                    <flux:button variant="ghost" icon="bus" size="sm">Urbans</flux:button>
+                                    <flux:menu>
+                                        @foreach ($socio->urbans as $urban)
+                                            <flux:menu.item icon="bus">{{ $urban->codigo_urban }}</flux:menu.item>
+                                        @endforeach
+                                    </flux:menu>
+                                </flux:dropdown>
+                            </flux:table.cell>
+                            <flux:table.cell class="flex gap-2">
+                                @can('update', $socio)
+                                    <flux:button variant="ghost" icon="user-round-pen" class="!text-azul_menu"
+                                        wire:click="$dispatch('preparar-edicion-socio', { id: {{ $socio->id_socio }} })">
+                                        <span class="hidden md:inline ml-1">Editar</span>
 
-                                </flux:button>
-                            @endcan
-                            @can('delete', $socio)
-                                <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
-                                    wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
-                                    <span class="hidden md:inline ml-1">Eliminar</span>
-                                </flux:button>
-                            @endcan
-                        </flux:table.cell>
-                    </flux:table.row>
-                @empty
-                    <flux:table.row>
-                        <flux:table.cell colspan="8" class="text-center py-4 ">
-                            No se encontraron socios.
-                        </flux:table.cell>
-                    </flux:table.row>
-                @endforelse
-            </flux:table.rows>
-        </flux:table>
+                                    </flux:button>
+                                @endcan
+                                @can('delete', $socio)
+                                    <flux:button variant="ghost" icon="user-round-minus" class="!text-rojo_texto"
+                                        wire:click="$dispatch('preparar-eliminacion-socio', { id: {{ $socio->id_socio }} })">
+                                        <span class="hidden md:inline ml-1">Eliminar</span>
+                                    </flux:button>
+                                @endcan
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="8" class="text-center py-4 ">
+                                No se encontraron socios.
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
         </div>
         <flux:select size="sm" class="w-full sm:w-auto mt-4" wire:model.live="perPage">
-            <flux:select.option value="6">6</flux:select.option>
-            <flux:select.option value="12">12</flux:select.option>
-            <flux:select.option value="24">24</flux:select.option>
+            <flux:select.option value="10">10</flux:select.option>
+            <flux:select.option value="25">25</flux:select.option>
+            <flux:select.option value="50">50</flux:select.option>
+            <flux:select.option value="100">100</flux:select.option>
         </flux:select>
     </flux:card>
 
